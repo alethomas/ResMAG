@@ -1,0 +1,3 @@
+sample_name,fq1,fq2,project
+I15564-L1,/projects/pig-muenster/Metagenome_Kiel/fastq/I15564-L1_S19_L001_R1_001.fastq.gz,/projects/pig-muenster/Metagenome_Kiel/fastq/I15564-L1_S19_L001_R2_001.fastq.gz,strawpigs
+I15546-L1,/projects/pig-muenster/Metagenome_Kiel/fastq/I15546-L1_S1_L001_R1_001.fastq.gz,/projects/pig-muenster/Metagenome_Kiel/fastq/I15546-L1_S1_L001_R2_001.fastq.gz,strawpigs

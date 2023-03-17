@@ -1,0 +1,23 @@
+show_analysis_time: True
+
+# order of report
+module_order:
+  - fastqc:
+      name: "Reads Quality Control"
+      target: "FastQC"
+  - fastp:
+      name: "Reads Preprocessing"
+      target: "fastp"
+  
+# sample name cleaning
+fn_clean_exts:
+  - ".fastp"
+  - ".trimmed"
+  - ".fastq"
+  - ".gz"
+  - "_L001_R1_001"
+  - "_L001_R2_001"
+  - "_L002_R1_001"
+  - "_L002_R2_001"
+  - "_S"
+  - ".1"

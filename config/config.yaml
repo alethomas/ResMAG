@@ -1,0 +1,12 @@
+pepfile: config/pep/config.yaml
+
+
+quality-criteria:
+  # minimal length of acceptable reads
+  min-length-reads: 30
+  # average quality of acceptable reads (PHRED)
+  min-PHRED: 20
+
+adapter_seqs: "-a CTGTCTCTTATACACATCT"
+
+nextera_transposase: "--adapter_sequence TCGTCGGCAGCGTCAGATGTGTATAAGAGACAG --adapter_sequence_r2 GTCTCGTGGGCTCGGAGATGTGTATAAGAGACAG"
