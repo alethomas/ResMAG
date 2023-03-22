@@ -7,6 +7,4 @@ quality-criteria:
   # average quality of acceptable reads (PHRED)
   min-PHRED: 20
 
-adapter_seqs: "-a CTGTCTCTTATACACATCT"
-
-nextera_transposase: "--adapter_sequence TCGTCGGCAGCGTCAGATGTGTATAAGAGACAG --adapter_sequence_r2 GTCTCGTGGGCTCGGAGATGTGTATAAGAGACAG"
+adapter_seqs: "-a CTGTCTCTTATACACATCT -g AGATGTGTATAAGAGACAG"

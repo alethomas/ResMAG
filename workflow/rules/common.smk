@@ -6,9 +6,15 @@ def get_samples():
 def get_fastqs(wildcards):
     return pep.sample_table.loc[wildcards.sample][["fq1", "fq2"]]
 
-def get_adapters(wildcards):
-    return config["nextera_transposase"]#"adapter_seqs"]
+def get_trimmed_fastqs(wildcards):
+    return [
+            "results/{project}/trimmed/fastp/{sample}.1.fastq.gz",
+            "results/{project}/trimmed/fastp/{sample}.2.fastq.gz",
+            ]
 
+def get_adapters(wildcards):
+    return config["adapter_seqs"]
+    
 def get_samples_for_project(project):
     # select samples for given project
     df = pep.sample_table
