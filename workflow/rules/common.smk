@@ -6,29 +6,60 @@ def get_samples():
 def get_fastqs(wildcards):
     return pep.sample_table.loc[wildcards.sample][["fq1", "fq2"]]
 
+def get_project():
+    return config['project-name']
+
+def get_adapters(wildcards):
+    return config["adapter_seqs"]
+    
+'''def get_samples_for_project(project):
+    # select samples for given project
+    df = pep.sample_table
+    df = df[df["project"] == project]
+
+    samples_of_run = list(df["sample_name"].values)
+    return samples_of_run'''
+
+def expand_samples_for_project(paths, **kwargs):
+    def inner(wildcards):
+        return expand(
+            paths,
+            sample=get_samples(),#_for_project(wildcards.project),
+            **kwargs,
+        )
+
+    return inner
+
+
 def get_trimmed_fastqs(wildcards):
     return [
             "results/{project}/trimmed/fastp/{sample}.1.fastq.gz",
             "results/{project}/trimmed/fastp/{sample}.2.fastq.gz",
             ]
 
-def get_adapters(wildcards):
-    return config["adapter_seqs"]
-    
-def get_samples_for_project(project):
-    # select samples for given project
-    df = pep.sample_table
-    df = df[df["project"] == project]
 
-    samples_of_run = list(df["sample_name"].values)
-    return samples_of_run
+def get_reference_species():
+    return config["reference-genomes"]["reference-species"]
 
-def expand_samples_for_project(paths, **kwargs):
-    def inner(wildcards):
-        return expand(
-            paths,
-            sample=get_samples_for_project(wildcards.project),
-            **kwargs,
-        )
+def get_reference_dir():
+    return config["reference-genomes"]["reference-dir"]
 
-    return inner
+def get_reference_file(wildcards):
+    ext = config["reference-genomes"]["reference-file-ext"]
+    ref_path = "{}{}{}".format(get_reference_dir(),wildcards.ref,ext)
+    return ref_path
+
+def get_reference_index(wildcards):
+    ind_path = "{}{{ref}}.mmi".format(get_reference_dir())
+    return expand(ind_path, ref=get_reference_species())
+    '''ind_list = []
+    for ref in get_reference_species():
+        ind_list.append("{}{}.mmi".format(get_reference_dir(),ref))
+    return ind_list'''
+
+
+def get_host_filtered_fastqs(wildcards):
+    return [
+            'results/{project}/filtered/{sample}_final.1.fastq.gz',
+            'results/{project}/filtered/{sample}_final.2.fastq.gz',
+            ]

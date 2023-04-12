@@ -1,5 +1,6 @@
 pepfile: config/pep/config.yaml
 
+project-name: 'strawpigs'
 
 quality-criteria:
   # minimal length of acceptable reads
@@ -8,3 +9,12 @@ quality-criteria:
   min-PHRED: 20
 
 adapter_seqs: "-a CTGTCTCTTATACACATCT -g AGATGTGTATAAGAGACAG"
+
+reference-genomes:
+  # list of reference names
+  reference-species: ["pig"] #, "human"]
+  # file extension of the reference genome,
+  # can be .fa, .fasta, .fna, optionally .gz
+  reference-file-ext: ".fna.gz"
+  # directory of reference genomes, e.g resources/reference/
+  reference-dir: resources/reference/

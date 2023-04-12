@@ -16,7 +16,9 @@ pepfile: config["pepfile"]
 include: "rules/common.smk"
 include: "rules/trimming.smk"
 include: "rules/qc.smk"
+include: "rules/host_filtering.smk"
 
 rule all:
     input:
-        "results/strawpigs/qc/multiqc.html"
+        "results/strawpigs/qc/multiqc.html",
+        expand('results/{project}/filtered/{sample}_final.1.fastq.gz', project=get_project(), sample=get_samples()),
