@@ -1,4 +1,36 @@
-# Main entrypoint of the workflow. 
-# Please follow the best practices: 
+# Main entrypoint of the workflow.
+# Please follow the best practices:
 # https://snakemake.readthedocs.io/en/stable/snakefiles/best_practices.html,
-# in particular regarding the standardized folder structure mentioned there. 
+# in particular regarding the standardized folder structure mentioned there.
+
+from snakemake.utils import min_version
+
+min_version("6.3.0")
+
+
+configfile: "config/config.yaml"
+
+
+pepfile: config["pepfile"]
+
+
+include: "rules/common.smk"
+include: "rules/trimming.smk"
+include: "rules/qc.smk"
+include: "rules/host_filtering.smk"
+
+
+rule all:
+    input:
+        #"results/strawpigs/qc/multiqc.html",
+        expand(
+            "results/{project}/filtered/kraken/{sample}_{kraken_ref}_1.fastq",
+            project=get_project(),
+            sample=get_samples(),
+            kraken_ref=get_kraken_ref(),
+        ),
+        expand(
+            "results/{project}/filtered/kraken/{sample}_summary.csv",
+            project=get_project(),
+            sample=get_samples(),
+        ),
