@@ -1,6 +1,6 @@
 pepfile: config/pep/config.yaml
 
-project-name: 'strawpigs'
+project-name: "strawpigs"
 
 quality-criteria:
   # minimal length of acceptable reads
@@ -20,8 +20,8 @@ reference-genomes:
   reference-dir: resources/reference/
 
 kraken:
-  kraken-db: 'resources/krakenDB/strawpigs'
+  kraken-db: "resources/krakenDB/strawpigs"
   # species/kingdom to separate with taxIDs in same order
   #ref: ['bacteria','fungi', 'pig', 'human', 'plant']
-  ref-analysis: ['bacteria','fungi']
-  taxIDs-ref: {bacteria: 2, fungi: 4751, pig: 9823, human: 9606, plant: 33090}
+  ref-analysis: ["bacteria", "fungi"]
+  taxIDs-ref: { bacteria: 2, fungi: 4751, pig: 9823, human: 9606, plant: 33090 }

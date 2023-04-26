@@ -1,14 +1,15 @@
 rule fastqc:
     input:
-        get_trimmed_fastqs
+        get_trimmed_fastqs,
     output:
         html="results/{project}/qc/fastqc/{sample}_trimmed.html",
         zip="results/{project}/qc/fastqc/{sample}_trimmed_fastqc.zip",
     log:
-        "logs/{project}/fastqc/{sample}.log"
+        "logs/{project}/fastqc/{sample}.log",
     wrapper:
         "v1.23.5/bio/fastqc"
-       
+
+
 rule multiqc:
     input:
         expand_samples_for_project(
