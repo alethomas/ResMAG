@@ -63,3 +63,15 @@ def get_host_filtered_fastqs(wildcards):
             'results/{project}/filtered/{sample}_final.1.fastq.gz',
             'results/{project}/filtered/{sample}_final.2.fastq.gz',
             ]
+
+def get_kraken_db():
+    return config["kraken"]["kraken-db"]
+
+def get_kraken_ref():
+    return config["kraken"]["ref-analysis"]
+
+def get_taxID_dict():
+    return config["kraken"]["taxIDs-ref"]
+
+def get_taxID(wildcards):
+    return config["kraken"]["taxIDs-ref"][wildcards.kraken_ref]

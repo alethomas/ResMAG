@@ -20,5 +20,6 @@ include: "rules/host_filtering.smk"
 
 rule all:
     input:
-        "results/strawpigs/qc/multiqc.html",
-        expand('results/{project}/filtered/{sample}_final.1.fastq.gz', project=get_project(), sample=get_samples()),
+        #"results/strawpigs/qc/multiqc.html",
+        expand('results/{project}/filtered/kraken/{sample}_{kraken_ref}_1.fastq', project=get_project(), sample=get_samples(), kraken_ref=get_kraken_ref()),
+        expand('results/{project}/filtered/kraken/{sample}_summary.csv', project=get_project(), sample=get_samples())

@@ -1,14 +1,13 @@
-# fastp in paired-end mdoe for Illumina paired-end data
+# fastp in paired-end mode for Illumina paired-end data
 rule fastp:
     input:
         sample=get_fastqs,
     output:
-        trimmed=temp(
-            [
+        trimmed=
+            temp([
                 "results/{project}/trimmed/fastp/{sample}.1.fastq.gz",
                 "results/{project}/trimmed/fastp/{sample}.2.fastq.gz",
-            ]
-        ),
+            ]),
         html="results/{project}/trimmed/fastp/{sample}.html",
         json="results/{project}/trimmed/fastp/{sample}.fastp.json",
     params:

@@ -1,8 +1,9 @@
 from pathlib import Path
 
 REFERENCE_DIR = get_reference_dir()
+KRAKEN_DB = get_kraken_db()
 
-## indexing
+'''## indexing
 rule minimap2_index:
     input:
         target = get_reference_file
@@ -32,6 +33,63 @@ rule filter_host_reads:
     conda:
         "../envs/minimap2.yaml"
     script:
-        "../scripts/host_filtering.py"
+        "../scripts/host_filtering.py"'''
 
+rule kraken2:
+    input:
+        get_trimmed_fastqs
+    output:
+        clf1 = temp('results/{project}/filtered/kraken/{sample}_clf_1.fastq'),
+        clf2 = temp('results/{project}/filtered/kraken/{sample}_clf_2.fastq'),
+        report = 'results/{project}/filtered/kraken/{sample}_report.tsv',
+        outfile = 'results/{project}/filtered/kraken/{sample}_outfile.tsv'
+    params:
+        clf = 'results/{project}/filtered/kraken/{sample}_clf#.fastq',
+        db = KRAKEN_DB
+    threads: 3
+    log:
+        'logs/{project}/kraken2/{sample}.log'
+    conda:
+        '../envs/kraken2.yaml'
+    shell:
+        'kraken2 --db {params.db} --threads {threads} --paired '
+        '--classified-out {params.clf} --output {output.outfile} '
+        '--report {output.report} --gzip-compressed {input} 2>> {log}'
+
+rule extract_kraken_reads:
+    input:
+        clf1 = 'results/{project}/filtered/kraken/{sample}_clf_1.fastq',
+        clf2 = 'results/{project}/filtered/kraken/{sample}_clf_2.fastq',
+        report = 'results/{project}/filtered/kraken/{sample}_report.tsv',
+        outfile = 'results/{project}/filtered/kraken/{sample}_outfile.tsv'
+    output:
+        out1 = 'results/{project}/filtered/kraken/{sample}_{kraken_ref}_1.fastq',
+        out2 = 'results/{project}/filtered/kraken/{sample}_{kraken_ref}_2.fastq'
+    log:
+        'logs/{project}/extract_kraken_reads/{sample}_{kraken_ref}.log'
+    params:
+        taxid = get_taxID
+    threads: 2
+    conda:
+        '../envs/kraken2.yaml'
+    shell:
+        'extract_kraken_reads.py -s1 {input.clf1} -s2 {input.clf2} -k {input.outfile} '
+        '-r {input.report} -t {params.taxid} --include-children '
+        '-o {output.out1} -o2 {output.out2} --fastq-output 2> {log}'
+
+rule kraken_summary:
+    input:
+        report = 'results/{project}/filtered/kraken/{sample}_report.tsv',
+        json = "results/{project}/trimmed/fastp/{sample}.fastp.json"
+    output:
+        ensure('results/{project}/filtered/kraken/{sample}_summary.csv', non_empty=True)
+    log:
+        'logs/{project}/kraken2/{sample}_summary.log'
+    params:
+        taxid_dict = get_taxID_dict()
+    threads: 2
+    conda:
+        '../envs/kraken2.yaml'
+    script:
+        '../scripts/kraken_summary.py'
 

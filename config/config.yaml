@@ -12,9 +12,16 @@ adapter_seqs: "-a CTGTCTCTTATACACATCT -g AGATGTGTATAAGAGACAG"
 
 reference-genomes:
   # list of reference names
-  reference-species: ["pig"] #, "human"]
+  reference-species: ["pig", "human"]
   # file extension of the reference genome,
   # can be .fa, .fasta, .fna, optionally .gz
   reference-file-ext: ".fna.gz"
   # directory of reference genomes, e.g resources/reference/
   reference-dir: resources/reference/
+
+kraken:
+  kraken-db: 'resources/krakenDB/strawpigs'
+  # species/kingdom to separate with taxIDs in same order
+  #ref: ['bacteria','fungi', 'pig', 'human', 'plant']
+  ref-analysis: ['bacteria','fungi']
+  taxIDs-ref: {bacteria: 2, fungi: 4751, pig: 9823, human: 9606, plant: 33090}
