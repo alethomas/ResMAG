@@ -12,6 +12,15 @@ outfile = snakemake.output[0] #f'results/{project}/filtered/kraken/{sample}_summ
 header_ls = ['prct', 'total_reads', 'lvl_reads', 'lvl', 'tax_id', 'name']
 report_df = pd.read_table(report, names=header_ls)
 results_dict = {}
+
+line = report_df.loc[report_df['tax_id']== 0]
+if not line.empty:
+    no_reads = line.iloc[0]['total_reads']
+    prct_reads = line.iloc[0]['prct']
+    results_dict['unclassified'] = [no_reads, prct_reads]
+else:
+    results_dict['unclassified'] = [0, 0]
+
 for ref in tax_ids:
     line = report_df.loc[report_df['tax_id']== tax_ids[ref]]
     if line.iloc[0]['lvl'] == 'S':
