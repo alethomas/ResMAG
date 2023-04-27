@@ -18,6 +18,7 @@ include: "rules/common.smk"
 include: "rules/trimming.smk"
 include: "rules/qc.smk"
 include: "rules/host_filtering.smk"
+include: "rules/assembly.smk"
 
 
 rule all:
@@ -31,6 +32,11 @@ rule all:
         ),
         expand(
             "results/{project}/filtered/kraken/{sample}_summary.csv",
+            project=get_project(),
+            sample=get_samples(),
+        ),
+        expand(
+            "results/{project}/assembly_megahit/{sample}/final.contigs.fa",
             project=get_project(),
             sample=get_samples(),
         ),
