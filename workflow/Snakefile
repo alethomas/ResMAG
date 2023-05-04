@@ -23,7 +23,7 @@ include: "rules/assembly.smk"
 
 rule all:
     input:
-        #"results/strawpigs/qc/multiqc.html",
+        "results/strawpigs/qc/multiqc.html",
         expand(
             "results/{project}/filtered/kraken/{sample}_{kraken_ref}_1.fastq",
             project=get_project(),
@@ -37,6 +37,11 @@ rule all:
         ),
         expand(
             "results/{project}/assembly_megahit/{sample}/final.contigs.fa",
+            project=get_project(),
+            sample=get_samples(),
+        ),
+        expand(
+            "results/{project}/assembly_megahit/{sample}_summary.csv",
             project=get_project(),
             sample=get_samples(),
         ),
