@@ -40,12 +40,12 @@ rule kraken2:
     input:
         get_trimmed_fastqs,
     output:
-        clf1=temp("results/{project}/filtered/kraken/{sample}_clf_1.fastq"),
-        clf2=temp("results/{project}/filtered/kraken/{sample}_clf_2.fastq"),
+        clf1=temp("results/{project}/filtered/{sample}_clf_1.fastq"),
+        clf2=temp("results/{project}/filtered/{sample}_clf_2.fastq"),
         report="results/{project}/filtered/kraken/{sample}_report.tsv",
         outfile="results/{project}/filtered/kraken/{sample}_outfile.tsv",
     params:
-        clf="results/{project}/filtered/kraken/{sample}_clf#.fastq",
+        clf="results/{project}/filtered/{sample}_clf#.fastq",
         db=KRAKEN_DB,
     threads: 3
     log:
@@ -60,24 +60,27 @@ rule kraken2:
 
 rule extract_kraken_reads:
     input:
-        clf1="results/{project}/filtered/kraken/{sample}_clf_1.fastq",
-        clf2="results/{project}/filtered/kraken/{sample}_clf_2.fastq",
+        clf1="results/{project}/filtered/{sample}_clf_1.fastq",
+        clf2="results/{project}/filtered/{sample}_clf_2.fastq",
         report="results/{project}/filtered/kraken/{sample}_report.tsv",
         outfile="results/{project}/filtered/kraken/{sample}_outfile.tsv",
     output:
-        out1="results/{project}/filtered/kraken/{sample}_{kraken_ref}_1.fastq",
-        out2="results/{project}/filtered/kraken/{sample}_{kraken_ref}_2.fastq",
+        out1="results/{project}/filtered/{kraken_ref}/{sample}_{kraken_ref}_1.fastq.gz",
+        out2="results/{project}/filtered/{kraken_ref}/{sample}_{kraken_ref}_2.fastq.gz",
     log:
         "logs/{project}/extract_kraken_reads/{sample}_{kraken_ref}.log",
     params:
         taxid=get_taxID,
+        int1=lambda wildcards, output: output.out1.split('.gz')[0],
+        int2=lambda wildcards, output: output.out2.split('.gz')[0],
     threads: 2
     conda:
         "../envs/kraken2.yaml"
     shell:
         "extract_kraken_reads.py -s1 {input.clf1} -s2 {input.clf2} -k {input.outfile} "
         "-r {input.report} -t {params.taxid} --include-children "
-        "-o {output.out1} -o2 {output.out2} --fastq-output 2> {log}"
+        "-o {params.int1} -o2 {params.int2} --fastq-output && "
+        "gzip {params.int1} {params.int2} 2>> {log}"
 
 
 rule kraken_summary:
@@ -85,7 +88,7 @@ rule kraken_summary:
         report="results/{project}/filtered/kraken/{sample}_report.tsv",
         json="results/{project}/trimmed/fastp/{sample}.fastp.json",
     output:
-        ensure("results/{project}/filtered/kraken/{sample}_summary.csv", non_empty=True),
+        ensure("results/{project}/filtered/{sample}_summary.csv", non_empty=True),
     log:
         "logs/{project}/kraken2/{sample}_summary.log",
     params:
