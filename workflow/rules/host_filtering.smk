@@ -71,8 +71,8 @@ rule extract_kraken_reads:
         "logs/{project}/extract_kraken_reads/{sample}_{kraken_ref}.log",
     params:
         taxid=get_taxID,
-        int1="results/{project}/filtered/{kraken_ref}/{sample}_{kraken_ref}_1.fastq",
-        int2="results/{project}/filtered/{kraken_ref}/{sample}_{kraken_ref}_2.fastq",
+        int1=lambda wildcards, output: output.out1.split('.gz')[0],
+        int2=lambda wildcards, output: output.out2.split('.gz')[0],
     threads: 2
     conda:
         "../envs/kraken2.yaml"
