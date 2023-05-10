@@ -19,6 +19,7 @@ include: "rules/trimming.smk"
 include: "rules/qc.smk"
 include: "rules/host_filtering.smk"
 include: "rules/assembly.smk"
+include: "rules/binning.smk"
 
 
 rule all:
@@ -45,6 +46,11 @@ rule all:
         ),
         expand(
             "results/{project}/assembly/{sample}_summary.csv",
+            project=get_project(),
+            sample=get_samples(),
+        ),
+        expand(
+            "results/{project}/metabinner/{sample}/metabinner_res/metabinner_result.tsv",
             project=get_project(),
             sample=get_samples(),
         ),

@@ -6,8 +6,10 @@ def get_samples():
 
 
 def get_fastqs(wildcards):
-    return pep.sample_table.loc[wildcards.sample][["fq1", "fq2"]]
-
+    return (
+        pep.sample_table.loc[wildcards.sample]["fq1"],
+        pep.sample_table.loc[wildcards.sample]["fq2"]
+    )
 
 def get_project():
     return config["project-name"]

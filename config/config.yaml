@@ -10,6 +10,8 @@ quality-criteria:
 
 adapter_seqs: "-a CTGTCTCTTATACACATCT -g AGATGTGTATAAGAGACAG"
 
+root_path: "/homes/adrian/ResMAG"
+
 reference-genomes:
   # list of reference names
   reference-species: ["pig", "human"]
@@ -20,7 +22,7 @@ reference-genomes:
   reference-dir: resources/reference/
 
 kraken:
-  kraken-db: "resources/krakenDB/strawpigs"
+  kraken-db: "/projects/pig-muenster/resmag/resources/krakenDB/strawpigs/"
   # species/kingdom to separate with taxIDs in same order
   #ref: ['bacteria','fungi', 'pig', 'human', 'plant']
   ref-analysis: ["bacteria", "fungi"]

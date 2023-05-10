@@ -4,3 +4,9 @@ logs/**
 .snakemake
 .snakemake/**
 workflow/scripts/old_*
+test_data/*
+MetaBinner/*
+MetaBinner
+vamb/*
+data/*
+test_binner/*
