@@ -3,15 +3,15 @@ from pathlib import Path
 
 rule megahit:
     input:
-        bact_fq1="results/{project}/filtered/kraken/{sample}_bacteria_1.fastq",
-        bact_fq2="results/{project}/filtered/kraken/{sample}_bacteria_2.fastq",
+        bact_fq1="results/{project}/filtered/bacteria/{sample}_bacteria_1.fastq.gz",
+        bact_fq2="results/{project}/filtered/bacteria/{sample}_bacteria_2.fastq.gz",
     output:
         contigs="results/{project}/assembly_megahit/{sample}/final.contigs.fa",
     params:
         outdir=lambda wildcards, output: Path(output.contigs).parent,
     threads: 8
     log:
-        "logs/{project}/assembly_megahit/{sample}.log",
+        "logs/{project}/megahit/{sample}.log",
     conda:
         "../envs/megahit.yaml"
     shell:
@@ -20,9 +20,9 @@ rule megahit:
 
 rule assembly_summary:
     input:
-        "logs/{project}/assembly_megahit/{sample}.log",
+        "logs/{project}/assembly/{sample}.log",
     output:
-        "results/{project}/assembly_megahit/{sample}_summary.csv",
+        "results/{project}/assembly/{sample}_summary.csv",
     log:
         "logs/{project}/assembly_summary/{sample}.log",
     conda:
