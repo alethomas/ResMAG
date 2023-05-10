@@ -23,7 +23,8 @@ include: "rules/assembly.smk"
 
 rule all:
     input:
-        expand("results/{project}/qc/multiqc.html",
+        expand(
+            "results/{project}/qc/multiqc.html",
             project=get_project(),
         ),
         expand(
