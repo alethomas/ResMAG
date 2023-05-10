@@ -23,7 +23,9 @@ include: "rules/assembly.smk"
 
 rule all:
     input:
-        "results/strawpigs/qc/multiqc.html",
+        expand("results/{project}/qc/multiqc.html",
+            project=get_project(),
+        ),
         expand(
             "results/{project}/filtered/{kraken_ref}/{sample}_{kraken_ref}_1.fastq.gz",
             project=get_project(),
@@ -36,12 +38,12 @@ rule all:
             sample=get_samples(),
         ),
         expand(
-            "results/{project}/assembly_megahit/{sample}/final.contigs.fa",
+            "results/{project}/assembly/{sample}/final.contigs.fa",
             project=get_project(),
             sample=get_samples(),
         ),
         expand(
-            "results/{project}/assembly_megahit/{sample}_summary.csv",
+            "results/{project}/assembly/{sample}_summary.csv",
             project=get_project(),
             sample=get_samples(),
         ),

@@ -6,7 +6,7 @@ rule megahit:
         bact_fq1="results/{project}/filtered/bacteria/{sample}_bacteria_1.fastq.gz",
         bact_fq2="results/{project}/filtered/bacteria/{sample}_bacteria_2.fastq.gz",
     output:
-        contigs="results/{project}/assembly_megahit/{sample}/final.contigs.fa",
+        contigs="results/{project}/assembly/{sample}/final.contigs.fa",
     params:
         outdir=lambda wildcards, output: Path(output.contigs).parent,
     threads: 8
@@ -20,7 +20,7 @@ rule megahit:
 
 rule assembly_summary:
     input:
-        "logs/{project}/assembly/{sample}.log",
+        "logs/{project}/megahit/{sample}.log",
     output:
         "results/{project}/assembly/{sample}_summary.csv",
     log:
