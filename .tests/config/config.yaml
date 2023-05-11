@@ -1,6 +1,9 @@
 pepfile: config/pep/config.yaml
 
-project-name: "strawpigs"
+# If testing set true
+testing: True
+
+project-name: "testing"
 
 quality-criteria:
   # minimal length of acceptable reads

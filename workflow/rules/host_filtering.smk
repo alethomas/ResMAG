@@ -35,28 +35,38 @@ rule filter_host_reads:
     script:
         "../scripts/host_filtering.py"'''
 
+if not config["testing"]:
+    rule kraken2:
+        input:
+            get_trimmed_fastqs,
+        output:
+            clf1=temp("results/{project}/filtered/{sample}_clf_1.fastq"),
+            clf2=temp("results/{project}/filtered/{sample}_clf_2.fastq"),
+            report="results/{project}/filtered/kraken/{sample}_report.tsv",
+            outfile="results/{project}/filtered/kraken/{sample}_outfile.tsv",
+        params:
+            clf="results/{project}/filtered/{sample}_clf#.fastq",
+            db=KRAKEN_DB,
+        threads: 3
+        log:
+            "logs/{project}/kraken2/{sample}.log",
+        conda:
+            "../envs/kraken2.yaml"
+        shell:
+            "kraken2 --db {params.db} --threads {threads} --paired "
+            "--classified-out {params.clf} --output {output.outfile} "
+            "--report {output.report} --gzip-compressed {input} 2>> {log}"
 
-rule kraken2:
-    input:
-        get_trimmed_fastqs,
-    output:
-        clf1=temp("results/{project}/filtered/{sample}_clf_1.fastq"),
-        clf2=temp("results/{project}/filtered/{sample}_clf_2.fastq"),
-        report="results/{project}/filtered/kraken/{sample}_report.tsv",
-        outfile="results/{project}/filtered/kraken/{sample}_outfile.tsv",
-    params:
-        clf="results/{project}/filtered/{sample}_clf#.fastq",
-        db=KRAKEN_DB,
-    threads: 3
-    log:
-        "logs/{project}/kraken2/{sample}.log",
-    conda:
-        "../envs/kraken2.yaml"
-    shell:
-        "kraken2 --db {params.db} --threads {threads} --paired "
-        "--classified-out {params.clf} --output {output.outfile} "
-        "--report {output.report} --gzip-compressed {input} 2>> {log}"
-
+if config["testing"]:
+    rule gzip_kraken_output:
+        input:
+            clf_gz_1="results/{project}/filtered/{sample}_clf_1.fastq.gz",
+            clf_gz_2="results/{project}/filtered/{sample}_clf_2.fastq.gz",
+        output:
+            clf1=temp("results/{project}/filtered/{sample}_clf_1.fastq"),
+            clf2=temp("results/{project}/filtered/{sample}_clf_2.fastq"),
+        shell:
+            "gunzip -k {input.clf_gz_1} {input.clf_gz_1}"
 
 rule extract_kraken_reads:
     input:
