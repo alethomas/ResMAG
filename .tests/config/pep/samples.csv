@@ -1,2 +1,2 @@
 sample_name,fq1,fq2
-I15546-L1,/projects/pig-muenster/Metagenome_Kiel/fastq/I15546-L1_R1.fastq.gz,/projects/pig-muenster/Metagenome_Kiel/fastq/I15546-L1_R2.fastq.gz
+SRR19906110_red,.tests/data/SRR19906110_red_R1.fastq.gz,.tests/data/SRR19906110_red_R2.fastq.gz
