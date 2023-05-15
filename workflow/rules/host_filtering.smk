@@ -36,7 +36,7 @@ rule filter_host_reads:
         "../scripts/host_filtering.py"'''
 
 if not config["testing"]:
-    
+
     rule kraken2:
         input:
             get_trimmed_fastqs,
@@ -58,9 +58,9 @@ if not config["testing"]:
             "--classified-out {params.clf} --output {output.outfile} "
             "--report {output.report} --gzip-compressed {input} 2>> {log}"
 
-            
+
 if config["testing"]:
-    
+
     rule gzip_kraken_output:
         input:
             clf_gz_1="results/{project}/filtered/{sample}_clf_1.fastq.gz",
@@ -71,7 +71,7 @@ if config["testing"]:
         shell:
             "gunzip -k {input.clf_gz_1} {input.clf_gz_1}"
 
-            
+
 rule extract_kraken_reads:
     input:
         clf1="results/{project}/filtered/{sample}_clf_1.fastq",
