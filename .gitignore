@@ -3,4 +3,6 @@ resources/**
 logs/**
 .snakemake
 .snakemake/**
+.tests/data/**
+.tests/results/**
 workflow/scripts/old_*

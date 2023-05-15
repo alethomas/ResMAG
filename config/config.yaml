@@ -1,5 +1,8 @@
 pepfile: config/pep/config.yaml
 
+# If testing set true
+testing: False
+
 project-name: "strawpigs"
 
 quality-criteria:
