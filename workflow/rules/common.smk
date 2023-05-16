@@ -18,6 +18,17 @@ def get_project():
 def get_adapters(wildcards):
     return config["adapter_seqs"]
 
+def get_executable_dir(executable):
+    import os
+    path = os.system(f"which run_metabinner.sh")
+    print(path)
+    return os.path.dirname(path)
+
+def get_threshold():
+    return config["binning"]["min_contig_length"]
+
+def get_kmersize():
+    return config["binning"]["kmer_length"]
 
 """def get_samples_for_project(project):
     # select samples for given project

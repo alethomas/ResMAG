@@ -21,6 +21,10 @@ reference-genomes:
   # directory of reference genomes, e.g resources/reference/
   reference-dir: resources/reference/
 
+binning:
+  min_contig_length: 1000
+  kmer_length: 4
+
 kraken:
   kraken-db: "/projects/pig-muenster/resmag/resources/krakenDB/strawpigs/"
   # species/kingdom to separate with taxIDs in same order
