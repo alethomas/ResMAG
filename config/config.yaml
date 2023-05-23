@@ -24,6 +24,7 @@ reference-genomes:
 binning:
   min_contig_length: 1000
   kmer_length: 4
+  threads: 60
 
 kraken:
   kraken-db: "/projects/pig-muenster/resmag/resources/krakenDB/strawpigs/"

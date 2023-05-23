@@ -19,7 +19,8 @@ include: "rules/trimming.smk"
 include: "rules/qc.smk"
 include: "rules/host_filtering.smk"
 include: "rules/assembly.smk"
-include: "rules/binning.smk"
+include: "rules/metabinner.smk"
+include: "rules/vamb.smk"
 
 
 rule all:
@@ -54,3 +55,8 @@ rule all:
             project=get_project(),
             sample=get_samples(),
         ),
+        #expand(
+        #    "results/{project}/vamb/{sample}/results/example.test",
+        #    project=get_project(),
+        #    sample=get_samples(),            
+        #)

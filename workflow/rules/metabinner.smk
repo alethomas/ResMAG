@@ -1,11 +1,3 @@
-rule vamb_contig_catalogue:
-    input:
-        contigs="results/{project}/assembly_megahit/{sample}/final.contigs.fa",
-    output:
-        "results/{project}/vamb/catalogue.fna.gz"
-    script:
-        "../vamb/src/concatenate.py"
-
 rule metabinner_unzip_fastqs:
     input:
         fq1=get_fastqs,
@@ -35,7 +27,7 @@ rule metabinner_coverage_profile:
     output:
         "results/{project}/metabinner/{sample}/coverage_profile/coverage_profile_f1k.tsv"
     params:
-        threads = 60,
+        threads=config["binning"]["threads"],
         threshold=config["binning"]["min_contig_length"],
         outdir="results/{project}/metabinner/{sample}/coverage_profile/",
     conda:
@@ -70,7 +62,7 @@ rule metabinner_run:
     output:
         "results/{project}/metabinner/{sample}/metabinner_res/metabinner_result.tsv"
     params:
-        threads=60,
+        threads=config["binning"]["threads"],
         outdir="results/{project}/metabinner/{sample}",
         root_path=config["root_path"]
     log:
