@@ -55,8 +55,8 @@ rule all:
             project=get_project(),
             sample=get_samples(),
         ),
-        #expand(
-        #    "results/{project}/vamb/{sample}/results/example.test",
-        #    project=get_project(),
-        #    sample=get_samples(),            
-        #)
+        expand(
+            "results/{project}/vamb/{sample}/vamb_res/model.pt",
+            project=get_project(),
+            sample=get_samples(),            
+        )
