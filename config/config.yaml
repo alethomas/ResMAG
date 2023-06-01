@@ -10,7 +10,7 @@ quality-criteria:
 
 adapter_seqs: "-a CTGTCTCTTATACACATCT -g AGATGTGTATAAGAGACAG"
 
-root_path: "/homes/adrian/ResMAG"
+root_path: "/homes/kblock/resmag/ResMAG"
 
 reference-genomes:
   # list of reference names
@@ -28,9 +28,13 @@ binning:
   # some metabinner parameter
   threads: 24
 
+das_tool:
+  # cores to use for das_tool
+  threads: 64
+
 kraken:
   kraken-db: "/projects/pig-muenster/resmag/resources/krakenDB/strawpigs/"
   # species/kingdom to separate with taxIDs in same order
-  #ref: ['bacteria','fungi', 'pig', 'human', 'plant']
+  # ref: ['bacteria','fungi', 'pig', 'human', 'plant']
   ref-analysis: ["bacteria", "fungi"]
   taxIDs-ref: { bacteria: 2, fungi: 4751, pig: 9823, human: 9606, plant: 33090 }

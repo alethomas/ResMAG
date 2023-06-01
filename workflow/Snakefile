@@ -21,6 +21,7 @@ include: "rules/host_filtering.smk"
 include: "rules/assembly.smk"
 include: "rules/metabinner.smk"
 include: "rules/vamb.smk"
+include: "rules/das_tool.smk"
 
 
 rule all:
@@ -57,6 +58,11 @@ rule all:
         ),
         expand(
             "results/{project}/vamb/{sample}/vamb_res/model.pt",
+            project=get_project(),
+            sample=get_samples(),            
+        ),
+        expand(
+            "results/{project}/das_tool/{sample}/{sample}_DASTool_summary.tsv",
             project=get_project(),
             sample=get_samples(),            
         )
