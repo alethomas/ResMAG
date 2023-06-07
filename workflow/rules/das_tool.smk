@@ -1,31 +1,21 @@
 rule swap_vamb_res:
     input: 
-        "results/{project}/vamb/{sample}/vamb_res/model.pt"
+        "results/{project}/vamb/{sample}/vamb_res/model.pt",
     output: 
         "results/{project}/vamb/{sample}/vamb_res/swaped_clusters.tsv"
-    params: 
-        cluster="results/{project}/vamb/{sample}/vamb_res/clusters.tsv"
+    params:
+        cluster="results/{project}/vamb/{sample}/vamb_res/clusters.tsv",
+        tmp="results/{project}/vamb/{sample}/vamb_res/temp",
+        root_path=config["root_path"],
     log:
         "logs/{project}/das_tool/{sample}/swap_vamb_res.log",
     shell:
-        "awk '{{ print $2 " " $1}}' {params.cluster} > {output} 2>{log}"
-
-rule rename_vamb_res:
-    input: 
-        "results/{project}/vamb/{sample}/vamb_res/swaped_clusters.tsv"
-    output: 
-        "results/{project}/vamb/{sample}/vamb_res/renamed_swaped_clusters.tsv"
-    log:
-        "logs/{project}/das_tool/{sample}/rename_vamb_res.log",
-    shell:
-        "sed 's/S[12]C//g' {input} > {output} 2>{log}"
+        "bash {params.root_path}/workflow/scripts/swap_vamb_clusters.sh {params.cluster} {output} {params.tmp} 2> {log}"
 
 rule dastool_run:
     input:
         bin1="results/{project}/metabinner/{sample}/metabinner_res/metabinner_result.tsv",
         bin2="results/{project}/vamb/{sample}/vamb_res/swaped_clusters.tsv",
-        # bins=get_binners_bins,
-        # contigs=get_binners_contigs,
     output:
         "results/{project}/das_tool/{sample}/{sample}_DASTool_summary.tsv"
     params:
