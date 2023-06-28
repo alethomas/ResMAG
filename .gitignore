@@ -10,3 +10,5 @@ MetaBinner
 vamb/*
 data/*
 test_binner/*
+.tests/data/**
+.tests/results/**
