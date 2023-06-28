@@ -8,8 +8,9 @@ def get_samples():
 def get_fastqs(wildcards):
     return (
         pep.sample_table.loc[wildcards.sample]["fq1"],
-        pep.sample_table.loc[wildcards.sample]["fq2"]
+        pep.sample_table.loc[wildcards.sample]["fq2"],
     )
+
 
 def get_project():
     return config["project-name"]
@@ -18,17 +19,22 @@ def get_project():
 def get_adapters(wildcards):
     return config["adapter_seqs"]
 
+
 def get_executable_dir(executable):
     import os
+
     path = os.system(f"which run_metabinner.sh")
     print(path)
     return os.path.dirname(path)
 
+
 def get_threshold():
     return config["binning"]["min_contig_length"]
 
+
 def get_kmersize():
     return config["binning"]["kmer_length"]
+
 
 """def get_samples_for_project(project):
     # select samples for given project
@@ -102,9 +108,13 @@ def get_taxID_dict():
 def get_taxID(wildcards):
     return config["kraken"]["taxIDs-ref"][wildcards.kraken_ref]
 
+
 def get_binners_contigs(wildcards):
-    return "results/{project}/metabinner/{sample}/coverage_profile/work_files/assembly.fa","results/{project}/vamb/catalogue.fna"
-    
+    return (
+        "results/{project}/metabinner/{sample}/coverage_profile/work_files/assembly.fa",
+        "results/{project}/vamb/catalogue.fna",
+    )
+
 
 def get_binners_bins(wildcards):
     return [

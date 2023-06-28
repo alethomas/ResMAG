@@ -59,10 +59,10 @@ rule all:
         expand(
             "results/{project}/vamb/{sample}/vamb_res/model.pt",
             project=get_project(),
-            sample=get_samples(),            
+            sample=get_samples(),
         ),
         expand(
             "results/{project}/das_tool/{sample}/{sample}_DASTool_summary.tsv",
             project=get_project(),
-            sample=get_samples(),            
-        )
+            sample=get_samples(),
+        ),
