@@ -1,12 +1,12 @@
 rule vamb_contig_catalogue:
     input:
-        contigs=expand("results/{{project}}/assembly/{sample}/final.contigs.fa",sample=get_samples()),
+        contigs="results/{project}/assembly/{sample}/final.contigs.fa",
     output:
-        catalogue="results/{project}/vamb/catalogue.fna.gz"
+        catalogue="results/{project}/vamb/{sample}/catalogue.fna.gz"
     params:
         threshold=config["binning"]["min_contig_length"]
     log:
-        "logs/{project}/vamb/contig_catalogue.log",        
+        "logs/{project}/vamb/{sample}/contig_catalogue.log",        
     conda:
         "../envs/vamb.yaml"
     shell:
@@ -14,11 +14,11 @@ rule vamb_contig_catalogue:
 
 rule vamb_catalogue_index:
     input:
-        catalogue="results/{project}/vamb/catalogue.fna.gz"
+        catalogue="results/{project}/vamb/{sample}/catalogue.fna.gz"
     output:
-        index="results/{project}/vamb/catalogue.mmi"
+        index="results/{project}/vamb/{sample}/catalogue.mmi"
     log:
-        "logs/{project}/vamb/contig_catalogue_index.log",       
+        "logs/{project}/vamb/{sample}/contig_catalogue_index.log",       
     conda:
         "../envs/vamb.yaml"
     shell:
@@ -28,7 +28,7 @@ rule vamb_map_reads:
     input:
         f1="results/{project}/trimmed/fastp/{sample}.1.fastq.gz",
         f2="results/{project}/trimmed/fastp/{sample}.2.fastq.gz",        
-        index="results/{project}/vamb/catalogue.mmi",
+        index="results/{project}/vamb/{sample}/catalogue.mmi",
     output:
         bam=temp("results/{project}/vamb/{sample}/{sample}.bam")
     params:
@@ -39,12 +39,12 @@ rule vamb_map_reads:
         "../envs/vamb.yaml"
     shell:
         "minimap2 -t {params.threads} -N 5 -ax sr {input.index} "
-        "{input.f1} {input.f2} | samtools view -F 3584 -b --threads 8 > {output.bam} 2>{log}"
+        "{input.f1} {input.f2} | samtools view -F 3584 -b --threads 8 > {output.bam} 2>{log} "
 
 rule vamb_run:
     input:
-        catalogue="results/{project}/vamb/catalogue.fna.gz",
-        bam=expand("results/{{project}}/vamb/{sample}/{sample}.bam",sample=get_samples()),
+        catalogue="results/{project}/vamb/{sample}/catalogue.fna.gz",
+        bam="results/{project}/vamb/{sample}/{sample}.bam",
     output:
         "results/{project}/vamb/{sample}/vamb_res/model.pt"
     params:
@@ -55,4 +55,19 @@ rule vamb_run:
         "../envs/vamb.yaml"    
     shell:
         "rm -r {params.outdir}; "
-        "vamb --outdir {params.outdir} --fasta {input.catalogue} --bamfiles {input.bam} 2>{log}"
+        "vamb --outdir {params.outdir} --fasta {input.catalogue} --bamfiles {input.bam} 2>{log} "
+
+# rule vamb_run:
+#     input:
+#         "results/{project}/vamb/{sample}/{sample}.bam",
+#     output:
+#         "results/{project}/vamb/{sample}/vamb_res/model.pt",
+#     params:
+#         outdir="results/{project}/vamb/{sample}/vamb_res"
+#     log:
+#         "logs/{project}/vamb/{sample}/vamb_run.log",       
+#     conda:
+#         "../envs/vamb.yaml"    
+#     shell:
+#         "rm -r {params.outdir}; "
+#         "vamb --outdir {params.outdir} --fasta {input} 2>{log} "

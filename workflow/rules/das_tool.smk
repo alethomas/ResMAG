@@ -19,7 +19,7 @@ rule dastool_run:
     output:
         "results/{project}/das_tool/{sample}/{sample}_DASTool_summary.tsv"
     params:
-        contigs="results/strawpigs/assembly/I15546-L1/final.contigs_500.fa",
+        contigs="results/strawpigs/assembly/{sample}/final.contigs.fa",
         threads=config["binning"]["threads"],
         outdir="results/{project}/das_tool/{sample}/{sample}",
     log:
