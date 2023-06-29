@@ -1,3 +1,6 @@
+import json
+
+
 configfile: "config/config.yaml"
 
 
@@ -88,3 +91,16 @@ def get_taxID_dict():
 
 def get_taxID(wildcards):
     return config["kraken"]["taxIDs-ref"][wildcards.kraken_ref]
+
+
+## easier with expand?
+def get_megahit_k_contigs(int_path):
+    file = open(json_path, "r")
+    json_data = json.load(file)
+    k_list = json_data["k_list"]
+    file.close()
+
+    all_contigs = []
+    for k in k_list:
+        all_contigs.append(f"{int_path}k{k}.contigs.fa")
+    return all_contigs
