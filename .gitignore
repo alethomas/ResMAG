@@ -1,5 +1,7 @@
 results/**
-resources/**
+resources/all_*
+resources/reference/*
+resources/krakenDB/*
 logs/**
 .snakemake
 .snakemake/**
@@ -12,4 +14,4 @@ data/*
 test_binner/*
 .tests/data/**
 .tests/results/**
-test_data/**
+gfview/**

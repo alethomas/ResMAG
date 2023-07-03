@@ -51,7 +51,7 @@ rule fastg2gfa:
     output:
         "results/{project}/binning_prep/{sample}/assembly_tree.gfa",
     params:
-        fastg2gfa_program="resources/gfaview/misc/fastg2gfa",
+        fastg2gfa_program="resources/gfaview/fastg2gfa",
     threads: 2
     log:
         "logs/{project}/fastg2gfa/{sample}.log",
