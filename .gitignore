@@ -1,12 +1,9 @@
 results/**
-resources/all_*
-resources/reference/*
-resources/krakenDB/*
+resources/*+
 logs/**
 .snakemake
 .snakemake/**
 workflow/scripts/old_*
-test_data/*
 MetaBinner/*
 MetaBinner
 vamb/*
