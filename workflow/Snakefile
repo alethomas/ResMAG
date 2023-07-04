@@ -22,6 +22,8 @@ include: "rules/assembly.smk"
 include: "rules/metabinner.smk"
 include: "rules/vamb.smk"
 include: "rules/das_tool.smk"
+include: "rules/metacoag_binning.smk"
+include: "rules/rosella.smk"
 
 
 rule all:
@@ -63,6 +65,11 @@ rule all:
         ),
         expand(
             "results/{project}/das_tool/{sample}/{sample}_DASTool_summary.tsv",
+            project=get_project(),
+            sample=get_samples(),
+        ),
+        expand(
+            "results/{project}/rosella/{sample}/rosella_res/rosella_kmer_table.tsv",
             project=get_project(),
             sample=get_samples(),
         ),
