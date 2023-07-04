@@ -1,4 +1,4 @@
-rule coverm:
+rule coverm_metacoag:
     input:
         bact_fq1="results/{project}/filtered/bacteria/{sample}_bacteria_1.fastq.gz",
         bact_fq2="results/{project}/filtered/bacteria/{sample}_bacteria_2.fastq.gz",
@@ -9,7 +9,7 @@ rule coverm:
     log:
         "logs/{project}/coverm/{sample}.log",
     conda:
-        "../envs/metacoag.yaml"
+        "../envs/coverm.yaml"
     shell:
         "coverm contig -1 {input.bact_fq1} -2 {input.bact_fq2} "
         "-r {input.contigs} -o {output} -t {threads} && "

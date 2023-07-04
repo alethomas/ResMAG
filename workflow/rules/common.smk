@@ -89,10 +89,10 @@ def get_reference_index(wildcards):
     return ind_list"""
 
 
-def get_host_filtered_fastqs(wildcards):
+def get_bacterial_reads(wildcards):
     return [
-        "results/{project}/filtered/{sample}_final.1.fastq.gz",
-        "results/{project}/filtered/{sample}_final.2.fastq.gz",
+        "results/{project}/filtered/bacteria/{sample}_bacteria_1.fastq.gz",
+        "results/{project}/filtered/bacteria/{sample}_bacteria_2.fastq.gz",
     ]
 
 
