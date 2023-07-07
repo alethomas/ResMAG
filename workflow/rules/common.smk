@@ -1,4 +1,5 @@
 import json
+import os
 
 
 configfile: "config/config.yaml"
@@ -124,3 +125,24 @@ def get_binners_bins(wildcards):
         "results/{project}/metabinner/{sample}/metabinner_res/metabinner_result.tsv",
         "results/{project}/vamb/{sample}/vamb_res/swaped_clusters.tsv",
     ]
+
+
+def get_rosella_yaml():
+    folder = get_rosella_folder()
+    root=get_root()
+    yaml = f"{root}/{folder}/rosella.yml"
+    return yaml
+
+def get_rosella_install():
+    folder = get_rosella_folder()
+    script = f"{folder}/install.sh"
+    return script
+
+def get_rosella_git():
+    return config["rosella"]["gitURL"]
+
+def get_rosella_folder():
+    return config["rosella"]["repopath"]
+
+def get_root():
+    return(os.getcwd())

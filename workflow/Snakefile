@@ -54,6 +54,13 @@ rule all:
             sample=get_samples(),
         ),
         expand(
+            "results/{project}/rosella/{sample}/rosella_res/rosella_kmer_table.tsv",
+            project=get_project(),
+            sample=get_samples(),
+        )
+
+'''
+        ,expand(
             "results/{project}/metabinner/{sample}/metabinner_res/metabinner_result.tsv",
             project=get_project(),
             sample=get_samples(),
@@ -68,8 +75,4 @@ rule all:
             project=get_project(),
             sample=get_samples(),
         ),
-        expand(
-            "results/{project}/rosella/{sample}/rosella_res/rosella_kmer_table.tsv",
-            project=get_project(),
-            sample=get_samples(),
-        ),
+       '''

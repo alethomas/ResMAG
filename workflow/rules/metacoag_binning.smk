@@ -14,3 +14,4 @@ rule coverm:
         "coverm contig -1 {input.bact_fq1} -2 {input.bact_fq2} "
         "-r {input.contigs} -o {output} -t {threads} && "
         "sed -i '1d' {output} > {log} 2>&1"
+
