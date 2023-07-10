@@ -1,8 +1,7 @@
 channels:
   - conda-forge
   - bioconda
-  - defaults
+  - nodefaults
 dependencies:
   - metacoag = 1.1.1
-  - coverm = 0.6.1
   - biopython = 1.81

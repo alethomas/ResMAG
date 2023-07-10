@@ -20,6 +20,7 @@ include: "rules/qc.smk"
 include: "rules/host_filtering.smk"
 include: "rules/assembly.smk"
 include: "rules/metabinner.smk"
+include: "rules/metacoag_binning.smk"
 include: "rules/vamb.smk"
 include: "rules/metabat2.smk"
 include: "rules/das_tool.smk"
@@ -45,7 +46,12 @@ rule all:
             sample=get_samples(),
         ),
         expand(
-            "results/{project}/assembly/{sample}/final.contigs.fa",
+            "results/{project}/metabat2/{sample}/",
+            project=get_project(),
+            sample=get_samples(),
+        ),
+        expand(
+            "results/{project}/metacoag/{sample}/",
             project=get_project(),
             sample=get_samples(),
         ),
