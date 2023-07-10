@@ -22,6 +22,7 @@ include: "rules/assembly.smk"
 include: "rules/metabinner.smk"
 include: "rules/metacoag_binning.smk"
 include: "rules/vamb.smk"
+include: "rules/metabat2.smk"
 include: "rules/das_tool.smk"
 
 
@@ -39,6 +40,11 @@ rule all:
         ),
         expand(
             "results/{project}/filtered/{sample}_summary.csv",
+            project=get_project(),
+            sample=get_samples(),
+        ),
+        expand(
+            "results/{project}/metabat2/{sample}/",
             project=get_project(),
             sample=get_samples(),
         ),

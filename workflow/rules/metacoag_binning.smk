@@ -1,7 +1,4 @@
-from pathlib import Path
-
-
-rule coverm:
+rule coverm_metacoag:
     input:
         bact_reads=get_bacterial_reads,
         contigs="results/{project}/assembly/{sample}/final.contigs.fa",
@@ -11,7 +8,7 @@ rule coverm:
     log:
         "logs/{project}/coverm/{sample}.log",
     conda:
-        "../envs/metacoag.yaml"
+        "../envs/coverm.yaml"
     shell:
         "coverm contig -1 {input.bact_reads[0]} -2 {input.bact_reads[1]} "
         "-r {input.contigs} -o {output} -t {threads}"
