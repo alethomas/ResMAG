@@ -90,10 +90,10 @@ def get_reference_index(wildcards):
     return ind_list"""
 
 
-def get_host_filtered_fastqs(wildcards):
+def get_bacterial_reads(wildcards):
     return [
-        "results/{project}/filtered/{sample}_final.1.fastq.gz",
-        "results/{project}/filtered/{sample}_final.2.fastq.gz",
+        "results/{project}/filtered/bacteria/{sample}_bacteria_1.fastq.gz",
+        "results/{project}/filtered/bacteria/{sample}_bacteria_2.fastq.gz",
     ]
 
 
@@ -127,22 +127,19 @@ def get_binners_bins(wildcards):
     ]
 
 
-def get_rosella_yaml():
-    folder = get_rosella_folder()
-    root=get_root()
-    yaml = f"{root}/{folder}/rosella.yml"
-    return yaml
-
 def get_rosella_install():
     folder = get_rosella_folder()
     script = f"{folder}/install.sh"
     return script
 
+
 def get_rosella_git():
     return config["rosella"]["gitURL"]
 
+
 def get_rosella_folder():
-    return config["rosella"]["repopath"]
+    return config["rosella"]["rosella_dir"]
+
 
 def get_root():
-    return(os.getcwd())
+    return os.getcwd()

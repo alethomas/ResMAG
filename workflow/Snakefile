@@ -21,6 +21,7 @@ include: "rules/host_filtering.smk"
 include: "rules/assembly.smk"
 include: "rules/metabinner.smk"
 include: "rules/vamb.smk"
+include: "rules/metabat2.smk"
 include: "rules/das_tool.smk"
 include: "rules/metacoag_binning.smk"
 include: "rules/rosella.smk"
@@ -57,9 +58,10 @@ rule all:
             "results/{project}/rosella/{sample}/rosella_res/rosella_kmer_table.tsv",
             project=get_project(),
             sample=get_samples(),
-        )
+        ),
 
-'''
+
+"""
         ,expand(
             "results/{project}/metabinner/{sample}/metabinner_res/metabinner_result.tsv",
             project=get_project(),
@@ -75,4 +77,4 @@ rule all:
             project=get_project(),
             sample=get_samples(),
         ),
-       '''
+       """

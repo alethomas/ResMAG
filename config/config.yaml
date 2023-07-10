@@ -13,7 +13,8 @@ quality-criteria:
 
 adapter_seqs: "-a CTGTCTCTTATACACATCT -g AGATGTGTATAAGAGACAG"
 
-root_path: "/homes/kblock/resmag/ResMAG"
+## we need to change this (maybe  PREFIX)
+root_path: "/homes/josefa/strawpig/ResMAG"
 
 reference-genomes:
   # list of reference names
@@ -41,3 +42,7 @@ kraken:
   # ref: ['bacteria','fungi', 'pig', 'human', 'plant']
   ref-analysis: ["bacteria", "fungi"]
   taxIDs-ref: { bacteria: 2, fungi: 4751, pig: 9823, human: 9606, plant: 33090 }
+
+rosella:
+  gitURL: "https://github.com/rhysnewell/rosella.git"
+  rosella_dir: resources/rosella
