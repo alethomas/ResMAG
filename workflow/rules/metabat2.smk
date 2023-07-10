@@ -23,7 +23,7 @@ rule metabat2:
         directory("results/{project}/metabat2/{sample}"),
     threads: 8
     params:
-        prefix="bin"
+        prefix="bin",
     log:
         "logs/{project}/metabat2/{sample}.log",
     conda:
