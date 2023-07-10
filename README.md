@@ -41,7 +41,7 @@ For any questions, or feedback, please contact the project maintainer at kathari
 
 ## Acknowledgements
 
-We would like to express our gratitude towards Alexander Thomas, Johannes Köster and the IKIM who have contributed to the development and testing of ResMAG. Their valuable insights and feedback have been helpful throughout the creation of the workflow.
+We would like to express our gratitude towards Alexander Thomas, Johannes Köster, Ann-Kathrin Brüggemann and the IKIM who have contributed to the development and testing of ResMAG. Their valuable insights and feedback have been helpful throughout the creation of the workflow.
 IKIM, Johannes Köster, Alexander Thomas, ?
 
 ## References
