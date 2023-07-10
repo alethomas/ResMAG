@@ -46,4 +46,5 @@ rule rosella_run:
     conda:
         "../envs/rosella.yml"
     shell:
-        "rosella recover -r {input.contigs} --coverage-values {input.abd} -o {params.outdir} -t {threads} > {log} 2>&1"
+        "rosella recover -r {input.contigs} --coverage-values {input.abd} "
+        "-o {params.outdir} -t {threads} > {log} 2>&1"

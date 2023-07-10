@@ -19,13 +19,12 @@ include: "rules/trimming.smk"
 include: "rules/qc.smk"
 include: "rules/host_filtering.smk"
 include: "rules/assembly.smk"
-include: "rules/metabinner.smk"
-include: "rules/metacoag_binning.smk"
-include: "rules/vamb.smk"
 include: "rules/metabat2.smk"
-include: "rules/das_tool.smk"
-include: "rules/metacoag_binning.smk"
+include: "rules/metabinner.smk"
+include: "rules/metacoag.smk"
 include: "rules/rosella.smk"
+include: "rules/vamb.smk"
+include: "rules/das_tool.smk"
 
 
 rule all:
@@ -65,10 +64,7 @@ rule all:
             project=get_project(),
             sample=get_samples(),
         ),
-
-
-"""
-        ,expand(
+        expand(
             "results/{project}/metabinner/{sample}/metabinner_res/metabinner_result.tsv",
             project=get_project(),
             sample=get_samples(),
@@ -83,4 +79,3 @@ rule all:
             project=get_project(),
             sample=get_samples(),
         ),
-       """

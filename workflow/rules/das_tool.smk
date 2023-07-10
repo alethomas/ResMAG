@@ -6,13 +6,13 @@ rule swap_vamb_res:
     params:
         cluster="results/{project}/vamb/{sample}/vamb_res/clusters.tsv",
         tmp="results/{project}/vamb/{sample}/vamb_res/temp",
-        root_path=config["root_path"],
+        root=get_root(),
     log:
         "logs/{project}/das_tool/{sample}/swap_vamb_res.log",
     conda:
         "../envs/das_tool.yaml"
     shell:
-        "bash {params.root_path}/workflow/scripts/swap_vamb_clusters.sh {params.cluster} {output} {params.tmp} 2> {log}"
+        "bash {params.root}/workflow/scripts/swap_vamb_clusters.sh {params.cluster} {output} {params.tmp} 2> {log}"
 
 
 ## TODO -l adding additional binner
