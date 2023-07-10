@@ -50,17 +50,17 @@ IKIM, Johannes Köster, Alexander Thomas, ?
 
 **Tools**
 
-[Fastp](https://doi.org/10.1093/bioinformatics/bty560)<br />
+[fastp](https://doi.org/10.1093/bioinformatics/bty560)<br />
 [Rosella](https://github.com/rhysnewell/rosella)<br />
-[MetaBAT2](https://doi.org/10.7717%2Fpeerj.7359)<br />
+[MetaBAT 2](https://doi.org/10.7717%2Fpeerj.7359)<br />
 [MetaBinner](https://doi.org/10.1186/s13059-022-02832-6)<br />
 [VAMB](https://doi.org/10.1038/s41587-020-00777-4)<br />
 [MetaCoAG](https://doi.org/10.1101/2021.09.10.459728)<br />
-[DASTool](https://doi.org/10.1038/s41564-018-0171-1)<br />
-[kraken2](https://doi.org/10.1186/s13059-019-1891-0)<br />
-[megahit](https://doi.org/10.1093/bioinformatics/btv033)<br />
+[DAS Tool](https://doi.org/10.1038/s41564-018-0171-1)<br />
+[Kraken 2](https://doi.org/10.1186/s13059-019-1891-0)<br />
+[MEGAHIT](https://doi.org/10.1093/bioinformatics/btv033)<br />
 [minimap2](https://doi.org/10.1093/bioinformatics/bty191)<br />
-[fastqc](https://snakemake.github.io)<br />
+[FastQC](https://snakemake.github.io)<br />
 [Placeholder :)](https://snakemake.github.io)<br />
 
 
