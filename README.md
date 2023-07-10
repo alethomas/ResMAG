@@ -6,7 +6,7 @@
 
 ResMAG is a state-of-the-art and user-friendly Snakemake workflow designed for the analysis of metagenomic data. It integrates multiple bioinformatics tools and algorithms to facilitate key steps in metagenome analysis, including bin refinement, metagenome-assembled genome (MAG) reconstruction, taxonomic classification of MAGs, and identification of antibiotic resistance genes.<br />
 
-**Key Features:**<br />
+### Key Features
 
 **Binning Techniques**: Employ a collection of five state-of-the-art binning tools to partition metagenomic contigs into individual bins, allowing for comprehensive and accurate analysis.<br />
 
@@ -18,7 +18,33 @@ ResMAG is a state-of-the-art and user-friendly Snakemake workflow designed for t
 
 **Performance Refinement**: Continuously optimize the pipeline by incorporating the latest advancements in metagenomics research, ensuring the highest accuracy and efficiency in metagenomic data analysis.<br />
 
+### Overview
+```mermaid
+flowchart TB;
+   A[short reads]
+   B["QC <br> <i>fastp<i>"]
+   C["Host read filtering <br> <i>Kraken 2<i>"]
+   D["Assembly <br> <i>MegaHIT<i>"]
+   E{Binning}
+   F["Bin refinement <br> <i>DAS Tool<i>"]
+   G{{MAGs}}
+   A --> B
+   B --> C
+   C --> D
+   D --> E
+   E --"<i>MetaBAT 2<i>"--> F
+   E --"<i>MetaBinner<i>"--> F
+   E --"<i>MetaCoAG<i>"--> F
+   E --"<i>Rosella<i>"--> F
+   E --"<i>Vamb<i>"--> F
+   F --- G
 
+   H["Resistance analysis <br> <i>HyDRA<i>"]
+   I[taxonomic classification]
+   G --- H
+   G --- I
+
+```
 ## Usage
 ### Preparations
 To prepare the workflow
@@ -56,11 +82,11 @@ For any questions, or feedback, please contact the project maintainer at kathari
 ## Acknowledgements
 
 We would like to express our gratitude towards Adrian Doerr, Alexander Thomas, Johannes Köster, Ann-Kathrin Brüggemann and the IKIM who have contributed to the development and testing of ResMAG. Their valuable insights and feedback have been helpful throughout the creation of the workflow.
-IKIM, Johannes Köster, Alexander Thomas, ?
 
 ## References
 
-**Tools**
+### Tools
+
 [CoverM](https://github.com/wwood/CoverM)<br />
 [DAS Tool](https://doi.org/10.1038/s41564-018-0171-1)<br />
 [fastp](https://doi.org/10.1093/bioinformatics/bty560)<br />
@@ -77,10 +103,7 @@ IKIM, Johannes Köster, Alexander Thomas, ?
 [VAMB](https://doi.org/10.1038/s41587-020-00777-4)<br />
 [MultiQC](https://doi.org/10.1093%2Fbioinformatics%2Fbtw354)<br />
 
-
-
-**Literature**
-
+### Literature
 [Not here yet](https://www.lipsum.com/feed/html)
 
 ## Citation
