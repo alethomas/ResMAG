@@ -1,6 +1,3 @@
-import json
-
-
 configfile: "config/config.yaml"
 
 
