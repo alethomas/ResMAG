@@ -4,7 +4,7 @@
 [![GitHub actions status](https://github.com/<owner>/<repo>/workflows/Tests/badge.svg?branch=main)](https://github.com/<owner>/<repo>/actions?query=branch%3Amain+workflow%3ATests)
 
 
-ResMAG is a state-of-the-art and user-friendly Snakemake workflow designed for the analysis of metagenomic data. It integrates multiple bioinformatics tools and algorithms to facilitate key steps in metagenome analysis, including bin refinement, taxonomic classification of MAGs,metagenome-assembled genome (MAG) reconstruction and, identification of antibiotic resistance genes.<br />
+ResMAG is a state-of-the-art and user-friendly Snakemake workflow designed for the analysis of metagenomic data. It integrates multiple bioinformatics tools and algorithms to facilitate key steps in metagenome analysis, including bin refinement, metagenome-assembled genome (MAG) reconstruction, taxonomic classification of MAGs, and identification of antibiotic resistance genes.<br />
 
 **Key Features:**<br />
 
@@ -20,7 +20,19 @@ ResMAG is a state-of-the-art and user-friendly Snakemake workflow designed for t
 
 
 ## Usage
+### Preparations
+To prepare the workflow
+1. Clone it to your desired working folder via git or your preferred IDE
+2. Edit the `config/config.yaml` file:
+   - Specify a project name (`project-name`)
+   - Download a kraken reference database for the host read filtering and specify the path to it (`kraken-db`)
+3. Provide a sample information in the `config/pep/samples.csv` file with keeping the header and format as `.csv`:
 
+```
+sample_name,fq1,fq2
+sample1,path/to/your/fastq/sample1_R1.fastq.gz,path/to/your/fastq/sample1_R2.fastq.gz
+```
+### Run the workflow
 ```snakemake --use-conda --cores all --rerun-incomplete```
 
 The usage of this workflow is described in the [Snakemake Workflow Catalog](https://snakemake.github.io/snakemake-workflow-catalog/?usage=<owner>%2F<repo>).
