@@ -21,12 +21,9 @@ ResMAG is a state-of-the-art and user-friendly Snakemake workflow designed for t
 
 ## Usage
 
-The usage of this workflow is described in the [Snakemake Workflow Catalog](https://snakemake.github.io/snakemake-workflow-catalog/?usage=<owner>%2F<repo>).
-
-If you use this workflow in a paper, don't forget to give credits to the authors by citing the URL of this (original) <repo>sitory and its DOI (see above).
-
 ```snakemake --use-conda --cores all --rerun-incomplete```
 
+The usage of this workflow is described in the [Snakemake Workflow Catalog](https://snakemake.github.io/snakemake-workflow-catalog/?usage=<owner>%2F<repo>).
 
 ## Output
 
@@ -46,29 +43,32 @@ For any questions, or feedback, please contact the project maintainer at kathari
 
 ## Acknowledgements
 
-We would like to express our gratitude towards Alexander Thomas, Johannes Köster, Ann-Kathrin Brüggemann and the IKIM who have contributed to the development and testing of ResMAG. Their valuable insights and feedback have been helpful throughout the creation of the workflow.
+We would like to express our gratitude towards Adrian Doerr, Alexander Thomas, Johannes Köster, Ann-Kathrin Brüggemann and the IKIM who have contributed to the development and testing of ResMAG. Their valuable insights and feedback have been helpful throughout the creation of the workflow.
 IKIM, Johannes Köster, Alexander Thomas, ?
 
 ## References
 
 **Tools**
 
-[Fastp](https://snakemake.github.io)<br />
-[Rosella](https://snakemake.github.io)<br />
-[MetaBAT2](https://snakemake.github.io)<br />
-[MetaBinner](https://snakemake.github.io)<br />
-[VAMB](https://snakemake.github.io)<br />
-[MetaCoAG](https://snakemake.github.io)<br />
-[DASTool](https://snakemake.github.io)<br />
-[Snakemake](https://snakemake.github.io)<br />
-[Snakemake](https://snakemake.github.io)<br />
-[Snakemake](https://snakemake.github.io)<br />
-[Snakemake](https://snakemake.github.io)<br />
-[Snakemake](https://snakemake.github.io)<br />
-[Snakemake](https://snakemake.github.io)<br />
-[Snakemake](https://snakemake.github.io)<br />
-[Snakemake](https://snakemake.github.io)<br />
+[Fastp](https://doi.org/10.1093/bioinformatics/bty560)<br />
+[Rosella](https://github.com/rhysnewell/rosella)<br />
+[MetaBAT2](https://doi.org/10.7717%2Fpeerj.7359)<br />
+[MetaBinner](https://doi.org/10.1186/s13059-022-02832-6)<br />
+[VAMB](https://doi.org/10.1038/s41587-020-00777-4)<br />
+[MetaCoAG](https://doi.org/10.1101/2021.09.10.459728)<br />
+[DASTool](https://doi.org/10.1038/s41564-018-0171-1)<br />
+[kraken2](https://doi.org/10.1186/s13059-019-1891-0)<br />
+[megahit](https://doi.org/10.1093/bioinformatics/btv033)<br />
+[minimap2](https://doi.org/10.1093/bioinformatics/bty191)<br />
+[fastqc](https://snakemake.github.io)<br />
+[Placeholder :)](https://snakemake.github.io)<br />
+
 
 
 **Literature**
+
 [Not here yet](https://www.lipsum.com/feed/html)
+
+## Citation
+
+A paper is on its way. If you use ResMAG in your work before the paper, then please consider citing this GitHub.
