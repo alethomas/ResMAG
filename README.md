@@ -21,13 +21,16 @@ ResMAG is a state-of-the-art and user-friendly Snakemake workflow designed for t
 ### Overview
 ```mermaid
 flowchart TB;
-   A[short reads]
+   A[Input: short reads]
    B["QC <br> <i>fastp<i>"]
    C["Host read filtering <br> <i>Kraken 2<i>"]
    D["Assembly <br> <i>MegaHIT<i>"]
    E{Binning}
    F["Bin refinement <br> <i>DAS Tool<i>"]
    G{{MAGs}}
+
+   classDef rule fill:#3c0,stroke:#330,stroke-width:2px
+   class B,C,D,E,F rule
    A --> B
    B --> C
    C --> D
@@ -45,6 +48,8 @@ flowchart TB;
    G --- I
 
 ```
+
+
 ## Usage
 ### Preparations
 To prepare the workflow
@@ -64,10 +69,21 @@ sample1,path/to/your/fastq/sample1_R1.fastq.gz,path/to/your/fastq/sample1_R2.fas
 The usage of this workflow is described in the [Snakemake Workflow Catalog](https://snakemake.github.io/snakemake-workflow-catalog/?usage=<owner>%2F<repo>).
 
 ## Output
+``` blockdiag
+blockdiag {
+A -> B -> C -> D -> E;
+
+C -> D [folded];
+}
+```
 
 ## Contributing
 
 **Bug report**
+
+```blockdiag
+blockdiag{ A -> B}
+```
 
 **Feature request**
 
