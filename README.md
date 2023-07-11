@@ -20,21 +20,31 @@ ResMAG is a state-of-the-art and user-friendly Snakemake workflow designed for t
 
 ### Overview
 ```mermaid
+%%{init: {'theme':'base', 'themeVariables': {
+      'primaryColor': '#cde498',
+      'primaryBorderColor': '#cde498',
+      'secondaryColor': '#fff'}}}%%
 flowchart TB;
-   A[Input: short reads]
-   B["QC <br> <i>fastp<i>"]
-   C["Host read filtering <br> <i>Kraken 2<i>"]
-   D["Assembly <br> <i>MegaHIT<i>"]
-   E{Binning}
-   F["Bin refinement <br> <i>DAS Tool<i>"]
-   G{{MAGs}}
+   A[/Input: short reads/]
+   B["<b>QC</b> <br> <i>fastp<i>"]
+   C["<b>Host read filtering</b> <br> <i>Kraken 2<i>"]
+   D["<b>Assembly</b> <br> <i>MegaHIT</i>"]
+   E["<b>Binning</b>"]
+   F["<b>Bin refinement</b> <br> <i>DAS Tool<i>"]
+   G[/MAGs/]
+   H["<b>Resistance analysis</b> <br> <i>HyDRA<i>"]
+   I["<b>taxonomic classification</b>"]
+   J[/MultiQC report/]
+   K[/Assembly summary/]
 
-   classDef rule fill:#3c0,stroke:#330,stroke-width:2px
-   class B,C,D,E,F rule
+   classDef rule stroke-width:2px
+   class B,C,D,E,F,H,I rule
    A --> B
    B --> C
+   B --- J
    C --> D
    D --> E
+   D --- K
    E --"<i>MetaBAT 2<i>"--> F
    E --"<i>MetaBinner<i>"--> F
    E --"<i>MetaCoAG<i>"--> F
@@ -42,8 +52,6 @@ flowchart TB;
    E --"<i>Vamb<i>"--> F
    F --- G
 
-   H["Resistance analysis <br> <i>HyDRA<i>"]
-   I[taxonomic classification]
    G --- H
    G --- I
 
@@ -69,7 +77,8 @@ sample1,path/to/your/fastq/sample1_R1.fastq.gz,path/to/your/fastq/sample1_R2.fas
 The usage of this workflow is described in the [Snakemake Workflow Catalog](https://snakemake.github.io/snakemake-workflow-catalog/?usage=<owner>%2F<repo>).
 
 ## Output
-``` blockdiag
+
+ ``` blockdiag
 blockdiag {
 A -> B -> C -> D -> E;
 
@@ -82,7 +91,14 @@ C -> D [folded];
 **Bug report**
 
 ```blockdiag
-blockdiag{ A -> B}
+blockdiag {
+  Kroki -> generates -> "Block diagrams";
+  Kroki -> is -> "very easy!";
+
+  Kroki [color = "greenyellow"];
+  "Block diagrams" [color = "pink"];
+  "very easy!" [color = "orange"];
+}
 ```
 
 **Feature request**
