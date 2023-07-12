@@ -20,41 +20,51 @@ ResMAG is a state-of-the-art and user-friendly Snakemake workflow designed for t
 
 ### Overview
 ```mermaid
-%%{init: {'theme':'base', 'themeVariables': {
+%%{init: 'theme':'base', 'themeVariables': {
       'primaryColor': '#cde498',
-      'background': '#fff',
+      'tertiaryColor': '#fff',
       'primaryBorderColor': '#000',
-      'secondaryColor': '#fff'}}}%%
+      'secondaryColor': '#fff'}},
+      {'flowchart': { 'curve': 'stepBefore' }}}%%
+
 flowchart LR;
-   A[/short reads/]
-   B["<b>QC</b> <br> <i>fastp<i>"]
-   C["<b>Host read filtering</b> <br> <i>Kraken 2<i>"]
-   D["<b>Assembly</b> <br> <i>MegaHIT</i>"]
-   E["<b>Binning</b>"]
-   F["<b>Bin refinement</b> <br> <i>DAS Tool<i>"]
-   G[/MAGs/]
-   H["<b>Resistance analysis</b> <br> <i>HyDRA<i>"]
-   I["<b>taxonomic classification</b>"]
-   J[/MultiQC report/]
-   K[/Assembly summary/]
+   subgraph Workflow
+      direction LR
 
-   classDef in_output fill:#fff,stroke:#cde498,stroke-width:4px
-   class A,G,J,K in_output
-   A --> B
-   B --> C
-   B --- J
-   C --> D
-   D --> E
-   D ---- K
-   E --"<i>MetaBAT 2<i>"--> F
-   E --"<i>MetaBinner<i>"--> F
-   E --"<i>MetaCoAG<i>"--> F
-   E --"<i>Rosella<i>"--> F
-   E --"<i>Vamb<i>"--> F
-   F --> G
+      %% Nodes
+      A[/short reads/]
+      B["<b>QC</b> <br> <i>fastp<i>"]
+      C["<b>Host read filtering</b> <br> <i>Kraken 2<i>"]
+      D["<b>Assembly</b> <br> <i>MegaHIT</i>"]
+      E["<b>Binning</b>"]
+      F["<b>Bin refinement</b> <br> <i>DAS Tool<i>"]
+      G[/MAGs/]
+      H["<b>Resistance analysis</b> <br> <i>HyDRA<i>"]
+      I["<b>taxonomic classification</b>"]
+      J[/MultiQC report/]
+      K[/Assembly summary/]
 
-   G --- H
-   G --- I
+      %% input & output node design
+      classDef in_output fill:#fff,stroke:#cde498,stroke-width:4px
+      class A,G,J,K in_output
+
+      %% Node links
+      A --> B
+      B --> C
+      B --- J
+      C --> D
+      D --> E
+      D ---- K
+      E --"<i>MetaBAT 2<i>"--> F
+      E --"<i>MetaBinner<i>"--> F
+      E --"<i>MetaCoAG<i>"--> F
+      E --"<i>Rosella<i>"--> F
+      E --"<i>Vamb<i>"--> F
+      F --> G
+      G --- H
+      G --- I
+
+      end
 
 ```
 
