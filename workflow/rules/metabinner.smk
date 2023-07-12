@@ -65,14 +65,14 @@ rule metabinner_composition_profile:
         outfile="results/{project}/metabinner/{sample}/composition_profile/final.contigs_{threshold}_kmer_{kmer_size}_f{threshold}.csv",
     threads: 8
     params:
-        root_path=get_root(),
+        root=get_root(),
         outdir=lambda wildcards, output: Path(output.outfile).parent,
     log:
         "logs/{project}/metabinner/{sample}/composition_profile_{kmer_size}_{threshold}.log",
     conda:
         "../envs/metabinner_env.yaml"
     shell:
-        "python {params.root_path}/workflow/scripts/gen_kmer.py {input.contig_file} {wildcards.threshold} {wildcards.kmer_size} 2>{log}; "
+        "python {params.root}/workflow/scripts/gen_kmer.py {input.contig_file} {wildcards.threshold} {wildcards.kmer_size} 2>{log}; "
         "mv results/{wildcards.project}/assembly/{wildcards.sample}/final.contigs_{wildcards.threshold}_kmer_{wildcards.kmer_size}_f{wildcards.threshold}.csv {params.outdir} 2>>{log}"
 
 
@@ -94,16 +94,16 @@ rule metabinner_run:
     params:
         threads=config["binning"]["threads"],
         outdir=lambda wildcards, output: Path(output.outfile).parent.parent,
-        root_path=get_root(),
+        root=get_root(),
     log:
         "logs/{project}/metabinner/{sample}/metabinner.log",
     conda:
         "../envs/metabinner_env.yaml"
     shell:
         "run_metabinner.sh "
-        "-a {params.root_path}/{input.contig_file} "
-        "-d {params.root_path}/{input.coverage_profile} "
-        "-k {params.root_path}/{input.kmer_profile} "
-        "-o {params.root_path}/{params.outdir} "
+        "-a {params.root}/{input.contig_file} "
+        "-d {params.root}/{input.coverage_profile} "
+        "-k {params.root}/{input.kmer_profile} "
+        "-o {params.root}/{params.outdir} "
         "-p $CONDA_PREFIX/bin/ "
         "-t {params.threads} 2>{log}"

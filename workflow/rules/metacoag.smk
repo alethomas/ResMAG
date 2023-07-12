@@ -4,7 +4,7 @@ rule coverm_metacoag:
         contigs="results/{project}/assembly/{sample}/final.contigs.fa",
     output:
         "results/{project}/binning_prep/{sample}/abundance.tsv",
-    threads: 8
+    threads: 2
     log:
         "logs/{project}/coverm/{sample}.log",
     conda:
@@ -19,11 +19,11 @@ rule edit_abundance_file:
         "results/{project}/binning_prep/{sample}/abundance.tsv",
     output:
         "results/{project}/binning_prep/{sample}/abundance_metacoag.tsv",
-    threads: 8
+    threads: 1
     log:
         "logs/{project}/coverm/{sample}.log",
     conda:
-        "../envs/metacoag.yaml"
+        "../envs/unix.yaml"
     shell:
         "cp {input} {output} && sed -i '1d' {output} > {log} 2>&1"
 
@@ -58,11 +58,11 @@ rule fastg2gfa:
         "{params.fastg2gfa_program} {input} > {output} 2>> {log}"
 
 
-rule metacoag:
+rule metacoag_run:
     input:
         contigs="results/{project}/assembly/{sample}/final.contigs.fa",
         gfa="results/{project}/binning_prep/{sample}/assembly_tree.gfa",
-        abundance="results/{project}/binning_prep/{sample}/abundance_metacoag.tsv",
+        abd="results/{project}/binning_prep/{sample}/abundance_metacoag.tsv",
     output:
         dir=directory("results/{project}/metacoag/{sample}/"),
         out="results/{project}/metacoag/{sample}/contig_to_bin.tsv",
@@ -75,5 +75,5 @@ rule metacoag:
         "../envs/metacoag.yaml"
     shell:
         "metacoag --assembler megahit --graph {input.gfa} "
-        "--contigs {input.contigs} --abundance {input.abundance} "
-        "--output {output.dir} > {log} 2>&1"
+        "--contigs {input.contigs} --abundance {input.abd} "
+        "--output {output} > {log} 2>&1"
