@@ -106,4 +106,4 @@ rule metabinner_run:
         "-k {params.root}/{input.kmer_profile} "
         "-o {params.root}/{params.outdir} "
         "-p $CONDA_PREFIX/bin/ "
-        "-t {params.threads} 2>{log}"
+        "-t {params.threads} > {log} 2>&1"

@@ -1,9 +1,9 @@
 from pathlib import Path
 
-REFERENCE_DIR = get_reference_dir()
 KRAKEN_DB = get_kraken_db()
 
 '''## indexing
+REFERENCE_DIR = get_reference_dir()
 rule minimap2_index:
     input:
         target = get_reference_file

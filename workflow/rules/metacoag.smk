@@ -64,7 +64,7 @@ rule metacoag_run:
         gfa="results/{project}/binning_prep/{sample}/assembly_tree.gfa",
         abd="results/{project}/binning_prep/{sample}/abundance_metacoag.tsv",
     output:
-        dir=directory("results/{project}/metacoag/{sample}/"),
+        outdir=directory("results/{project}/metacoag/{sample}/"),
         out="results/{project}/metacoag/{sample}/contig_to_bin.tsv",
     params:
         fastg2gfa_program="resources/gfaview/misc/fastg2gfa",
@@ -76,4 +76,4 @@ rule metacoag_run:
     shell:
         "metacoag --assembler megahit --graph {input.gfa} "
         "--contigs {input.contigs} --abundance {input.abd} "
-        "--output {output} > {log} 2>&1"
+        "--output {output.outdir} > {log} 2>&1"

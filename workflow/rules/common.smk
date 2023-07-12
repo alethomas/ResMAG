@@ -94,8 +94,18 @@ def get_root():
     return os.getcwd()
 
 
-def get_paths_binner(file):
+def get_paths_binner(wildcards):
+    file = f"results/{wildcards.project}/das_tool/{wildcards.sample}/binner_control.csv"
     lines = open(file).readlines()
     paths = str(lines[0].rstrip('\n'))
     binner= str(lines[1].rstrip('\n'))
     return paths, binner
+
+def get_all_contig2bin(wildcards):
+    return [
+        "results/{project}/metabinner/{sample}/metabinner_res/metabinner_result.tsv",
+        "results/{project}/binning_rev/{sample}/vamb_contig2bin.tsv",
+        "results/{project}/binning_rev/{sample}/metabat_contig2bin.tsv",
+        "results/{project}/metacoag/{sample}/contig_to_bin.tsv",
+        "results/{project}/binning_rev/{sample}/rosella_contig2bin.tsv",
+    ]

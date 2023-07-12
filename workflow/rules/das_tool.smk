@@ -1,10 +1,6 @@
 rule binner_control:
     input:
-        bin1="results/{project}/metabinner/{sample}/metabinner_res/metabinner_result.tsv",
-        bin2="results/{project}/vamb/{sample}/vamb_res/swaped_clusters.tsv",
-        bin3="results/{project}/metabat2/{sample}/metabat_contig2bin.tsv",
-        bin4="results/{project}/metacoag/{sample}/contig_to_bin.tsv",
-        bin5="results/{project}/rosella/{sample}/rosella_contig2bin.tsv",
+        get_all_contig2bin,
     output:
         "results/{project}/das_tool/{sample}/binner_control.csv",
     log:
@@ -12,62 +8,61 @@ rule binner_control:
     conda:
         "../envs/das_tool.yaml"
     script:
-        "workflow/scripts/binner_control.py"
+        "../scripts/binner_control.py"
+
 
 rule postprocess_vamb:
     input:
         "results/{project}/vamb/{sample}/vamb_res/model.pt",
     output:
-        "results/{project}/vamb/{sample}/vamb_res/swaped_clusters.tsv",
+        "results/{project}/binning_rev/{sample}/vamb_contig2bin.tsv",
     params:
         cluster="results/{project}/vamb/{sample}/vamb_res/clusters.tsv",
         tmp="results/{project}/vamb/{sample}/vamb_res/temp",
         root=get_root(),
     log:
-        "logs/{project}/das_tool/{sample}/vamb_postprocessing.log",
+        "logs/{project}/binning_rev/{sample}/postprocess_vamb.log",
     conda:
         "../envs/das_tool.yaml"
     shell:
-        "bash {params.root}/workflow/scripts/swap_vamb_clusters.sh {params.cluster} {output} {params.tmp} 2> {log}"
+        "bash {params.root}/workflow/scripts/postprocess_vamb.sh {params.cluster} {output} {params.tmp} 2> {log}"
+
 
 rule postprocess_metabat:
     input:
-        "results/strawpigs/metabat2/{sample}/"
+        "results/strawpigs/metabat2/{sample}/",
     output:
         "results/{project}/binning_rev/{sample}/metabat_contig2bin.tsv",
     log:
-        "logs/{project}/binning_rev/{sample}/metabat_postprocessing.log",
+        "logs/{project}/binning_rev/{sample}/postprocess_metabat.log",
     conda:
         "../envs/das_tool.yaml"
     script:
-        "workflow/scripts/postprocess_metabat.py"
+        "../scripts/postprocess_metabat.py"
+
 
 rule postprocess_rosella:
     input:
-        "results/{project}/rosella/{sample}/rosella_bins.json",
+        "results/{project}/rosella/{sample}/",
     output:
-        "results/{project}/rosella/{sample}/rosella_contig2bin.tsv",
+        "results/{project}/binning_rev/{sample}/rosella_contig2bin.tsv",
     log:
-        "logs/{project}/das_tool/{sample}/rosella_postprocessing.log",
+        "logs/{project}/binning_rev/{sample}/postprocess_rosella.log",
     conda:
         "../envs/das_tool.yaml"
     script:
-        "workflow/scripts/postprocess_rosella.py"
+        "../scripts/postprocess_metabat.py"
+
 
 rule dastool_run:
     input:
-        bin1="results/{project}/metabinner/{sample}/metabinner_res/metabinner_result.tsv",
-        bin2="results/{project}/vamb/{sample}/vamb_res/swaped_clusters.tsv",
-        bin3="results/{project}/metabat2/{sample}/metabat_contig2bin.tsv",
-        bin4="results/{project}/metacoag/{sample}/contig_to_bin.tsv",
-        bin5="results/{project}/rosella/{sample}/rosella_contig2bin.tsv",
+        all_bins=get_all_contig2bin,
         binc="results/{project}/das_tool/{sample}/binner_control.csv",
         contigs="results/{project}/assembly/{sample}/final.contigs.fa",
     output:
         outfile="results/{project}/das_tool/{sample}/{sample}_DASTool_summary.tsv",
     params:
-        paths=lambda wildcards, input: get_paths_binner(input.binc)[0],
-        binner=lambda wildcards, input: get_paths_binner(input.binc)[1],
+        path_bin_list=get_paths_binner,
         outdir=lambda wildcards, output: Path(output.outfile).parent,
     log:
         "logs/{project}/das_tool/{sample}/das_tool_run.log",
@@ -76,8 +71,8 @@ rule dastool_run:
     shell:
         "DAS_Tool -t 64 "
         "--debug "
-        "-i {params.paths} "
-        "-l {params.binner} "
+        "-i {params.path_bin_list[0]} "
+        "-l {params.path_bin_list[1]} "
         "-c {input.contigs} "
-        "-o {params.outdir}/{wildcard.sample} "
-        " 2> {log} "
+        "-o {params.outdir}/{wildcards.sample} "
+        "> {log} 2>&1 "
