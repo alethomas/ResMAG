@@ -22,6 +22,7 @@ ResMAG is a state-of-the-art and user-friendly Snakemake workflow designed for t
 ```mermaid
 %%{init: {'theme':'base', 'themeVariables': {
       'primaryColor': '#cde498',
+      'background': '#fff',
       'primaryBorderColor': '#000',
       'secondaryColor': '#fff'}}}%%
 flowchart LR;
