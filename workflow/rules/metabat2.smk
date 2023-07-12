@@ -20,7 +20,7 @@ rule metabat2:
         contigs="results/{project}/assembly/{sample}/final.contigs.fa",
         abd="results/{project}/binning_prep/{sample}/abundance_metabat.tsv",
     output:
-        directory("results/{project}/metabat2/{sample}"),
+        directory("results/{project}/metabat2/{sample}/"),
     threads: 8
     params:
         prefix="bin",

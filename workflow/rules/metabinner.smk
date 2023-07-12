@@ -65,7 +65,7 @@ rule metabinner_composition_profile:
         outfile="results/{project}/metabinner/{sample}/composition_profile/final.contigs_{threshold}_kmer_{kmer_size}_f{threshold}.csv",
     threads: 8
     params:
-        root_path=config["root_path"],
+        root_path=get_root(),
         outdir=lambda wildcards, output: Path(output.outfile).parent,
     log:
         "logs/{project}/metabinner/{sample}/composition_profile_{kmer_size}_{threshold}.log",
@@ -94,7 +94,7 @@ rule metabinner_run:
     params:
         threads=config["binning"]["threads"],
         outdir=lambda wildcards, output: Path(output.outfile).parent.parent,
-        root_path=config["root_path"],
+        root_path=get_root(),
     log:
         "logs/{project}/metabinner/{sample}/metabinner.log",
     conda:

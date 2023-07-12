@@ -38,6 +38,7 @@ rule rosella_run:
         log_install="logs/{project}/rosella/rosella_install.log",
     output:
         outfile="results/{project}/rosella/{sample}/rosella_kmer_table.tsv",
+        out="results/{project}/rosella/{sample}/rosella_bins.json"
     params:
         outdir=lambda wildcards, output: Path(output.outfile).parent,
     threads: 16

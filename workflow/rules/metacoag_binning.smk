@@ -48,7 +48,7 @@ rule fastg2gfa:
     output:
         "results/{project}/binning_prep/{sample}/assembly_tree.gfa",
     params:
-        fastg2gfa_program="../scripts/fastg2gfa",
+        fastg2gfa_program="workflow/scripts/fastg2gfa",
     threads: 2
     log:
         "logs/{project}/fastg2gfa/{sample}.log",
@@ -64,7 +64,8 @@ rule metacoag:
         gfa="results/{project}/binning_prep/{sample}/assembly_tree.gfa",
         abundance="results/{project}/binning_prep/{sample}/abundance_metacoag.tsv",
     output:
-        directory("results/{project}/metacoag/{sample}/"),
+        dir=directory("results/{project}/metacoag/{sample}/"),
+        out="results/{project}/metacoag/{sample}/contig_to_bin.tsv",
     params:
         fastg2gfa_program="resources/gfaview/misc/fastg2gfa",
     threads: 2
@@ -75,4 +76,4 @@ rule metacoag:
     shell:
         "metacoag --assembler megahit --graph {input.gfa} "
         "--contigs {input.contigs} --abundance {input.abundance} "
-        "--output {output} > {log} 2>&1"
+        "--output {output.dir} > {log} 2>&1"

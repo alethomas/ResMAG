@@ -24,8 +24,8 @@ include: "rules/metacoag_binning.smk"
 include: "rules/vamb.smk"
 include: "rules/metabat2.smk"
 include: "rules/das_tool.smk"
-include: "rules/metacoag_binning.smk"
 include: "rules/rosella.smk"
+#include: "rules/test_common.smk"
 
 
 rule all:
@@ -61,14 +61,11 @@ rule all:
             sample=get_samples(),
         ),
         expand(
-            "results/{project}/rosella/{sample}/rosella_res/rosella_kmer_table.tsv",
+            "results/{project}/rosella/{sample}/rosella_kmer_table.tsv",
             project=get_project(),
             sample=get_samples(),
         ),
-
-
-"""
-        ,expand(
+        expand(
             "results/{project}/metabinner/{sample}/metabinner_res/metabinner_result.tsv",
             project=get_project(),
             sample=get_samples(),
@@ -82,5 +79,5 @@ rule all:
             "results/{project}/das_tool/{sample}/{sample}_DASTool_summary.tsv",
             project=get_project(),
             sample=get_samples(),
-        ),
-       """
+        )
+

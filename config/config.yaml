@@ -13,9 +13,6 @@ quality-criteria:
 
 adapter_seqs: "-a CTGTCTCTTATACACATCT -g AGATGTGTATAAGAGACAG"
 
-## we need to change this (maybe  PREFIX)
-root_path: "/homes/josefa/strawpig/ResMAG"
-
 reference-genomes:
   # list of reference names
   reference-species: ["pig", "human"]

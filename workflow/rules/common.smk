@@ -112,21 +112,6 @@ def get_taxID_dict():
 def get_taxID(wildcards):
     return config["kraken"]["taxIDs-ref"][wildcards.kraken_ref]
 
-
-def get_binners_contigs(wildcards):
-    return (
-        "results/{project}/metabinner/{sample}/coverage_profile/work_files/assembly.fa",
-        "results/{project}/vamb/catalogue.fna",
-    )
-
-
-def get_binners_bins(wildcards):
-    return [
-        "results/{project}/metabinner/{sample}/metabinner_res/metabinner_result.tsv",
-        "results/{project}/vamb/{sample}/vamb_res/swaped_clusters.tsv",
-    ]
-
-
 def get_rosella_install():
     folder = get_rosella_folder()
     script = f"{folder}/install.sh"
@@ -143,3 +128,9 @@ def get_rosella_folder():
 
 def get_root():
     return os.getcwd()
+
+def get_paths_binner(file):
+    lines = open(file).readlines()
+    paths = str(lines[0].rstrip('\n'))
+    binner= str(lines[1].rstrip('\n'))
+    return paths, binner
