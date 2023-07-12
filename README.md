@@ -22,10 +22,10 @@ ResMAG is a state-of-the-art and user-friendly Snakemake workflow designed for t
 ```mermaid
 %%{init: {'theme':'base', 'themeVariables': {
       'primaryColor': '#cde498',
-      'primaryBorderColor': '#cde498',
+      'primaryBorderColor': '#000',
       'secondaryColor': '#fff'}}}%%
-flowchart TB;
-   A[/Input: short reads/]
+flowchart LR;
+   A[/short reads/]
    B["<b>QC</b> <br> <i>fastp<i>"]
    C["<b>Host read filtering</b> <br> <i>Kraken 2<i>"]
    D["<b>Assembly</b> <br> <i>MegaHIT</i>"]
@@ -37,20 +37,20 @@ flowchart TB;
    J[/MultiQC report/]
    K[/Assembly summary/]
 
-   classDef rule stroke-width:2px
-   class B,C,D,E,F,H,I rule
+   classDef in_output fill:#fff,stroke:#cde498,stroke-width:4px
+   class A,G,J,K in_output
    A --> B
    B --> C
    B --- J
    C --> D
    D --> E
-   D --- K
+   D ---- K
    E --"<i>MetaBAT 2<i>"--> F
    E --"<i>MetaBinner<i>"--> F
    E --"<i>MetaCoAG<i>"--> F
    E --"<i>Rosella<i>"--> F
    E --"<i>Vamb<i>"--> F
-   F --- G
+   F --> G
 
    G --- H
    G --- I
@@ -78,28 +78,11 @@ The usage of this workflow is described in the [Snakemake Workflow Catalog](http
 
 ## Output
 
- ``` blockdiag
-blockdiag {
-A -> B -> C -> D -> E;
-
-C -> D [folded];
-}
-```
 
 ## Contributing
 
 **Bug report**
 
-```blockdiag
-blockdiag {
-  Kroki -> generates -> "Block diagrams";
-  Kroki -> is -> "very easy!";
-
-  Kroki [color = "greenyellow"];
-  "Block diagrams" [color = "pink"];
-  "very easy!" [color = "orange"];
-}
-```
 
 **Feature request**
 
