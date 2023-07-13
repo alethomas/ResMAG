@@ -55,7 +55,7 @@ rule metabinner_coverage_profile:
         "-a {input.contig_file} "
         "-o {params.outdir} "
         "-l {params.threshold} "
-        "{input.fastq1} {input.fastq2} 2>{log}"
+        "{input.fastq1} {input.fastq2} > {log} 2>&1"
 
 
 rule metabinner_composition_profile:
@@ -72,8 +72,8 @@ rule metabinner_composition_profile:
     conda:
         "../envs/metabinner_env.yaml"
     shell:
-        "python {params.root}/workflow/scripts/gen_kmer.py {input.contig_file} {wildcards.threshold} {wildcards.kmer_size} 2>{log}; "
-        "mv results/{wildcards.project}/assembly/{wildcards.sample}/final.contigs_{wildcards.threshold}_kmer_{wildcards.kmer_size}_f{wildcards.threshold}.csv {params.outdir} 2>>{log}"
+        "python {params.root}/workflow/scripts/gen_kmer.py {input.contig_file} {wildcards.threshold} {wildcards.kmer_size} >{log} 2>&1; "
+        "mv results/{wildcards.project}/assembly/{wildcards.sample}/final.contigs_{wildcards.threshold}_kmer_{wildcards.kmer_size}_f{wildcards.threshold}.csv {params.outdir} >{log} 2>&1"
 
 
 rule metabinner_run:

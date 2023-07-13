@@ -28,7 +28,7 @@ rule install_rosella:
     conda:
         "../envs/rosella.yml"
     shell:
-        "cd {params.folder} && bash install.sh && cd {params.root} > {params.root}/{log} 2>&1"
+        "cd {params.folder} && bash -v install.sh > {params.root}/{log} 2>&1 && cd {params.root} "
 
 
 rule rosella_run:
@@ -38,9 +38,7 @@ rule rosella_run:
         log_install="logs/{project}/rosella/rosella_install.log",
     output:
         outfile="results/{project}/rosella/{sample}/rosella_kmer_table.tsv",
-        out="results/{project}/rosella/{sample}/rosella_bins.json"
-    params:
-        outdir=lambda wildcards, output: Path(output.outfile).parent,
+        outdir=directory("results/{project}/rosella/{sample}/"),
     threads: 16
     log:
         "logs/{project}/rosella/{sample}/rosella_run.log",
@@ -48,4 +46,4 @@ rule rosella_run:
         "../envs/rosella.yml"
     shell:
         "rosella recover -r {input.contigs} --coverage-values {input.abd} "
-        "-o {params.outdir} -t {threads} > {log} 2>&1"
+        "-o {output.outdir} -t {threads} > {log} 2>&1"

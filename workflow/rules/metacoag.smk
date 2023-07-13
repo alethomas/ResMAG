@@ -55,7 +55,7 @@ rule fastg2gfa:
     conda:
         "../envs/metacoag.yaml"
     shell:
-        "{params.fastg2gfa_program} {input} > {output} 2>> {log}"
+        "{params.fastg2gfa_program} {input} > {output} > {log} 2>&1"
 
 
 rule metacoag_run:

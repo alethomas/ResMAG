@@ -25,7 +25,7 @@ rule postprocess_vamb:
     conda:
         "../envs/das_tool.yaml"
     shell:
-        "bash {params.root}/workflow/scripts/postprocess_vamb.sh {params.cluster} {output} {params.tmp} 2> {log}"
+        "bash {params.root}/workflow/scripts/postprocess_vamb.sh {params.cluster} {output} {params.tmp} > {log} 2>&1"
 
 
 rule postprocess_metabat:
