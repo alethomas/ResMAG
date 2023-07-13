@@ -20,15 +20,17 @@ ResMAG is a state-of-the-art and user-friendly Snakemake workflow designed for t
 
 ### Overview
 ```mermaid
-%%{init: 'theme':'base', 'themeVariables': {
-      'primaryColor': '#cde498',
+%%{init: {
+   'theme':'base',
+   'themeVariables': {
+      'secondaryColor': '#fff',
       'tertiaryColor': '#fff',
-      'primaryBorderColor': '#000',
-      'secondaryColor': '#fff'}},
-      {'flowchart': { 'curve': 'stepBefore' }}}%%
+      'tertiaryBorderColor' : '#fff'}
+   }}%%
 
 flowchart LR;
-   subgraph Workflow
+
+   subgraph " "
       direction LR
 
       %% Nodes
@@ -47,6 +49,9 @@ flowchart LR;
       %% input & output node design
       classDef in_output fill:#fff,stroke:#cde498,stroke-width:4px
       class A,G,J,K in_output
+      %% rule node design
+      classDef rule fill:#cde498,stroke:#000
+      class B,C,D,E,F,H,I rule
 
       %% Node links
       A --> B
@@ -64,10 +69,9 @@ flowchart LR;
       G --- H
       G --- I
 
-      end
+   end
 
 ```
-
 
 ## Usage
 ### Preparations
