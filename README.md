@@ -28,10 +28,10 @@ ResMAG is a state-of-the-art and user-friendly Snakemake workflow designed for t
       'tertiaryBorderColor' : '#fff'}
    }}%%
 
-flowchart LR;
+flowchart TB;
 
    subgraph " "
-      direction LR
+      direction TB
 
       %% Nodes
       A[/short reads/]
