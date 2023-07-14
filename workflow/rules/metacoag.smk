@@ -11,7 +11,7 @@ rule coverm_metacoag:
         "../envs/coverm.yaml"
     shell:
         "coverm contig -1 {input.bact_reads[0]} -2 {input.bact_reads[1]} "
-        "-r {input.contigs} -o {output} -t {threads}"
+        "-r {input.contigs} -o {output} -t {threads} > {log} 2>&1"
 
 
 rule edit_abundance_file:
@@ -55,7 +55,7 @@ rule fastg2gfa:
     conda:
         "../envs/metacoag.yaml"
     shell:
-        "{params.fastg2gfa_program} {input} > {output} > {log} 2>&1"
+        "{params.fastg2gfa_program} {input} > {output} 2> {log}"
 
 
 rule metacoag_run:
@@ -66,8 +66,6 @@ rule metacoag_run:
     output:
         outdir=directory("results/{project}/metacoag/{sample}/"),
         out="results/{project}/metacoag/{sample}/contig_to_bin.tsv",
-    params:
-        fastg2gfa_program="resources/gfaview/misc/fastg2gfa",
     threads: 2
     log:
         "logs/{project}/metacoag/{sample}.log",

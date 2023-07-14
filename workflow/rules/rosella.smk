@@ -28,7 +28,9 @@ rule install_rosella:
     conda:
         "../envs/rosella.yml"
     shell:
-        "cd {params.folder} && bash -v install.sh > {params.root}/{log} 2>&1 && cd {params.root} "
+        "(cd {params.folder} && "
+        "bash -v install.sh && "
+        "cd {params.root}) > {params.root}/{log} 2>&1"
 
 
 rule rosella_run:

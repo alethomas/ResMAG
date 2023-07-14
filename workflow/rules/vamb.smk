@@ -23,7 +23,7 @@ rule vamb_catalogue_index:
     conda:
         "../envs/vamb.yaml"
     shell:
-        "minimap2 -d {output.index} {input.catalogue} >{log} 2>&1"
+        "minimap2 -d {output.index} {input.catalogue} > {log} 2>&1"
 
 
 rule vamb_map_reads:
@@ -41,7 +41,7 @@ rule vamb_map_reads:
         "../envs/vamb.yaml"
     shell:
         "minimap2 -t {params.threads} -N 5 -ax sr {input.index} "
-        "{input.f1} {input.f2} | samtools view -F 3584 -b --threads 8 > {output.bam} >{log} 2>&1"
+        "{input.f1} {input.f2} | samtools view -F 3584 -b --threads 8 > {output.bam} 2> {log}"
 
 
 rule vamb_run:
@@ -58,4 +58,4 @@ rule vamb_run:
         "../envs/vamb.yaml"
     shell:
         "rm -r {params.outdir}; "
-        "vamb --outdir {params.outdir} --fasta {input.catalogue} --bamfiles {input.bam} >{log} 2>&1"
+        "vamb --outdir {params.outdir} --fasta {input.catalogue} --bamfiles {input.bam} > {log} 2>&1"

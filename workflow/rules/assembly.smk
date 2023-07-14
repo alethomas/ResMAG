@@ -3,8 +3,7 @@ from pathlib import Path
 
 rule megahit:
     input:
-        bact_fq1="results/{project}/filtered/bacteria/{sample}_bacteria_1.fastq.gz",
-        bact_fq2="results/{project}/filtered/bacteria/{sample}_bacteria_2.fastq.gz",
+        get_bacterial_reads,
     output:
         contigs="results/{project}/assembly/{sample}/final.contigs.fa",
     params:
@@ -15,7 +14,7 @@ rule megahit:
     conda:
         "../envs/megahit.yaml"
     shell:
-        "megahit -1 {input.bact_fq1} -2 {input.bact_fq2} --out-dir {params.outdir} -f > {log} 2>&1"
+        "megahit -1 {input[0]} -2 {input[1]} --out-dir {params.outdir} -f > {log} 2>&1"
 
 
 rule assembly_summary:
