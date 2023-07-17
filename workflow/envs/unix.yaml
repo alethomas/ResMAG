@@ -5,3 +5,4 @@ channels:
 dependencies:
   - git
   - sed
+  - curl
