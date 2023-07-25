@@ -1,0 +1,7 @@
+channels:
+  - conda-forge
+  - bioconda
+  - anaconda
+dependencies:
+  - pandas = 2.0.3
+  - biopython = 1.81

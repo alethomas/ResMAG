@@ -64,7 +64,7 @@ rule metacoag_run:
         gfa="results/{project}/binning_prep/{sample}/assembly_tree.gfa",
         abd="results/{project}/binning_prep/{sample}/abundance_metacoag.tsv",
     output:
-        outdir=directory("results/{project}/metacoag/{sample}/"),
+        outdir=directory("results/{project}/metacoag/{sample}/bins/"),
         out="results/{project}/metacoag/{sample}/contig_to_bin.tsv",
     threads: 2
     log:

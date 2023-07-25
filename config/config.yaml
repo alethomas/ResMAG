@@ -22,7 +22,8 @@ binning:
 
 das_tool:
   # cores to use for das_tool
-  threads: 64
+  threads: 32
+  binner-list: ["metabinner", "metabat2", "metacoag", "rosella", "vamb"]
 
 kraken:
   kraken-db: "/projects/pig-muenster/resmag/resources/krakenDB/strawpigs/"

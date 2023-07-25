@@ -3,14 +3,16 @@ rule binner_control:
         get_all_contig2bin,
     output:
         "results/{project}/das_tool/{sample}/binner_control.csv",
+    params:
+        get_binners(),
     log:
         "logs/{project}/das_tool/{sample}/binner_control.log",
     conda:
-        "../envs/das_tool.yaml"
+        "../envs/unix.yaml"
     script:
         "../scripts/binner_control.py"
 
-
+## give bash script as script
 rule postprocess_vamb:
     input:
         "results/{project}/vamb/{sample}/vamb_res/model.pt",
@@ -23,7 +25,7 @@ rule postprocess_vamb:
     log:
         "logs/{project}/binning_rev/{sample}/postprocess_vamb.log",
     conda:
-        "../envs/das_tool.yaml"
+        "../envs/unix.yaml"
     shell:
         "bash {params.root}/workflow/scripts/postprocess_vamb.sh {params.cluster} {output} {params.tmp} > {log} 2>&1"
 
@@ -32,15 +34,28 @@ rule postprocess_metabat:
     input:
         "results/strawpigs/metabat2/{sample}/",
     output:
-        "results/{project}/binning_rev/{sample}/metabat_contig2bin.tsv",
+        "results/{project}/binning_rev/{sample}/metabat2_contig2bin.tsv",
     log:
-        "logs/{project}/binning_rev/{sample}/postprocess_metabat.log",
+        "logs/{project}/binning_rev/{sample}/postprocess_metabat2.log",
     conda:
-        "../envs/das_tool.yaml"
+        "../envs/python.yaml"
     script:
         "../scripts/postprocess_metabat.py"
 
 
+rule postprocess_metacoag:
+    input:
+        "results/{project}/metacoag/{sample}/bins/",
+    output:
+        "results/{project}/binning_rev/{sample}/metacoag_contig2bin.tsv",
+    log:
+        "logs/{project}/binning_rev/{sample}/postprocess_metacoag.log",
+    conda:
+        "../envs/python.yaml"
+    script:
+        "../scripts/postprocess_metabat.py"
+
+## vererbung
 rule postprocess_rosella:
     input:
         "results/{project}/rosella/{sample}/",
@@ -49,7 +64,7 @@ rule postprocess_rosella:
     log:
         "logs/{project}/binning_rev/{sample}/postprocess_rosella.log",
     conda:
-        "../envs/das_tool.yaml"
+        "../envs/python.yaml"
     script:
         "../scripts/postprocess_metabat.py"
 
@@ -64,12 +79,13 @@ rule dastool_run:
     params:
         path_bin_list=get_paths_binner,
         outdir=lambda wildcards, output: Path(output.outfile).parent,
+    threads: get_DAS_Tool_threads(),
     log:
         "logs/{project}/das_tool/{sample}/das_tool_run.log",
     conda:
         "../envs/das_tool.yaml"
     shell:
-        "DAS_Tool -t 64 "
+        "DAS_Tool -t {threads} "
         "--debug "
         "-i {params.path_bin_list[0]} "
         "-l {params.path_bin_list[1]} "

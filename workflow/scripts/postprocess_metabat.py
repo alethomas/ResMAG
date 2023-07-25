@@ -1,21 +1,36 @@
 import os
 import sys
+import pandas as pd
+from Bio import SeqIO
+
 
 sys.stderr = open(snakemake.log[0], "w")
 
+
 def fasta_to_tsv(directory, output_tsv):
-    with open(output_tsv, 'w') as f_out:
-        f_out.write("Sequence\tFile\n")
-        
-        for file_name in os.listdir(directory):
-            if file_name.endswith(".fasta") or file_name.endswith(".fa"):
-                file_path = os.path.join(directory, file_name)
-                
-                with open(file_path, 'r') as f_in:
-                    for line in f_in:
-                        if line.startswith(">"):
-                            sequence_name = line[1:].strip()
-                            f_out.write(f"{sequence_name}\t{file_name}\n")
+    #first = True
+    results_df = pd.DataFrame()
+    for file_name in os.listdir(directory):
+        if (
+            file_name.endswith(".fasta")
+            or file_name.endswith(".fa")
+            or file_name.endswith(".fna")
+        ):
+            record_dict = SeqIO.to_dict(
+                SeqIO.parse(f"{directory}/{file_name}", "fasta")
+            )
+            for record in record_dict:
+                record_dict[record] = file_name
+
+            if results_df.empty:
+                results_df = pd.DataFrame.from_dict(record_dict, orient="index")
+                #first = False
+            else:
+                df = pd.DataFrame.from_dict(record_dict, orient="index")
+                results_df = pd.concat([results_df, df])
+
+    results_df.to_csv(output_tsv, sep="\t", header=False)
+
 
 # Get the input and output file paths from command-line arguments
 directory = snakemake.input[0]

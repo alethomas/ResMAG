@@ -93,6 +93,9 @@ def get_rosella_folder():
 def get_root():
     return os.getcwd()
 
+def get_binners():
+    return config["das_tool"]["binner-list"]
+
 
 def get_paths_binner(wildcards):
     file = f"results/{wildcards.project}/das_tool/{wildcards.sample}/binner_control.csv"
@@ -101,11 +104,16 @@ def get_paths_binner(wildcards):
     binner= str(lines[1].rstrip('\n'))
     return paths, binner
 
+
 def get_all_contig2bin(wildcards):
     return [
         "results/{project}/metabinner/{sample}/metabinner_res/metabinner_result.tsv",
         "results/{project}/binning_rev/{sample}/vamb_contig2bin.tsv",
-        "results/{project}/binning_rev/{sample}/metabat_contig2bin.tsv",
-        "results/{project}/metacoag/{sample}/contig_to_bin.tsv",
+        "results/{project}/binning_rev/{sample}/metabat2_contig2bin.tsv",
+        "results/{project}/binning_rev/{sample}/metacoag_contig2bin.tsv",
         "results/{project}/binning_rev/{sample}/rosella_contig2bin.tsv",
     ]
+
+
+def get_DAS_Tool_threads():
+    return config["das_tool"]["threads"]
