@@ -3,5 +3,4 @@ channels:
   - bioconda
   - nodefaults
 dependencies:
-  - metacoag = 1.1.1
-  - biopython = 1.81
+  - coverm = 0.6.1

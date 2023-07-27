@@ -13,31 +13,25 @@ quality-criteria:
 
 adapter_seqs: "-a CTGTCTCTTATACACATCT -g AGATGTGTATAAGAGACAG"
 
-root_path: "/homes/kblock/resmag/ResMAG"
-
-reference-genomes:
-  # list of reference names
-  reference-species: ["pig", "human"]
-  # file extension of the reference genome,
-  # can be .fa, .fasta, .fna, optionally .gz
-  reference-file-ext: ".fna.gz"
-  # directory of reference genomes, e.g resources/reference/
-  reference-dir: resources/reference/
-
-binning:
-  min_contig_length: 300
-  # threshold for the minimum contig length to be accepted by metabinner and vamb
-  kmer_length: 3
-  # some metabinner parameter
-  threads: 24
-
-das_tool:
-  # cores to use for das_tool
-  threads: 64
-
 kraken:
   kraken-db: "/projects/pig-muenster/resmag/resources/krakenDB/strawpigs/"
   # species/kingdom to separate with taxIDs in same order
   # ref: ['bacteria','fungi', 'pig', 'human', 'plant']
   ref-analysis: ["bacteria", "fungi"]
   taxIDs-ref: { bacteria: 2, fungi: 4751, pig: 9823, human: 9606, plant: 33090 }
+
+binning:
+  # threshold for the minimum contig length to be accepted by metabinner and vamb
+  min_contig_length: 300
+  # some metabinner parameter
+  kmer_length: 3
+  threads: 24
+
+rosella:
+  gitURL: "https://github.com/rhysnewell/rosella.git"
+  rosella_dir: resources/rosella
+
+das_tool:
+  # cores to use for das_tool
+  threads: 32
+  binner-list: ["metabinner", "metabat2", "metacoag", "rosella", "vamb"]

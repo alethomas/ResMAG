@@ -1,9 +1,9 @@
 from pathlib import Path
 
-REFERENCE_DIR = get_reference_dir()
 KRAKEN_DB = get_kraken_db()
 
 '''## indexing
+REFERENCE_DIR = get_reference_dir()
 rule minimap2_index:
     input:
         target = get_reference_file
@@ -56,7 +56,7 @@ if not config["testing"]:
         shell:
             "kraken2 --db {params.db} --threads {threads} --paired "
             "--classified-out {params.clf} --output {output.outfile} "
-            "--report {output.report} --gzip-compressed {input} 2>> {log}"
+            "--report {output.report} --gzip-compressed {input} > {log} 2>&1"
 
 
 if config["testing"]:
@@ -94,7 +94,7 @@ rule extract_kraken_reads:
         "extract_kraken_reads.py -s1 {input.clf1} -s2 {input.clf2} -k {input.outfile} "
         "-r {input.report} -t {params.taxid} --include-children "
         "-o {params.int1} -o2 {params.int2} --fastq-output && "
-        "gzip {params.int1} {params.int2} 2>> {log}"
+        "gzip {params.int1} {params.int2} > {log} 2>&1"
 
 
 rule kraken_summary:
