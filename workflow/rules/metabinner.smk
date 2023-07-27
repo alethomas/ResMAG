@@ -3,31 +3,33 @@ from pathlib import Path
 
 rule metabinner_unzip_fastqs:
     input:
-        fq1=get_fastqs,
-        fq2=get_fastqs,
+        get_bacterial_reads,
     output:
-        fq1_unzipped=temp("results/{project}/data/intermediate/{sample}_1.fastq"),
-        fq2_unzipped=temp("results/{project}/data/intermediate/{sample}_2.fastq"),
+        fq1_unzip=temp("results/{project}/temp/{sample}_1.fastq"),
+        fq2_unzip=temp("results/{project}/temp/{sample}_2.fastq"),
     log:
         "logs/{project}/metabinner/{sample}/unzip_fastqs.log",
+    threads: 2
     conda:
         "../envs/metabinner_env.yaml"
     shell:
-        "gunzip -c {input.fq1} > {output.fq1_unzipped};"
-        "gunzip -c {input.fq2} > {output.fq2_unzipped}"
+        "(gunzip -c {input[0]} > {output.fq1_unzip} && "
+        "gunzip -c {input[1]} > {output.fq2_unzip}) 2> {log}"
 
 
-rule metabinner_final_contig:
+rule metabinner_filter_contigs:
     input:
-        contig_file="results/{project}/assembly/{sample}/final.contigs.fa",
+        "results/{project}/assembly/{sample}/final.contigs.fa",
     output:
-        contig_file="results/{project}/assembly/{sample}/final.contigs_{threshold}.fa",
+        "results/{project}/assembly/{sample}/final.contigs_{threshold}.fa",
     log:
-        "logs/{project}/metabinner/{sample}/final_contig_{threshold}.log",
+        "logs/{project}/metabinner/{sample}/filter_contigs_{threshold}.log",
+    threads: 2
     conda:
         "../envs/metabinner_env.yaml"
     shell:
-        "python $CONDA_PREFIX/bin/scripts/Filter_tooshort.py {input.contig_file} {wildcards.threshold}"
+        "python $CONDA_PREFIX/bin/scripts/Filter_tooshort.py "
+        "{input} {wildcards.threshold} > {log} 2>&1"
 
 
 rule metabinner_coverage_profile:
@@ -36,14 +38,14 @@ rule metabinner_coverage_profile:
             "results/{{project}}/assembly/{{sample}}/final.contigs_{threshold}.fa",
             threshold=get_threshold(),
         ),
-        fastq1="results/{project}/data/intermediate/{sample}_1.fastq",
-        fastq2="results/{project}/data/intermediate/{sample}_2.fastq",
+        f1="results/{project}/temp/{sample}_1.fastq",
+        f2="results/{project}/temp/{sample}_2.fastq",
     output:
         outfile="results/{project}/metabinner/{sample}/coverage_profile/coverage_profile.tsv",
     threads: 8
     params:
+        threshold=get_threshold(),
         threads=config["binning"]["threads"],
-        threshold=config["binning"]["min_contig_length"],
         outdir=lambda wildcards, output: Path(output.outfile).parent,
     log:
         "logs/{project}/metabinner/{sample}/coverage_profile.log",
@@ -55,25 +57,28 @@ rule metabinner_coverage_profile:
         "-a {input.contig_file} "
         "-o {params.outdir} "
         "-l {params.threshold} "
-        "{input.fastq1} {input.fastq2} > {log} 2>&1"
+        "{input.f1} {input.f2} > {log} 2>&1"
 
 
 rule metabinner_composition_profile:
     input:
-        contig_file="results/{project}/assembly/{sample}/final.contigs_{threshold}.fa",
+        contigs="results/{project}/assembly/{sample}/final.contigs_{threshold}.fa",
     output:
         outfile="results/{project}/metabinner/{sample}/composition_profile/final.contigs_{threshold}_kmer_{kmer_size}_f{threshold}.csv",
     threads: 8
     params:
-        root=get_root(),
+        #root=get_root(),
+        script_path="{}/workflow/scripts/gen_kmer.py".format(get_root()),
         outdir=lambda wildcards, output: Path(output.outfile).parent,
+        contigs_path=lambda wildcards, input: Path(input.contigs).parent,
+        filename=lambda wildcards, output: Path(output.outfile).name,
     log:
         "logs/{project}/metabinner/{sample}/composition_profile_{kmer_size}_{threshold}.log",
     conda:
         "../envs/metabinner_env.yaml"
     shell:
-        "python {params.root}/workflow/scripts/gen_kmer.py {input.contig_file} {wildcards.threshold} {wildcards.kmer_size} >{log} 2>&1; "
-        "mv results/{wildcards.project}/assembly/{wildcards.sample}/final.contigs_{wildcards.threshold}_kmer_{wildcards.kmer_size}_f{wildcards.threshold}.csv {params.outdir} >{log} 2>&1"
+        "(python {params.script_path} {input} {wildcards.threshold} {wildcards.kmer_size} && "
+        "mv {params.contigs_path}/{params.filename} {params.outdir}) > {log} 2>&1"
 
 
 rule metabinner_run:

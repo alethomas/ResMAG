@@ -45,32 +45,7 @@ rule all:
             sample=get_samples(),
         ),
         expand(
-            "results/{project}/metabat2/{sample}/",
-            project=get_project(),
-            sample=get_samples(),
-        ),
-        expand(
-            "results/{project}/metacoag/{sample}/",
-            project=get_project(),
-            sample=get_samples(),
-        ),
-        expand(
             "results/{project}/assembly/{sample}_summary.csv",
-            project=get_project(),
-            sample=get_samples(),
-        ),
-        expand(
-            "results/{project}/rosella/{sample}/rosella_kmer_table.tsv",
-            project=get_project(),
-            sample=get_samples(),
-        ),
-        expand(
-            "results/{project}/metabinner/{sample}/metabinner_res/metabinner_result.tsv",
-            project=get_project(),
-            sample=get_samples(),
-        ),
-        expand(
-            "results/{project}/vamb/{sample}/vamb_res/model.pt",
             project=get_project(),
             sample=get_samples(),
         ),
@@ -79,3 +54,6 @@ rule all:
             project=get_project(),
             sample=get_samples(),
         ),
+
+
+# "results/{project}/das_tool/{sample}/binner_control.csv",

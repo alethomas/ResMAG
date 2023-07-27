@@ -12,7 +12,8 @@ rule clone_rosella:
     conda:
         "../envs/unix.yaml"
     shell:
-        "git clone --recursive {params.git_url} {params.folder} > {log} 2>&1"
+        "(rm -r -f {params.folder} && "
+        "git clone --recursive {params.git_url} {params.folder}) > {log} 2>&1"
 
 
 rule install_rosella:

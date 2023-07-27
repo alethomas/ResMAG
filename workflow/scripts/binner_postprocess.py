@@ -8,7 +8,6 @@ sys.stderr = open(snakemake.log[0], "w")
 
 
 def fasta_to_tsv(directory, output_tsv):
-    #first = True
     results_df = pd.DataFrame()
     for file_name in os.listdir(directory):
         if (
@@ -24,7 +23,6 @@ def fasta_to_tsv(directory, output_tsv):
 
             if results_df.empty:
                 results_df = pd.DataFrame.from_dict(record_dict, orient="index")
-                #first = False
             else:
                 df = pd.DataFrame.from_dict(record_dict, orient="index")
                 results_df = pd.concat([results_df, df])

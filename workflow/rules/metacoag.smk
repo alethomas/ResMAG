@@ -64,8 +64,9 @@ rule metacoag_run:
         gfa="results/{project}/binning_prep/{sample}/assembly_tree.gfa",
         abd="results/{project}/binning_prep/{sample}/abundance_metacoag.tsv",
     output:
-        outdir=directory("results/{project}/metacoag/{sample}/bins/"),
-        out="results/{project}/metacoag/{sample}/contig_to_bin.tsv",
+        out_tsv="results/{project}/metacoag/{sample}/contig_to_bin.tsv",
+    params:
+        outdir=lambda wildcards, output: Path(output.out_tsv).parent,
     threads: 2
     log:
         "logs/{project}/metacoag/{sample}.log",
@@ -74,4 +75,4 @@ rule metacoag_run:
     shell:
         "metacoag --assembler megahit --graph {input.gfa} "
         "--contigs {input.contigs} --abundance {input.abd} "
-        "--output {output.outdir} > {log} 2>&1"
+        "--output {params.outdir} > {log} 2>&1"

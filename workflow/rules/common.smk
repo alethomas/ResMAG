@@ -77,7 +77,7 @@ def get_taxID(wildcards):
 
 
 def get_rosella_install():
-    folder = get_rosella_folder()
+    folder = config["rosella"]["rosella_dir"]
     script = f"{folder}/install.sh"
     return script
 
@@ -86,13 +86,6 @@ def get_rosella_git():
     return config["rosella"]["gitURL"]
 
 
-def get_rosella_folder():
-    return config["rosella"]["rosella_dir"]
-
-
-def get_root():
-    return os.getcwd()
-
 def get_binners():
     return config["das_tool"]["binner-list"]
 
@@ -100,8 +93,8 @@ def get_binners():
 def get_paths_binner(wildcards):
     file = f"results/{wildcards.project}/das_tool/{wildcards.sample}/binner_control.csv"
     lines = open(file).readlines()
-    paths = str(lines[0].rstrip('\n'))
-    binner= str(lines[1].rstrip('\n'))
+    paths = str(lines[0].rstrip("\n"))
+    binner = str(lines[1].rstrip("\n"))
     return paths, binner
 
 
