@@ -3,7 +3,7 @@ from pathlib import Path
 
 rule metabinner_unzip_fastqs:
     input:
-        get_bacterial_reads,
+        fastqs=get_bacterial_reads,
     output:
         fq1_unzip=temp("results/{project}/temp/{sample}_1.fastq"),
         fq2_unzip=temp("results/{project}/temp/{sample}_2.fastq"),
@@ -13,8 +13,8 @@ rule metabinner_unzip_fastqs:
     conda:
         "../envs/metabinner_env.yaml"
     shell:
-        "(gunzip -c {input[0]} > {output.fq1_unzip} && "
-        "gunzip -c {input[1]} > {output.fq2_unzip}) 2> {log}"
+        "(gunzip -c {input.fastqs[0]} > {output.fq1_unzip} && "
+        "gunzip -c {input.fastqs[1]} > {output.fq2_unzip}) 2> {log}"
 
 
 rule metabinner_filter_contigs:

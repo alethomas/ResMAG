@@ -1,7 +1,28 @@
+RAW_DATA_PATH = get_data_path()
+
+
+# copy files to local
+rule copy_fastp:
+    input:
+        get_fastqs,
+    output:
+        raw1="{data}{{project}}/{{sample}}_R1.fastq.gz".format(data=RAW_DATA_PATH),
+        raw2="{data}{{project}}/{{sample}}_R2.fastq.gz".format(data=RAW_DATA_PATH),
+    params:
+        outdir=lambda wildcards, output: Path(output.raw1).parent,
+    log:
+        "logs/{project}/copy_data/{sample}.log",
+    conda:
+        "../envs/unix.yaml"
+    shell:
+        "(mkdir -p {params.outdir} && "
+        "cp -v -t {params.outdir} {input}) > {log} 2>&1"
+
+
 # fastp in paired-end mode for Illumina paired-end data
 rule fastp:
     input:
-        sample=get_fastqs,
+        sample=get_local_fastqs,
     output:
         trimmed=temp(
             [

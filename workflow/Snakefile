@@ -34,10 +34,11 @@ rule all:
             project=get_project(),
         ),
         expand(
-            "results/{project}/filtered/{kraken_ref}/{sample}_{kraken_ref}_1.fastq.gz",
+            "results/{project}/filtered/{kraken_ref}/{sample}_{kraken_ref}_all_{read}.fastq.gz",
             project=get_project(),
             sample=get_samples(),
             kraken_ref=get_kraken_ref(),
+            read=["1", "2"],
         ),
         expand(
             "results/{project}/filtered/{sample}_summary.csv",
@@ -54,6 +55,4 @@ rule all:
             project=get_project(),
             sample=get_samples(),
         ),
-
-
 # "results/{project}/das_tool/{sample}/binner_control.csv",

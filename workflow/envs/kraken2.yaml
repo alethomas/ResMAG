@@ -6,4 +6,3 @@ channels:
 dependencies:
   - kraken2 = 2.1.2
   - krakentools = 1.2
-  - pandas = 1.5.3

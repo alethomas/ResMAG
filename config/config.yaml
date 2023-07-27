@@ -5,6 +5,11 @@ testing: False
 
 project-name: "strawpigs"
 
+data-handling:
+  # path to store data within the workflow
+  data: "data/"
+  resources: "resources/"
+
 quality-criteria:
   # minimal length of acceptable reads
   min-length-reads: 30
@@ -29,7 +34,6 @@ binning:
 
 rosella:
   gitURL: "https://github.com/rhysnewell/rosella.git"
-  rosella_dir: resources/rosella
 
 das_tool:
   # cores to use for das_tool
