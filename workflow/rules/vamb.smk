@@ -29,12 +29,13 @@ rule vamb_catalogue_index:
 
 rule vamb_map_reads:
     input:
-        reads=get_bacterial_reads,
+        reads=get_bacterial_gz_reads,
         index="results/{project}/vamb/{sample}/catalogue.mmi",
     output:
         bam=temp("results/{project}/vamb/{sample}/{sample}.bam"),
     params:
         threads=config["binning"]["threads"],
+    threads: 8
     log:
         "logs/{project}/vamb/{sample}/map_reads.log",
     conda:
@@ -53,6 +54,7 @@ rule vamb_run:
         outfile="results/{project}/vamb/{sample}/vamb_res/clusters.tsv",
     params:
         outdir=lambda wildcards, output: Path(output.outfile).parent,
+    threads: 8
     log:
         "logs/{project}/vamb/{sample}/vamb_run.log",
     conda:

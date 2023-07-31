@@ -55,4 +55,9 @@ rule all:
             project=get_project(),
             sample=get_samples(),
         ),
+        expand(
+            "results/{project}/vamb/{sample}/vamb_res/clusters.tsv",
+            project=get_project(),
+            sample=get_samples(),
+        ),
 # "results/{project}/das_tool/{sample}/binner_control.csv",

@@ -76,6 +76,13 @@ def get_bacterial_reads(wildcards):
     ]
 
 
+def get_bacterial_gz_reads(wildcards):
+    return [
+        "results/{project}/filtered/bacteria/{sample}_bacteria_all_1.fastq.gz",
+        "results/{project}/filtered/bacteria/{sample}_bacteria_all_2.fastq.gz",
+    ]
+
+
 def get_kraken_db():
     return config["kraken"]["kraken-db"]
 
@@ -122,7 +129,7 @@ def get_paths_binner(wildcards):
 def get_all_contig2bin(wildcards):
     return [
         "results/{project}/metabinner/{sample}/metabinner_res/metabinner_result.tsv",
-        "results/{project}/binning_rev/{sample}/vamb_contig2bin.tsv",
+        #"results/{project}/binning_rev/{sample}/vamb_contig2bin.tsv",
         "results/{project}/binning_rev/{sample}/metabat2_contig2bin.tsv",
         "results/{project}/binning_rev/{sample}/metacoag_contig2bin.tsv",
         "results/{project}/binning_rev/{sample}/rosella_contig2bin.tsv",

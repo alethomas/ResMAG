@@ -14,7 +14,7 @@ rule postprocess_vamb:
 
 rule postprocess_metabat:
     input:
-        "results/strawpigs/metabat2/{sample}/",
+        "results/{project}/metabat2/{sample}/",
     output:
         "results/{project}/binning_rev/{sample}/metabat2_contig2bin.tsv",
     log:

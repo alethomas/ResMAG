@@ -71,6 +71,7 @@ rule rosella_run:
         contigs="results/{project}/assembly/{sample}/final.contigs.fa",
         abd="results/{project}/binning_prep/{sample}/abundance_metabat.tsv",
         log_install="logs/rosella_install.log",
+        checkm_init="logs/checkm_init.log",
     output:
         outfile="results/{project}/rosella/{sample}/rosella_kmer_table.tsv",
         outdir=directory("results/{project}/rosella/{sample}/"),

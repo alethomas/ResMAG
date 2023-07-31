@@ -1,6 +1,6 @@
 rule coverm_metacoag:
     input:
-        bact_reads=get_bacterial_reads,
+        bact_reads=get_bacterial_gz_reads,
         contigs="results/{project}/assembly/{sample}/final.contigs.fa",
     output:
         "results/{project}/binning_prep/{sample}/abundance.tsv",
@@ -67,7 +67,7 @@ rule metacoag_run:
         out_tsv="results/{project}/metacoag/{sample}/contig_to_bin.tsv",
     params:
         outdir=lambda wildcards, output: Path(output.out_tsv).parent,
-    threads: 2
+    threads: 8
     log:
         "logs/{project}/metacoag/{sample}.log",
     conda:

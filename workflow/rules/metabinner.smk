@@ -1,7 +1,7 @@
 from pathlib import Path
 
 
-rule metabinner_unzip_fastqs:
+'''rule metabinner_unzip_fastqs:
     input:
         fastqs=get_bacterial_reads,
     output:
@@ -14,7 +14,7 @@ rule metabinner_unzip_fastqs:
         "../envs/metabinner_env.yaml"
     shell:
         "(gunzip -c {input.fastqs[0]} > {output.fq1_unzip} && "
-        "gunzip -c {input.fastqs[1]} > {output.fq2_unzip}) 2> {log}"
+        "gunzip -c {input.fastqs[1]} > {output.fq2_unzip}) 2> {log}"'''
 
 
 rule metabinner_filter_contigs:
@@ -38,8 +38,7 @@ rule metabinner_coverage_profile:
             "results/{{project}}/assembly/{{sample}}/final.contigs_{threshold}.fa",
             threshold=get_threshold(),
         ),
-        f1="results/{project}/temp/{sample}_1.fastq",
-        f2="results/{project}/temp/{sample}_2.fastq",
+        fastqs=get_bacterial_reads,
     output:
         outfile="results/{project}/metabinner/{sample}/coverage_profile/coverage_profile.tsv",
     threads: 8
@@ -57,7 +56,7 @@ rule metabinner_coverage_profile:
         "-a {input.contig_file} "
         "-o {params.outdir} "
         "-l {params.threshold} "
-        "{input.f1} {input.f2} > {log} 2>&1"
+        "{input.fastqs[0]} {input.fastqs[1]} > {log} 2>&1"
 
 
 rule metabinner_composition_profile:

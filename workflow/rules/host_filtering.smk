@@ -45,7 +45,7 @@ if not config["testing"]:
 
 if config["testing"]:
 
-    rule gzip_kraken_output:
+    rule gunzip_kraken_output:
         input:
             clf_gz_1="results/{project}/filtered/{sample}_clf_1.fastq.gz",
             clf_gz_2="results/{project}/filtered/{sample}_clf_2.fastq.gz",
@@ -73,7 +73,7 @@ rule extract_kraken_reads:
         "logs/{project}/kraken2_extract_reads/{sample}_{kraken_ref}.log",
     params:
         taxid=get_taxID,
-    threads: 2
+    threads: 4
     conda:
         "../envs/kraken2.yaml"
     shell:
@@ -87,17 +87,26 @@ rule add_unclf_reads:
         clf="results/{project}/filtered/{kraken_ref}/{sample}_{kraken_ref}_{read}.fastq",
         unclf="results/{project}/filtered/{sample}_unclf_{read}.fastq",
     output:
-        out="results/{project}/filtered/{kraken_ref}/{sample}_{kraken_ref}_all_{read}.fastq.gz",
+        temp("results/{project}/filtered/{kraken_ref}/{sample}_{kraken_ref}_all_{read}.fastq"),
     log:
         "logs/{project}/kraken2_add_unclf_reads/{sample}_{kraken_ref}_{read}.log",
-    params:
-        taxid=get_taxID,
-        inter=lambda wildcards, output: output.out.split(".gz")[0],
     conda:
         "../envs/unix.yaml"
     shell:
-        "(cat {input.clf} {input.unclf} > {params.inter} "
-        "&& gzip {params.inter}) > {log} 2>&1"
+        "cat {input.clf} {input.unclf} > {output} 2> {log}"
+
+
+rule gzip_kraken_output:
+    input:
+        "results/{project}/filtered/{kraken_ref}/{sample}_{kraken_ref}_all_{read}.fastq",
+    output:
+        "results/{project}/filtered/{kraken_ref}/{sample}_{kraken_ref}_all_{read}.fastq.gz",
+    log:
+        "logs/{project}/kraken2_gzip_fastq/{sample}_{kraken_ref}_{read}.log",
+    conda:
+        "../envs/unix.yaml"
+    shell:
+        "gzip -k {input} > {log} 2>&1"
 
 
 rule kraken_summary:
