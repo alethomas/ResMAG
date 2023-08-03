@@ -3,12 +3,12 @@ from pathlib import Path
 
 rule megahit:
     input:
-        fastqs=get_bacterial_gz_reads,
+        fastqs=get_filtered_gz_reads,
     output:
         contigs="results/{project}/assembly/{sample}/final.contigs.fa",
     params:
         outdir=lambda wildcards, output: Path(output.contigs).parent,
-    threads: 32
+    threads: 64
     log:
         "logs/{project}/megahit/{sample}.log",
     conda:

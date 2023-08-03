@@ -3,7 +3,7 @@ from pathlib import Path
 
 '''rule metabinner_unzip_fastqs:
     input:
-        fastqs=get_bacterial_reads,
+        fastqs=get_filtered_reads,
     output:
         fq1_unzip=temp("results/{project}/temp/{sample}_1.fastq"),
         fq2_unzip=temp("results/{project}/temp/{sample}_2.fastq"),
@@ -38,10 +38,10 @@ rule metabinner_coverage_profile:
             "results/{{project}}/assembly/{{sample}}/final.contigs_{threshold}.fa",
             threshold=get_threshold(),
         ),
-        fastqs=get_bacterial_reads,
+        fastqs=get_filtered_reads,
     output:
         outfile="results/{project}/metabinner/{sample}/coverage_profile/coverage_profile.tsv",
-    threads: 8
+    threads: 32
     params:
         threshold=get_threshold(),
         threads=config["binning"]["threads"],
@@ -64,7 +64,7 @@ rule metabinner_composition_profile:
         contigs="results/{project}/assembly/{sample}/final.contigs_{threshold}.fa",
     output:
         outfile="results/{project}/metabinner/{sample}/composition_profile/final.contigs_{threshold}_kmer_{kmer_size}_f{threshold}.csv",
-    threads: 8
+    threads: 32
     params:
         #root=get_root(),
         script_path="{}/workflow/scripts/gen_kmer.py".format(get_root()),
@@ -94,7 +94,7 @@ rule metabinner_run:
         ),
     output:
         outfile="results/{project}/metabinner/{sample}/metabinner_res/metabinner_result.tsv",
-    threads: 8
+    threads: 64
     params:
         threads=config["binning"]["threads"],
         outdir=lambda wildcards, output: Path(output.outfile).parent.parent,

@@ -29,7 +29,7 @@ rule vamb_catalogue_index:
 
 rule vamb_map_reads:
     input:
-        reads=get_bacterial_gz_reads,
+        reads=get_filtered_gz_reads,
         index="results/{project}/vamb/{sample}/catalogue.mmi",
     output:
         bam=temp("results/{project}/vamb/{sample}/{sample}.bam"),

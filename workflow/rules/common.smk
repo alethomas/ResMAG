@@ -69,17 +69,17 @@ def get_trimmed_fastqs(wildcards):
     ]
 
 
-def get_bacterial_reads(wildcards):
+def get_filtered_reads(wildcards):
     return [
-        "results/{project}/filtered/bacteria/{sample}_bacteria_all_1.fastq.gz",
-        "results/{project}/filtered/bacteria/{sample}_bacteria_all_2.fastq.gz",
+        "results/{project}/filtered/non_human/{sample}_all_1.fastq",
+        "results/{project}/filtered/non_human/{sample}_all_2.fastq",
     ]
 
 
-def get_bacterial_gz_reads(wildcards):
+def get_filtered_gz_reads(wildcards):
     return [
-        "results/{project}/filtered/bacteria/{sample}_bacteria_all_1.fastq.gz",
-        "results/{project}/filtered/bacteria/{sample}_bacteria_all_2.fastq.gz",
+        "results/{project}/filtered/non_human/{sample}_all_1.fastq.gz",
+        "results/{project}/filtered/non_human/{sample}_all_2.fastq.gz",
     ]
 
 
@@ -88,7 +88,7 @@ def get_kraken_db():
 
 
 def get_local_krakenDB():
-    path = "{}krakenDB/".format(get_resource_path())
+    path = "{}kraken2_plusPF/".format(get_resource_path())
     return path
 
 
@@ -127,13 +127,22 @@ def get_paths_binner(wildcards):
 
 
 def get_all_contig2bin(wildcards):
-    return [
+    binners = get_binners()
+    file_list = []
+    for binner in binners:
+        if binner == "metabinner":
+            file_list.append("results/{project}/metabinner/{sample}/metabinner_res/metabinner_result.tsv")
+        else:
+            file_list.append(f"results/{{project}}/binning_rev/{{sample}}/{binner}_contig2bin.tsv")
+    return file_list
+
+'''[
         "results/{project}/metabinner/{sample}/metabinner_res/metabinner_result.tsv",
         #"results/{project}/binning_rev/{sample}/vamb_contig2bin.tsv",
         "results/{project}/binning_rev/{sample}/metabat2_contig2bin.tsv",
         "results/{project}/binning_rev/{sample}/metacoag_contig2bin.tsv",
         "results/{project}/binning_rev/{sample}/rosella_contig2bin.tsv",
-    ]
+    ]'''
 
 
 def get_DAS_Tool_threads():

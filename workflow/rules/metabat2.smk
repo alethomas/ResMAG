@@ -1,6 +1,6 @@
 rule coverm_metabat:
     input:
-        bact_reads=get_bacterial_gz_reads,
+        bact_reads=get_filtered_gz_reads,
         contigs="results/{project}/assembly/{sample}/final.contigs.fa",
     output:
         "results/{project}/binning_prep/{sample}/abundance_metabat.tsv",

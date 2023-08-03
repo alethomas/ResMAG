@@ -3,7 +3,7 @@ pepfile: config/pep/config.yaml
 # If testing set true
 testing: False
 
-project-name: "strawpigs"
+project-name: "metagenomics_07_25_23"
 
 data-handling:
   # path to store data within the workflow
@@ -23,7 +23,7 @@ kraken:
   # species/kingdom to separate with taxIDs in same order
   # ref: ['bacteria','fungi', 'pig', 'human', 'plant']
   ref-analysis: ["bacteria", "fungi"]
-  taxIDs-ref: { bacteria: 2, fungi: 4751, pig: 9823, human: 9606, plant: 33090 }
+  taxIDs-ref: { bacteria: 2, fungi: 4751, human: 9606, archaea: 2157, viruses: 10239 } #pig: 9823 plant: 33090
 
 binning:
   # threshold for the minimum contig length to be accepted by metabinner and vamb
@@ -37,5 +37,6 @@ rosella:
 
 das_tool:
   # cores to use for das_tool
-  threads: 32
-  binner-list: ["metabinner", "metabat2", "metacoag", "rosella", "vamb"]
+  threads: 64
+  # available binners are: metabinner, metabat2, metacoag, rosella, vamb
+  binner-list: ["metabinner", "metabat2", "metacoag", "rosella"]
