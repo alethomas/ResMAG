@@ -79,7 +79,7 @@ rule dastool_run:
         "../envs/das_tool.yaml"
     shell:
         "DAS_Tool -t {threads} "
-        "--debug "
+        "--debug --write_bins "
         "-i {params.path_bin_list[0]} "
         "-l {params.path_bin_list[1]} "
         "-c {input.contigs} "
