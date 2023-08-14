@@ -1,27 +1,39 @@
 from pathlib import Path
 
-
-## copy DB to local
-rule copy_kraken_db:
-    input:
-        get_kraken_db(),
+rule download_kraken_db:
     output:
-        directory("{}krakenDB/".format(get_resource_path())),
-    threads: 2
+        fullpath=get_kraken_db_path(),
+    params:
+        download=config["kraken"]["download-path"],
+        resource_path=config["kraken"]["kraken-db"],
     log:
-        "logs/copy_kraken_db.log",
+        "logs/kraken2_dl/dl-kraken-db.log",
     conda:
         "../envs/unix.yaml"
     shell:
-        "cp -vr {input} {output} > {log} 2>&1"
+        "wget {params.download} -P {params.resource_path} 2> {log}"               
 
+rule unzip_kraken_db:
+    input:
+        fullpath=get_kraken_db_path(),
+    output:
+        hfile=temp("resources/kraken2_db/hash.k2d"),
+    params:
+        download=config["kraken"]["download-path"],
+        resource_path=config["kraken"]["kraken-db"],
+    log:
+        "logs/kraken2_dl/unzip-kraken-db.log",
+    conda:
+        "../envs/unix.yaml"
+    shell:
+        "tar -xf {input.fullpath} -C {params.resource_path} 2> {log}"
 
 if not config["testing"]:
 
     rule kraken2:
         input:
+            hfile="resources/kraken2_db/hash.k2d",
             fastqs=get_trimmed_fastqs,
-            db=get_local_krakenDB(),
         output:
             clf1=temp("results/{project}/filtered/{sample}_clf_1.fastq"),
             clf2=temp("results/{project}/filtered/{sample}_clf_2.fastq"),
@@ -32,13 +44,14 @@ if not config["testing"]:
         params:
             clf=lambda wildcards, output: output.clf1.replace("_clf_1", "_clf#"),
             unclf=lambda wildcards, output: output.unclf1.replace("_unclf_1", "_unclf#"),
+            db=get_kraken_db(),
         threads: 20
         log:
             "logs/{project}/kraken2/{sample}.log",
         conda:
             "../envs/kraken2.yaml"
         shell:
-            "kraken2 --db {input.db} --threads {threads} --paired --classified-out {params.clf} "
+            "kraken2 --db {params.db} --threads {threads} --paired --classified-out {params.clf} "
             "--unclassified-out {params.unclf} --output {output.outfile} "
             "--report {output.report} --gzip-compressed {input.fastqs} > {log} 2>&1"
 

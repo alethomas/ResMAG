@@ -19,7 +19,8 @@ quality-criteria:
 adapter_seqs: "-a CTGTCTCTTATACACATCT -g AGATGTGTATAAGAGACAG"
 
 kraken:
-  kraken-db: "/projects/pig-muenster/resmag/resources/krakenDB/strawpigs/"
+  download-path: "https://genome-idx.s3.amazonaws.com/kraken/k2_pluspf_20230605.tar.gz"
+  kraken-db: "resources/kraken2_db/"
   # species/kingdom to separate with taxIDs in same order
   # ref: ['bacteria','fungi', 'pig', 'human', 'plant']
   ref-analysis: ["bacteria", "fungi"]

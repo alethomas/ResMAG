@@ -95,6 +95,10 @@ def get_local_krakenDB():
 def get_kraken_ref():
     return config["kraken"]["ref-analysis"]
 
+def get_kraken_db_path():
+    download = config["kraken"]["download-path"]
+    db_path = config["kraken"]["kraken-db"]
+    return db_path + download.split("/")[-1]
 
 def get_taxID_dict():
     return config["kraken"]["taxIDs-ref"]
