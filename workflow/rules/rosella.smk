@@ -75,7 +75,7 @@ rule rosella_run:
     output:
         outfile="results/{project}/rosella/{sample}/rosella_kmer_table.tsv",
         outdir=directory("results/{project}/rosella/{sample}/"),
-    threads: 16
+    threads: 32
     log:
         "logs/{project}/rosella/{sample}/rosella_run.log",
     conda:
