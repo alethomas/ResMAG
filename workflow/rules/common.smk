@@ -131,18 +131,25 @@ def get_all_contig2bin(wildcards):
     file_list = []
     for binner in binners:
         if binner == "metabinner":
-            file_list.append("results/{project}/metabinner/{sample}/metabinner_res/metabinner_result.tsv")
+            file_list.append(
+                "results/{project}/metabinner/{sample}/metabinner_res/metabinner_result.tsv"
+            )
         else:
-            file_list.append(f"results/{{project}}/binning_rev/{{sample}}/{binner}_contig2bin.tsv")
+            file_list.append(
+                f"results/{{project}}/binning_rev/{{sample}}/{binner}_contig2bin.tsv"
+            )
     return file_list
 
-'''[
+
+"""
+[
         "results/{project}/metabinner/{sample}/metabinner_res/metabinner_result.tsv",
         #"results/{project}/binning_rev/{sample}/vamb_contig2bin.tsv",
         "results/{project}/binning_rev/{sample}/metabat2_contig2bin.tsv",
         "results/{project}/binning_rev/{sample}/metacoag_contig2bin.tsv",
         "results/{project}/binning_rev/{sample}/rosella_contig2bin.tsv",
-    ]'''
+    ]
+"""
 
 
 def get_DAS_Tool_threads():
