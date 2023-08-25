@@ -75,7 +75,7 @@ rule extract_kraken_reads:
         "../envs/kraken2.yaml"
     shell:
         "extract_kraken_reads.py -s1 {input.clf1} -s2 {input.clf2} -k {input.outfile} "
-        "-r {input.report} -t {params.human_tax}  --exclude " 
+        "-r {input.report} -t {params.human_tax}  --exclude "
         "-o {output.out1} -o2 {output.out2} --fastq-output > {log} 2>&1"
         #--include-children
 
