@@ -1,6 +1,6 @@
 rule coverm_metabat:
     input:
-        bact_reads=get_bacterial_reads,
+        bact_reads=get_filtered_gz_reads,
         contigs="results/{project}/assembly/{sample}/final.contigs.fa",
     output:
         "results/{project}/binning_prep/{sample}/abundance_metabat.tsv",
@@ -21,7 +21,7 @@ rule metabat2:
         abd="results/{project}/binning_prep/{sample}/abundance_metabat.tsv",
     output:
         directory("results/{project}/metabat2/{sample}/"),
-    threads: 8
+    threads: 32
     params:
         prefix="bin",
     log:

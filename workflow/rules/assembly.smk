@@ -3,12 +3,12 @@ from pathlib import Path
 
 rule megahit:
     input:
-        fastqs=get_bacterial_reads,
+        fastqs=get_filtered_gz_reads,
     output:
         contigs="results/{project}/assembly/{sample}/final.contigs.fa",
     params:
         outdir=lambda wildcards, output: Path(output.contigs).parent,
-    threads: 8
+    threads: 64
     log:
         "logs/{project}/megahit/{sample}.log",
     conda:
@@ -25,6 +25,6 @@ rule assembly_summary:
     log:
         "logs/{project}/assembly_summary/{sample}.log",
     conda:
-        "../envs/kraken2.yaml"
+        "../envs/python.yaml"
     script:
         "../scripts/assembly_summary.py"

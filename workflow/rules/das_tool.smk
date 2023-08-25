@@ -14,7 +14,7 @@ rule postprocess_vamb:
 
 rule postprocess_metabat:
     input:
-        "results/strawpigs/metabat2/{sample}/",
+        "results/{project}/metabat2/{sample}/",
     output:
         "results/{project}/binning_rev/{sample}/metabat2_contig2bin.tsv",
     log:
@@ -79,7 +79,7 @@ rule dastool_run:
         "../envs/das_tool.yaml"
     shell:
         "DAS_Tool -t {threads} "
-        "--debug "
+        "--debug --write_bins "
         "-i {params.path_bin_list[0]} "
         "-l {params.path_bin_list[1]} "
         "-c {input.contigs} "
