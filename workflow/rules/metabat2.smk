@@ -21,7 +21,7 @@ rule metabat2:
         abd="results/{project}/binning_prep/{sample}/abundance_metabat.tsv",
     output:
         directory("results/{project}/metabat2/{sample}/"),
-    threads: 8
+    threads: 32
     params:
         prefix="bin",
     log:

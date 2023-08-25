@@ -32,7 +32,7 @@ if not config["testing"]:
         params:
             clf=lambda wildcards, output: output.clf1.replace("_clf_1", "_clf#"),
             unclf=lambda wildcards, output: output.unclf1.replace("_unclf_1", "_unclf#"),
-        threads: 20
+        threads: 32
         log:
             "logs/{project}/kraken2/{sample}.log",
         conda:
