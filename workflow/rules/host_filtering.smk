@@ -63,27 +63,25 @@ rule extract_kraken_reads:
         report="results/{project}/filtered/kraken/{sample}_report.tsv",
         outfile="results/{project}/filtered/kraken/{sample}_outfile.tsv",
     output:
-        out1=temp(
-            "results/{project}/filtered/{sample}_filtered_1.fastq"
-        ),
-        out2=temp(
-            "results/{project}/filtered/{sample}_filtered_2.fastq"
-        ),
+        out1=temp("results/{project}/filtered/{sample}_filtered_1.fastq"),
+        out2=temp("results/{project}/filtered/{sample}_filtered_2.fastq"),
     log:
         "logs/{project}/kraken2_extract_human/{sample}.log",
     params:
         #taxid=get_taxID,
-        human_tax = 9606,
+        human_tax=9606,
     threads: 4
     conda:
         "../envs/kraken2.yaml"
     shell:
         "extract_kraken_reads.py -s1 {input.clf1} -s2 {input.clf2} -k {input.outfile} "
-        "-r {input.report} -t {params.human_tax}  --exclude " #--include-children
+        "-r {input.report} -t {params.human_tax}  --exclude " 
         "-o {output.out1} -o2 {output.out2} --fastq-output > {log} 2>&1"
+        #--include-children
 
 
-'''rule filter_human:
+"""
+rule filter_human:
     input:
         human1="results/{project}/filtered/{sample}_human_1.fastq",
         human2="results/{project}/filtered/{sample}_human_2.fastq",
@@ -103,8 +101,9 @@ rule extract_kraken_reads:
         "../envs/python.yaml"
     script:
         "../scripts/kraken_filter_human.py"
+"""
 
-'''
+
 rule add_unclf_reads:
     input:
         filt="results/{project}/filtered/{sample}_filtered_{read}.fastq",
