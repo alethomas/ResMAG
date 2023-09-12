@@ -1,7 +1,7 @@
 rule coverm_metabat:
     input:
-        bact_reads=get_filtered_gz_reads,
-        contigs="results/{project}/assembly/{sample}/final.contigs.fa",
+        bact_reads=get_filtered_gz_fastqs,
+        contigs="results/{project}/megahit/{sample}/final.contigs.fa",
     output:
         "results/{project}/binning_prep/{sample}/abundance_metabat.tsv",
     threads: 2
@@ -17,7 +17,7 @@ rule coverm_metabat:
 
 rule metabat2:
     input:
-        contigs="results/{project}/assembly/{sample}/final.contigs.fa",
+        contigs="results/{project}/megahit/{sample}/final.contigs.fa",
         abd="results/{project}/binning_prep/{sample}/abundance_metabat.tsv",
     output:
         directory("results/{project}/metabat2/{sample}/"),

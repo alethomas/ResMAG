@@ -3,7 +3,7 @@ from pathlib import Path
 
 '''rule metabinner_unzip_fastqs:
     input:
-        fastqs=get_filtered_reads,
+        fastqs=get_filtered_fastqs,
     output:
         fq1_unzip=temp("results/{project}/temp/{sample}_1.fastq"),
         fq2_unzip=temp("results/{project}/temp/{sample}_2.fastq"),
@@ -19,9 +19,9 @@ from pathlib import Path
 
 rule metabinner_filter_contigs:
     input:
-        "results/{project}/assembly/{sample}/final.contigs.fa",
+        "results/{project}/megahit/{sample}/final.contigs.fa",
     output:
-        "results/{project}/assembly/{sample}/final.contigs_{threshold}.fa",
+        "results/{project}/megahit/{sample}/final.contigs_{threshold}.fa",
     log:
         "logs/{project}/metabinner/{sample}/filter_contigs_{threshold}.log",
     threads: 2
@@ -35,10 +35,10 @@ rule metabinner_filter_contigs:
 rule metabinner_coverage_profile:
     input:
         contig_file=expand(
-            "results/{{project}}/assembly/{{sample}}/final.contigs_{threshold}.fa",
+            "results/{{project}}/megahit/{{sample}}/final.contigs_{threshold}.fa",
             threshold=get_threshold(),
         ),
-        fastqs=get_filtered_reads,
+        fastqs=get_filtered_fastqs,
     output:
         outfile="results/{project}/metabinner/{sample}/coverage_profile/coverage_profile.tsv",
     threads: 32
@@ -61,7 +61,7 @@ rule metabinner_coverage_profile:
 
 rule metabinner_composition_profile:
     input:
-        contigs="results/{project}/assembly/{sample}/final.contigs_{threshold}.fa",
+        contigs="results/{project}/megahit/{sample}/final.contigs_{threshold}.fa",
     output:
         outfile="results/{project}/metabinner/{sample}/composition_profile/final.contigs_{threshold}_kmer_{kmer_size}_f{threshold}.csv",
     threads: 32
@@ -83,7 +83,7 @@ rule metabinner_composition_profile:
 rule metabinner_run:
     input:
         contig_file=expand(
-            "results/{{project}}/assembly/{{sample}}/final.contigs_{threshold}.fa",
+            "results/{{project}}/megahit/{{sample}}/final.contigs_{threshold}.fa",
             threshold=get_threshold(),
         ),
         coverage_profile="results/{project}/metabinner/{sample}/coverage_profile/coverage_profile.tsv",

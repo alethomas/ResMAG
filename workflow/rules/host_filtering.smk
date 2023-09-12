@@ -28,7 +28,7 @@ if not config["testing"]:
             unclf1=temp("results/{project}/filtered/{sample}_unclf_1.fastq"),
             unclf2=temp("results/{project}/filtered/{sample}_unclf_2.fastq"),
             report="results/{project}/filtered/kraken/{sample}_report.tsv",
-            outfile="results/{project}/filtered/kraken/{sample}_outfile.tsv",
+            outfile=temp("results/{project}/filtered/kraken/{sample}_outfile.tsv"),
         params:
             clf=lambda wildcards, output: output.clf1.replace("_clf_1", "_clf#"),
             unclf=lambda wildcards, output: output.unclf1.replace("_unclf_1", "_unclf#"),

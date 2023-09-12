@@ -1,6 +1,6 @@
 rule vamb_contig_catalogue:
     input:
-        contigs="results/{project}/assembly/{sample}/final.contigs.fa",
+        contigs="results/{project}/megahit/{sample}/final.contigs.fa",
     output:
         catalogue="results/{project}/vamb/{sample}/catalogue.fna.gz",
     params:
@@ -29,7 +29,7 @@ rule vamb_catalogue_index:
 
 rule vamb_map_reads:
     input:
-        reads=get_filtered_gz_reads,
+        reads=get_filtered_gz_fastqs,
         index="results/{project}/vamb/{sample}/catalogue.mmi",
     output:
         bam=temp("results/{project}/vamb/{sample}/{sample}.bam"),

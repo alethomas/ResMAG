@@ -8,8 +8,31 @@ def get_root():
     return os.getcwd()
 
 
+def get_data_path():
+    return config["data-handling"]["data"]
+
+
+def get_resource_path():
+    return config["data-handling"]["resources"]
+
+
+def get_project():
+    return config["project-name"]
+
+
 def get_samples():
     return list(pep.sample_table["sample_name"].values)
+
+
+def expand_samples_for_project(paths, **kwargs):
+    def inner(wildcards):
+        return expand(
+            paths,
+            sample=get_samples(),
+            **kwargs,
+        )
+
+    return inner
 
 
 def get_fastqs(wildcards):
@@ -27,59 +50,14 @@ def get_local_fastqs(wildcards):
     )
 
 
-def get_data_path():
-    return config["data-handling"]["data"]
-
-
-def get_resource_path():
-    return config["data-handling"]["resources"]
-
-
-def get_project():
-    return config["project-name"]
-
-
 def get_adapters(wildcards):
     return config["adapter_seqs"]
-
-
-def get_threshold():
-    return config["binning"]["min_contig_length"]
-
-
-def get_kmersize():
-    return config["binning"]["kmer_length"]
-
-
-def expand_samples_for_project(paths, **kwargs):
-    def inner(wildcards):
-        return expand(
-            paths,
-            sample=get_samples(),
-            **kwargs,
-        )
-
-    return inner
 
 
 def get_trimmed_fastqs(wildcards):
     return [
         "results/{project}/trimmed/fastp/{sample}.1.fastq.gz",
         "results/{project}/trimmed/fastp/{sample}.2.fastq.gz",
-    ]
-
-
-def get_filtered_reads(wildcards):
-    return [
-        "results/{project}/filtered/non_human/{sample}_all_1.fastq",
-        "results/{project}/filtered/non_human/{sample}_all_2.fastq",
-    ]
-
-
-def get_filtered_gz_reads(wildcards):
-    return [
-        "results/{project}/filtered/non_human/{sample}_all_1.fastq.gz",
-        "results/{project}/filtered/non_human/{sample}_all_2.fastq.gz",
     ]
 
 
@@ -104,6 +82,33 @@ def get_taxID(wildcards):
     return config["kraken"]["taxIDs-ref"][wildcards.kraken_ref]
 
 
+def get_filtered_fastqs(wildcards):
+    return [
+        "results/{project}/filtered/non_human/{sample}_all_1.fastq",
+        "results/{project}/filtered/non_human/{sample}_all_2.fastq",
+    ]
+
+
+def get_filtered_gz_fastqs(wildcards):
+    return [
+        "results/{project}/filtered/non_human/{sample}_all_1.fastq.gz",
+        "results/{project}/filtered/non_human/{sample}_all_2.fastq.gz",
+    ]
+
+
+## binning parameters
+def get_threshold():
+    return config["binning"]["min_contig_length"]
+
+
+def get_kmersize():
+    return config["binning"]["kmer_length"]
+
+
+def get_binners():
+    return config["das_tool"]["binner-list"]
+
+
 def get_rosella_install():
     folder = get_resource_path()
     script = f"{folder}rosella/install.sh"
@@ -114,42 +119,23 @@ def get_rosella_git():
     return config["rosella"]["gitURL"]
 
 
-def get_binners():
-    return config["das_tool"]["binner-list"]
+def get_all_contig2bin_files(wildcards):
+    binners = get_binners()
+    file_list = [
+        f"results/{{project}}/contig2bins/{{sample}}/{binner}_contig2bin.tsv"
+        for binner in binners
+    ]
+    return file_list
 
 
+## reads in binner control file and returns list with paths to contig2bin files
+## and a list with name of the binners that produced results
 def get_paths_binner(wildcards):
     file = f"results/{wildcards.project}/das_tool/{wildcards.sample}/binner_control.csv"
     lines = open(file).readlines()
     paths = str(lines[0].rstrip("\n"))
     binner = str(lines[1].rstrip("\n"))
     return paths, binner
-
-
-def get_all_contig2bin(wildcards):
-    binners = get_binners()
-    file_list = []
-    for binner in binners:
-        if binner == "metabinner":
-            file_list.append(
-                "results/{project}/metabinner/{sample}/metabinner_res/metabinner_result.tsv"
-            )
-        else:
-            file_list.append(
-                f"results/{{project}}/binning_rev/{{sample}}/{binner}_contig2bin.tsv"
-            )
-    return file_list
-
-
-"""
-[
-        "results/{project}/metabinner/{sample}/metabinner_res/metabinner_result.tsv",
-        #"results/{project}/binning_rev/{sample}/vamb_contig2bin.tsv",
-        "results/{project}/binning_rev/{sample}/metabat2_contig2bin.tsv",
-        "results/{project}/binning_rev/{sample}/metacoag_contig2bin.tsv",
-        "results/{project}/binning_rev/{sample}/rosella_contig2bin.tsv",
-    ]
-"""
 
 
 def get_DAS_Tool_threads():

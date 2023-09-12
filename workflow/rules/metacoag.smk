@@ -1,7 +1,7 @@
 rule coverm_metacoag:
     input:
-        bact_reads=get_filtered_gz_reads,
-        contigs="results/{project}/assembly/{sample}/final.contigs.fa",
+        bact_reads=get_filtered_gz_fastqs,
+        contigs="results/{project}/megahit/{sample}/final.contigs.fa",
     output:
         "results/{project}/binning_prep/{sample}/abundance.tsv",
     threads: 2
@@ -30,7 +30,7 @@ rule edit_abundance_file:
 
 rule fastg_assembly_tree:
     input:
-        "results/{project}/assembly/{sample}/final.contigs.fa",
+        "results/{project}/megahit/{sample}/final.contigs.fa",
     output:
         "results/{project}/binning_prep/{sample}/assembly_tree.fastg",
     threads: 2
@@ -60,7 +60,7 @@ rule fastg2gfa:
 
 rule metacoag_run:
     input:
-        contigs="results/{project}/assembly/{sample}/final.contigs.fa",
+        contigs="results/{project}/megahit/{sample}/final.contigs.fa",
         gfa="results/{project}/binning_prep/{sample}/assembly_tree.gfa",
         abd="results/{project}/binning_prep/{sample}/abundance_metacoag.tsv",
     output:
