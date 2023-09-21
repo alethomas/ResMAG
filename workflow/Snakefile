@@ -30,16 +30,7 @@ include: "rules/das_tool.smk"
 rule all:
     input:
         expand(
-            "results/{project}/qc/multiqc.html",
-            project=get_project(),
-        ),
-        expand(
-            "results/{project}/filtered/{sample}_summary.csv",
-            project=get_project(),
-            sample=get_samples(),
-        ),
-        expand(
-            "results/{project}/assembly/{sample}_summary.csv",
+            "results/{project}/assembly/{sample}_final.contigs.fa.gz",
             project=get_project(),
             sample=get_samples(),
         ),
@@ -48,17 +39,27 @@ rule all:
             project=get_project(),
             sample=get_samples(),
         ),
-
-
-"""expand(
-            "results/{project}/vamb/{sample}/vamb_res/clusters.tsv",
+        expand(
+            "results/{project}/qc/multiqc.html",
+            project=get_project(),
+        ),
+        expand(
+            "results/{project}/report/assembly_summary.html",
+            project=get_project(),
+        ),
+        expand(
+            "results/{project}/report/kraken2_summary.html",
+            project=get_project(),
+        ),
+        expand(
+            "results/{project}/report/bracken_plot.png",
+            project=get_project(),
+        ),
+        expand(
+            "results/{project}/qc/checkm2/{sample}/quality_report.tsv",
             project=get_project(),
             sample=get_samples(),
-        ),expand(
-            "results/{project}/filtered/{kraken_ref}/{sample}_{kraken_ref}_all_{read}.fastq.gz",
-            project=get_project(),
-            sample=get_samples(),
-            kraken_ref=get_kraken_ref(),
-            read=["1", "2"],
-        ),"""
-# "results/{project}/das_tool/{sample}/binner_control.csv",
+        ),
+'''  
+                    
+'''

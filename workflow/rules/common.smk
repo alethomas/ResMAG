@@ -61,48 +61,45 @@ def get_trimmed_fastqs(wildcards):
     ]
 
 
-def get_kraken_db():
-    return config["kraken"]["kraken-db"]
+def get_kraken_db_file():
+    file = "{}{}/hash.k2d".format(get_resource_path(), config["kraken"]["db-name"])
+    return file
 
 
-def get_local_krakenDB():
-    path = "{}kraken2_plusPF/".format(get_resource_path())
-    return path
+def get_checkm2_db():
+    file="{}{}".format(get_resource_path(), config["checkm2"])
 
-
-def get_kraken_ref():
-    return config["kraken"]["ref-analysis"]
-
-def get_kraken_db_path():
-    download = config["kraken"]["download-path"]
-    db_path = config["kraken"]["kraken-db"]
-    return db_path + download.split("/")[-1]
 
 def get_taxID_dict():
     return config["kraken"]["taxIDs-ref"]
 
 
-def get_taxID(wildcards):
-    return config["kraken"]["taxIDs-ref"][wildcards.kraken_ref]
-
-
 def get_filtered_fastqs(wildcards):
     return [
-        "results/{project}/filtered/non_human/{sample}_all_1.fastq",
-        "results/{project}/filtered/non_human/{sample}_all_2.fastq",
+        "results/{project}/filtered/fastqs/{sample}_1.fastq",
+        "results/{project}/filtered/fastqs/{sample}_2.fastq",
     ]
 
 
 def get_filtered_gz_fastqs(wildcards):
     return [
-        "results/{project}/filtered/non_human/{sample}_all_1.fastq.gz",
-        "results/{project}/filtered/non_human/{sample}_all_2.fastq.gz",
+        "results/{project}/filtered/fastqs/{sample}_1.fastq.gz",
+        "results/{project}/filtered/fastqs/{sample}_2.fastq.gz",
     ]
 
 
+def get_assembly(wildcards):
+    return "results/{project}/megahit/{sample}/final.contigs.fa"
+
+
 ## binning parameters
-def get_threshold():
+def get_contig_length_threshold():
     return config["binning"]["min_contig_length"]
+
+
+def get_contig_length_filter():
+    filt=int(config["binning"]["min_contig_length"]) -1
+    return filt
 
 
 def get_kmersize():

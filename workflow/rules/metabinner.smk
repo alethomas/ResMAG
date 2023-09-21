@@ -1,78 +1,42 @@
 from pathlib import Path
 
 
-'''rule metabinner_unzip_fastqs:
-    input:
-        fastqs=get_filtered_fastqs,
-    output:
-        fq1_unzip=temp("results/{project}/temp/{sample}_1.fastq"),
-        fq2_unzip=temp("results/{project}/temp/{sample}_2.fastq"),
-    log:
-        "logs/{project}/metabinner/{sample}/unzip_fastqs.log",
-    threads: 2
-    conda:
-        "../envs/metabinner_env.yaml"
-    shell:
-        "(gunzip -c {input.fastqs[0]} > {output.fq1_unzip} && "
-        "gunzip -c {input.fastqs[1]} > {output.fq2_unzip}) 2> {log}"'''
-
-
-rule metabinner_filter_contigs:
-    input:
-        "results/{project}/megahit/{sample}/final.contigs.fa",
-    output:
-        "results/{project}/megahit/{sample}/final.contigs_{threshold}.fa",
-    log:
-        "logs/{project}/metabinner/{sample}/filter_contigs_{threshold}.log",
-    threads: 2
-    conda:
-        "../envs/metabinner_env.yaml"
-    shell:
-        "python $CONDA_PREFIX/bin/scripts/Filter_tooshort.py "
-        "{input} {wildcards.threshold} > {log} 2>&1"
-
-
 rule metabinner_coverage_profile:
     input:
-        contig_file=expand(
-            "results/{{project}}/megahit/{{sample}}/final.contigs_{threshold}.fa",
-            threshold=get_threshold(),
-        ),
+        contig_file=get_assembly,
         fastqs=get_filtered_fastqs,
     output:
-        outfile="results/{project}/metabinner/{sample}/coverage_profile/coverage_profile.tsv",
+        outfile="results/{project}/metabinner/{sample}/coverage_profile_{threshold}/coverage_profile.tsv",
     threads: 32
     params:
-        threshold=get_threshold(),
         threads=config["binning"]["threads"],
         outdir=lambda wildcards, output: Path(output.outfile).parent,
     log:
-        "logs/{project}/metabinner/{sample}/coverage_profile.log",
+        "logs/{project}/metabinner/{sample}/coverage_profile_{threshold}.log",
     conda:
         "../envs/metabinner_env.yaml"
     shell:
-        "bash $CONDA_PREFIX/bin/scripts/gen_coverage_file.sh "
+        "(bash $CONDA_PREFIX/bin/scripts/gen_coverage_file.sh "
         "-t {params.threads} "
         "-a {input.contig_file} "
         "-o {params.outdir} "
-        "-l {params.threshold} "
-        "{input.fastqs[0]} {input.fastqs[1]} > {log} 2>&1"
+        "-l {wildcards.threshold} "
+        "{input.fastqs[0]} {input.fastqs[1]}) > {log} 2>&1"
 
 
 rule metabinner_composition_profile:
     input:
-        contigs="results/{project}/megahit/{sample}/final.contigs_{threshold}.fa",
+        contigs=get_assembly,
     output:
-        outfile="results/{project}/metabinner/{sample}/composition_profile/final.contigs_{threshold}_kmer_{kmer_size}_f{threshold}.csv",
+        outfile="results/{project}/metabinner/{sample}/composition_profile/final.contigs_kmer_{kmer_size}_f{threshold}.csv",
     threads: 32
     params:
-        #root=get_root(),
-        script_path="{}/workflow/scripts/gen_kmer.py".format(get_root()),
+        script_path="{}/workflow/scripts/gen_kmer.py".format(get_root()),  ## does it work when we change this to ../scripts?, AD what is changed?
         outdir=lambda wildcards, output: Path(output.outfile).parent,
         contigs_path=lambda wildcards, input: Path(input.contigs).parent,
         filename=lambda wildcards, output: Path(output.outfile).name,
     log:
-        "logs/{project}/metabinner/{sample}/composition_profile_{kmer_size}_{threshold}.log",
+        "logs/{project}/metabinner/{sample}/composition_profile_kmer_{kmer_size}_f{threshold}.log",
     conda:
         "../envs/metabinner_env.yaml"
     shell:
@@ -82,15 +46,15 @@ rule metabinner_composition_profile:
 
 rule metabinner_run:
     input:
-        contig_file=expand(
-            "results/{{project}}/megahit/{{sample}}/final.contigs_{threshold}.fa",
-            threshold=get_threshold(),
+        contig_file=get_assembly,
+        coverage_profile=expand(
+            "results/{{project}}/metabinner/{{sample}}/coverage_profile_{threshold}/coverage_profile.tsv",
+            threshold=get_contig_length_filter(),
         ),
-        coverage_profile="results/{project}/metabinner/{sample}/coverage_profile/coverage_profile.tsv",
         kmer_profile=expand(
-            "results/{{project}}/metabinner/{{sample}}/composition_profile/final.contigs_{threshold}_kmer_{kmer_size}_f{threshold}.csv",
+            "results/{{project}}/metabinner/{{sample}}/composition_profile/final.contigs_kmer_{kmer_size}_f{threshold}.csv",
             kmer_size=get_kmersize(),
-            threshold=get_threshold(),
+            threshold=get_contig_length_filter(),
         ),
     output:
         outfile="results/{project}/metabinner/{sample}/metabinner_res/metabinner_result.tsv",

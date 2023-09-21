@@ -1,6 +1,6 @@
 rule vamb_contig_catalogue:
     input:
-        contigs="results/{project}/megahit/{sample}/final.contigs.fa",
+        contigs=get_assembly,
     output:
         catalogue="results/{project}/vamb/{sample}/catalogue.fna.gz",
     params:

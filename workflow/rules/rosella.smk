@@ -68,7 +68,7 @@ rule checkm_init:
 
 rule rosella_run:
     input:
-        contigs="results/{project}/megahit/{sample}/final.contigs.fa",
+        contigs=get_assembly,
         abd="results/{project}/binning_prep/{sample}/abundance_metabat.tsv",
         log_install="logs/rosella_install.log",
         checkm_init="logs/checkm_init.log",

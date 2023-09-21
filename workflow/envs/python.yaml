@@ -5,3 +5,6 @@ channels:
 dependencies:
   - pandas = 2.0.3
   - biopython = 1.81
+  - numpy = 1.25.0
+  - matplotlib = 3.7.2
+  - distinctipy = 1.2.3

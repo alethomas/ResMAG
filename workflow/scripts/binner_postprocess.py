@@ -18,8 +18,9 @@ def fasta_to_tsv(directory, output_tsv):
             record_dict = SeqIO.to_dict(
                 SeqIO.parse(f"{directory}/{file_name}", "fasta")
             )
+            bin_name = "{0}_bin_{1}".format(snakemake.params.binner,file_name.split(".")[-2])
             for record in record_dict:
-                record_dict[record] = file_name
+                record_dict[record] = bin_name
 
             if results_df.empty:
                 results_df = pd.DataFrame.from_dict(record_dict, orient="index")

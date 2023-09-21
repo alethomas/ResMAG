@@ -3,7 +3,7 @@ pepfile: config/pep/config.yaml
 # If testing set true
 testing: False
 
-project-name: "metagenomics_07_25_23"
+project-name: "strawpigs"
 
 data-handling:
   # path to store data within the workflow
@@ -20,11 +20,11 @@ adapter_seqs: "-a CTGTCTCTTATACACATCT -g AGATGTGTATAAGAGACAG"
 
 kraken:
   download-path: "https://genome-idx.s3.amazonaws.com/kraken/k2_pluspf_20230605.tar.gz"
-  kraken-db: "resources/kraken2_db/"
+  db-name: "k2_pluspf"
   # species/kingdom to separate with taxIDs in same order
-  # ref: ['bacteria','fungi', 'pig', 'human', 'plant']
-  ref-analysis: ["bacteria", "fungi"]
   taxIDs-ref: { bacteria: 2, fungi: 4751, human: 9606, archaea: 2157, viruses: 10239 } #pig: 9823 plant: 33090
+
+checkm2: "CheckM2_database/uniref100.KO.1.dmnd"
 
 binning:
   # threshold for the minimum contig length to be accepted by metabinner and vamb

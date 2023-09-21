@@ -2,12 +2,13 @@ RAW_DATA_PATH = get_data_path()
 
 
 # copy files to local
-rule copy_fastp:
+### TODO: rename rule to fastq (local copy..), change to f"{RAW_DATA_PATh}{{project}}/{{sample}}_R1.fastq.gz"
+rule copy_fastq:
     input:
         get_fastqs,
     output:
-        raw1="{data}{{project}}/{{sample}}_R1.fastq.gz".format(data=RAW_DATA_PATH),
-        raw2="{data}{{project}}/{{sample}}_R2.fastq.gz".format(data=RAW_DATA_PATH),
+        raw1=f"{RAW_DATA_PATH}{{project}}/{{sample}}_R1.fastq.gz",
+        raw2=f"{RAW_DATA_PATH}{{project}}/{{sample}}_R2.fastq.gz",
     params:
         outdir=lambda wildcards, output: Path(output.raw1).parent,
     log:
@@ -42,4 +43,4 @@ rule fastp:
         "logs/{project}/fastp/{sample}.log",
     threads: 2
     wrapper:
-        "v1.23.5/bio/fastp"
+        "v2.6.0/bio/fastp"
