@@ -68,3 +68,7 @@ rule checkm2_run:
         "--input {input.bins}/ --output-directory {params.outdir}/ "
         "> {log} 2>&1"
         # --remove_intermediates-x fa.gz
+
+
+rule filter_MAGs:
+    

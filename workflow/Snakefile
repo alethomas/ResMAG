@@ -25,6 +25,7 @@ include: "rules/metacoag.smk"
 include: "rules/rosella.smk"
 include: "rules/vamb.smk"
 include: "rules/das_tool.smk"
+include: "rules/classify.smk"
 
 
 rule all:
@@ -60,6 +61,18 @@ rule all:
             project=get_project(),
             sample=get_samples(),
         ),
+        expand(
+            "results/{project}/report/krona/{sample}.krona.html",
+            project=get_project(),
+            sample=get_samples(),
+        ),
+        expand(
+            "results/{project}/classification/{sample}/{sample}.bac120.summary.tsv",
+            project=get_project(),
+            sample=get_samples(),
+        ),
+        
+        
 '''  
                     
 '''

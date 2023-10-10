@@ -173,7 +173,7 @@ rule bracken_analysis:
     conda:
         "../envs/bracken.yaml"
     shell:
-        "bracken -d {params.db} -i {input.kreport} -l G -o {output.bfile} -w {output.breport} > {log} 2>&1"
+        "bracken -d {params.db} -i {input.kreport} -l F -o {output.bfile} -w {output.breport} > {log} 2>&1"
 
 
 rule merge_bracken:
@@ -212,3 +212,33 @@ rule create_bracken_plot:
         "../envs/python.yaml"
     script:
         "../scripts/brackenplot.py"
+
+
+rule kraken2krona:
+    input:
+        "results/{project}/filtered/kraken_postfilt/{sample}_report.tsv",
+    output:
+        temp("results/{project}/filtered/krona/{sample}.krona"),
+    threads: 4
+    log:
+        "logs/{project}/kraken2/postfilt_krona/{sample}.log",
+    conda:
+        "../envs/kraken2.yaml"
+    shell:
+        "(python $CONDA_PREFIX/bin/kreport2krona.py -r {input} "
+        "-o {output}) > {log} 2>&1"
+
+
+rule krona_html:
+    input:
+        "results/{project}/filtered/krona/{sample}.krona",
+    output:
+        "results/{project}/report/krona/{sample}.krona.html",
+    threads: 1
+    log:
+        "logs/{project}/krona/{sample}.log",
+    conda:
+        "../envs/krona.yaml"
+    shell:
+        "(ktImportText -o {output} {input}) > {log} 2>&1"
+#  results/autobrewer/filtered/krona/ABS_24_07.krona.html results/autobrewer/filtered/krona/ABS_24_07.krona

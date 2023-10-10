@@ -87,7 +87,7 @@ def plot_bracken(bracken_df, png_file):
     legend = plt.legend(
         handles=handles,
         labels=new_labels,
-        title="Species",
+        title="family",
         bbox_to_anchor=(1.35, 0.5),
         loc="center right",
         fontsize=(labelsize - 4),
