@@ -22,9 +22,19 @@ kraken:
   download-path: "https://genome-idx.s3.amazonaws.com/kraken/k2_pluspf_20230605.tar.gz"
   db-name: "k2_pluspf"
   # species/kingdom to separate with taxIDs in same order
-  taxIDs-ref: { bacteria: 2, fungi: 4751, human: 9606, archaea: 2157, viruses: 10239 } #pig: 9823 plant: 33090
+  taxIDs-ref: {
+      bacteria: 2,
+      fungi: 4751,
+      human: 9606,
+      archaea: 2157,
+      viruses: 10239,
+    } #pig: 9823 plant: 33090
 
 checkm2: "CheckM2_database/uniref100.KO.1.dmnd"
+
+kaiju:
+  download: "https://kaiju-idx.s3.eu-central-1.amazonaws.com/2023/kaiju_db_refseq_nr_2023-06-17.tgz"
+  fmi-file: "kaiju_db/kaiju_db_refseq_nr.fmi"
 
 binning:
   # threshold for the minimum contig length to be accepted by metabinner and vamb
@@ -41,3 +51,7 @@ das_tool:
   threads: 64
   # available binners are: metabinner, metabat2, metacoag, rosella, vamb
   binner-list: ["metabinner", "metabat2", "metacoag", "rosella"]
+
+MAG-criteria:
+  min-completeness: 85.00
+  max-contamination: 5.00

@@ -233,12 +233,14 @@ rule krona_html:
     input:
         "results/{project}/filtered/krona/{sample}.krona",
     output:
-        "results/{project}/report/krona/{sample}.krona.html",
+        "results/{project}/report/{sample}/kraken.krona.html",
     threads: 1
     log:
         "logs/{project}/krona/{sample}.log",
     conda:
-        "../envs/krona.yaml"
+        "../envs/kaiju.yaml"
     shell:
         "(ktImportText -o {output} {input}) > {log} 2>&1"
+
+
 #  results/autobrewer/filtered/krona/ABS_24_07.krona.html results/autobrewer/filtered/krona/ABS_24_07.krona

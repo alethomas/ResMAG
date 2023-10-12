@@ -67,7 +67,8 @@ def get_kraken_db_file():
 
 
 def get_checkm2_db():
-    file="{}{}".format(get_resource_path(), config["checkm2"])
+    file = "{}{}".format(get_resource_path(), config["checkm2"])
+    return file
 
 
 def get_taxID_dict():
@@ -92,13 +93,22 @@ def get_assembly(wildcards):
     return "results/{project}/megahit/{sample}/final.contigs.fa"
 
 
+def get_kaiju_files():
+    file = "{}{}".format(get_resource_path(), config["kaiju"]["fmi-file"])
+    path = Path(file).parent
+    fmi = Path(file).name
+    names = ["nodes.dmp", fmi, "names.dmp"]
+    files = [f"{path}/{name}" for name in names]
+    return files
+
+
 ## binning parameters
 def get_contig_length_threshold():
     return config["binning"]["min_contig_length"]
 
 
 def get_contig_length_filter():
-    filt=int(config["binning"]["min_contig_length"]) -1
+    filt = int(config["binning"]["min_contig_length"]) - 1
     return filt
 
 

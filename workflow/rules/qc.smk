@@ -39,7 +39,7 @@ rule multiqc:
 ## bin QC
 rule checkm2_DB_download:
     output:
-        dbfile=str(config["checkm2"]),
+        dbfile=get_checkm2_db(),  #"{}/{}".format(config["data-handling"]["resources"], config["checkm2"]),
     params:
         direct=lambda wildcards, output: Path(output.dbfile).parent.parent,
     log:
@@ -53,7 +53,7 @@ rule checkm2_DB_download:
 rule checkm2_run:
     input:
         bins="results/{project}/das_tool/{sample}/{sample}_DASTool_bins/",
-        dbfile=str(config["checkm2"]),
+        dbfile=get_checkm2_db(),  #"{}/{}".format(config["data-handling"]["resources"], config["checkm2"]),
     output:
         stats="results/{project}/qc/checkm2/{sample}/quality_report.tsv",
     params:
@@ -64,11 +64,35 @@ rule checkm2_run:
     conda:
         "../envs/checkm2.yaml"
     shell:
-        "checkm2 predict -x fa --threads {threads} "
+        "checkm2 predict -x fa --threads {threads} --force "
         "--input {input.bins}/ --output-directory {params.outdir}/ "
         "> {log} 2>&1"
         # --remove_intermediates-x fa.gz
 
 
-rule filter_MAGs:
-    
+rule bin_summary:
+    input:
+        tool="results/{project}/das_tool/{sample}/{sample}_DASTool_summary.tsv",
+        checkm="results/{project}/qc/checkm2/{sample}/quality_report.tsv",
+        gtdb="results/{project}/classification/{sample}/{sample}.bac120.summary.tsv",
+    output:
+        csv_mags="results/{project}/report/{sample}/mags_summary.csv",
+        csv_bins="results/{project}/report/{sample}/bin_summary.csv",
+        csv_tax="results/{project}/report/{sample}/bin_taxonomy.csv",
+        csv_checkm="results/{project}/report/{sample}/checkm_summary.csv",
+        csv_dastool="results/{project}/report/{sample}/DASTool_summary.csv",
+        html_mags="results/{project}/report/{sample}/mags_summary.html",
+        html_bins="results/{project}/report/{sample}/bin_summary.html",
+        html_tax="results/{project}/report/{sample}/bin_taxonomy.html",
+        html_checkm="results/{project}/report/{sample}/checkm_summary.html",
+        html_dastool="results/{project}/report/{sample}/DASTool_summary.html",
+    params:
+        max_cont=config["MAG-criteria"]["max-contamination"],  #snakemake.params.contamination
+        min_comp=config["MAG-criteria"]["min-completeness"],
+    log:
+        "logs/{project}/bin_summary/{sample}.log",
+    threads: 4
+    conda:
+        "../envs/python.yaml"
+    script:
+        "../scripts/bin_summary.py"

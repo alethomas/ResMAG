@@ -1,3 +1,52 @@
+rule download_kaiju:
+    output:
+        db_files=get_kaiju_files(),
+    params:
+        download=config["kaiju"]["download"],
+        db_folder=lambda wildcards, output: Path(output.db_files[0]).parent,
+    log:
+        "logs/kaiju_DB_download.log",
+    conda:
+        "../envs/unix.yaml"
+    shell:
+        "(mkdir -p {params.db_folder} && "
+        "wget -c {params.download} -O - | "
+        "tar -zxv -C {params.db_folder}) > {log} 2>&1"
+
+
+rule run_kaiju:
+    input:
+        db_files=get_kaiju_files(),
+        fastqs=get_filtered_gz_fastqs,
+    output:
+        "results/{project}/kaiju/{sample}/kaiju.out",
+    threads: 20
+    log:
+        "logs/{project}/kaiju/{sample}_run.log",
+    conda:
+        "../envs/kaiju.yaml"
+    shell:
+        "kaiju -z {threads} -t {input.db_files[0]} -f {input.db_files[1]} "
+        "-i {input.fastqs[0]} -j {input.fastqs[1]} -o {output} > {log} 2>&1"
+
+
+rule kaiju2krona:
+    input:
+        db_files=get_kaiju_files(),
+        kaiju_report="results/{project}/kaiju/{sample}/kaiju.out",
+    output:
+        krona=temp("results/{project}/kaiju/{sample}/kaiju.out.krona"),
+        html="results/{project}/report/{sample}/kaiju.out.html",
+    log:
+        "logs/{project}/kaiju/{sample}_2krona.log",
+    conda:
+        "../envs/kaiju.yaml"
+    shell:
+        "(kaiju2krona -t {input.db_files[0]} -n {input.db_files[2]} "
+        "-i {input.kaiju_report} -o {output.krona} && "
+        "ktImportText -o {output.html} {output.krona}) > {log} 2>&1"
+
+
 rule download_GTDB:
     output:
         "logs/gtdbtk_download_DB.log",
@@ -7,7 +56,10 @@ rule download_GTDB:
         "../envs/gtdbtk.yaml"
     shell:
         "download-db.sh > {log} 2>&1"
+
+
 ##remove output here, log can be used as input too
+
 
 rule gtdbtk_classify_wf:
     input:

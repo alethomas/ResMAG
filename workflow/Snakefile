@@ -57,12 +57,42 @@ rule all:
             project=get_project(),
         ),
         expand(
+            "results/{project}/report/{sample}/mags_summary.html",
+            project=get_project(),
+            sample=get_samples(),
+        ),
+        expand(
+            "results/{project}/report/{sample}/bin_summary.html",
+            project=get_project(),
+            sample=get_samples(),
+        ),
+        expand(
+            "results/{project}/report/{sample}/bin_taxonomy.html",
+            project=get_project(),
+            sample=get_samples(),
+        ),
+        expand(
+            "results/{project}/report/{sample}/checkm_summary.html",
+            project=get_project(),
+            sample=get_samples(),
+        ),
+        expand(
+            "results/{project}/report/{sample}/DASTool_summary.html",
+            project=get_project(),
+            sample=get_samples(),
+        ),
+        expand(
             "results/{project}/qc/checkm2/{sample}/quality_report.tsv",
             project=get_project(),
             sample=get_samples(),
         ),
         expand(
-            "results/{project}/report/krona/{sample}.krona.html",
+            "results/{project}/report/{sample}/kraken.krona.html",
+            project=get_project(),
+            sample=get_samples(),
+        ),
+        expand(
+            "results/{project}/report/{sample}/kaiju.out.html",
             project=get_project(),
             sample=get_samples(),
         ),
@@ -71,8 +101,8 @@ rule all:
             project=get_project(),
             sample=get_samples(),
         ),
-        
-        
-'''  
+
+
+"""  
                     
-'''
+"""

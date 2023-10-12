@@ -1,6 +1,6 @@
 from pathlib import Path
 
-#MIN_CONTIG_LEN=get_contig_length_threshold()
+# MIN_CONTIG_LEN=get_contig_length_threshold()
 
 
 rule megahit:
@@ -22,7 +22,6 @@ rule megahit:
         "--min-contig-len {params.threshold} "
         "--out-dir {params.outdir} -f > {log} 2>&1"
         #"&& cp {output.contigs} {output.contigs_len}) "
-        
 
 
 rule gzip_assembly:

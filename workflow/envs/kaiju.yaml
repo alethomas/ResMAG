@@ -4,3 +4,4 @@ channels:
   - nodefaults
 dependencies:
   - krona = 2.8.1
+  - kaiju = 1.9.2

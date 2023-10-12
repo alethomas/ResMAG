@@ -1,35 +1,33 @@
 import pandas as pd
-#import sys
+import sys
 
-#sys.stderr = open(snakemake.log[0], "w")
+sys.stderr = open(snakemake.log[0], "w")
 
 ## input files
-in_dastool= "ResMAG/results/autobrewer/das_tool/ABS_24_07/ABS_24_07_DASTool_summary.tsv"
-in_checkm = "ResMAG/results/autobrewer/qc/checkm2/ABS_24_07/quality_report.tsv"
-in_gtdb="ResMAG/results/autobrewer/classification/ABS_24_07/ABS_24_07.bac120.summary.tsv"
+in_dastool= snakemake.input.tool #"ResMAG/results/autobrewer/das_tool/ABS_24_07/ABS_24_07_DASTool_summary.tsv"
+in_checkm = snakemake.input.checkm #"ResMAG/results/autobrewer/qc/checkm2/ABS_24_07/quality_report.tsv"
+in_gtdb=snakemake.input.gtdb #"ResMAG/results/autobrewer/classification/ABS_24_07/ABS_24_07.bac120.summary.tsv"
 
 ## output files
 ### csv
-csv_path_mags = "ResMAG/results/autobrewer/report/ABS_24_07/mags_summary.csv" #snakemake.output.csv
-csv_path_bins = "ResMAG/results/autobrewer/report/ABS_24_07/bin_summary.csv" 
-csv_path_tax = "ResMAG/results/autobrewer/report/ABS_24_07/bin_taxonomy.csv"
-csv_path_checkm = "ResMAG/results/autobrewer/report/ABS_24_07/checkm_summary.csv"
-csv_path_dastool = "ResMAG/results/autobrewer/report/ABS_24_07/DASTool_summary.csv"
+csv_path_mags = snakemake.output.csv_mags #"ResMAG/results/autobrewer/report/ABS_24_07/mags_summary.csv" #
+csv_path_bins = snakemake.output.csv_bins #"ResMAG/results/autobrewer/report/ABS_24_07/bin_summary.csv" 
+csv_path_tax = snakemake.output.csv_tax #"ResMAG/results/autobrewer/report/ABS_24_07/bin_taxonomy.csv"
+csv_path_checkm = snakemake.output.csv_checkm #"ResMAG/results/autobrewer/report/ABS_24_07/checkm_summary.csv"
+csv_path_dastool = snakemake.output.csv_dastool #"ResMAG/results/autobrewer/report/ABS_24_07/DASTool_summary.csv"
 ### html
-html_path_mags = "ResMAG/results/autobrewer/report/ABS_24_07/mags_summary.html" #snakemake.output.html
-html_path_bins = "ResMAG/results/autobrewer/report/ABS_24_07/bin_summary.html" 
-html_path_tax = "ResMAG/results/autobrewer/report/ABS_24_07/bin_taxonomy.html" 
-html_path_checkm = "ResMAG/results/autobrewer/report/ABS_24_07/checkm_summary.html"
-html_path_dastool = "ResMAG/results/autobrewer/report/ABS_24_07/DASTool_summary.html"
-
+html_path_mags = snakemake.output.html_mags #"ResMAG/results/autobrewer/report/ABS_24_07/mags_summary.html"
+html_path_bins = snakemake.output.html_bins #"ResMAG/results/autobrewer/report/ABS_24_07/bin_summary.html" 
+html_path_tax = snakemake.output.html_tax #"ResMAG/results/autobrewer/report/ABS_24_07/bin_taxonomy.html" 
+html_path_checkm = snakemake.output.html_checkm #"ResMAG/results/autobrewer/report/ABS_24_07/checkm_summary.html"
+html_path_dastool = snakemake.output.html_dastool #"ResMAG/results/autobrewer/report/ABS_24_07/DASTool_summary.html"
 
 ## params
-max_cont= 5.0 #snakemake.params.contamination
-min_comp= 85.00 #snakemake.params.completeness
+max_cont= snakemake.params.max_cont
+min_comp= snakemake.params.min_comp
 
 
 def save_html_csv_table(csv_path, html_path, summary_df, title):
-    #summary_df = df.set_index("bin_name")
     summary_df.columns.name='bin_name'
     summary_df.index.name = None
     summary_df.to_csv(csv_path)
@@ -122,18 +120,13 @@ gtdb_df.set_index("bin_name",inplace=True)
 cols=['classification','fastani_reference','fastani_reference_radius','fastani_ani','fastani_af','classification_method']
 gtdb_red_df=gtdb_df[cols]
 
-
 tab_title="Bins taxonomy classification"
 save_html_csv_table(csv_path_tax, html_path_tax, gtdb_red_df, tab_title)
 
 
-bins_df = pd.concat([tool_red_df,checkm_red_df,gtdb_red_df[['classification','fastani_reference']]], axis=1)#.reset_index()
-#bins_df.rename({"index":"bin_name"},axis=1,inplace=True)
+bins_df = pd.concat([tool_red_df,checkm_red_df,gtdb_red_df[['classification','fastani_reference','fastani_ani']]], axis=1)
 col_order = ["completeness","contamination","bin_score","contigs","genome_size","contig_N50","GC_content",'classification','fastani_reference']
 bins_df=bins_df[col_order]
-
-#sum_df = pd.concat([bins_df,gtdb_red_df[['classification','fastani_reference']]], axis=1)
-
 
 tab_title="Bins summary"
 save_html_csv_table(csv_path_bins, html_path_bins, bins_df, tab_title)
