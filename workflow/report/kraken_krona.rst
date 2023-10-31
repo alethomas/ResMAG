@@ -1,0 +1,1 @@
+krona plot for Kraken2 results after host filtering

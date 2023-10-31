@@ -13,6 +13,8 @@ configfile: "config/config.yaml"
 
 pepfile: config["pepfile"]
 
+report: "report/workflow.rst"
+
 
 include: "rules/common.smk"
 include: "rules/trimming.smk"
@@ -101,8 +103,14 @@ rule all:
             project=get_project(),
             sample=get_samples(),
         ),
+        
+        
 
 
 """  
-                    
+   directory(expand(
+            "results/{project}/report/assembly_test/",
+            project=get_project(),
+            sample=get_samples(),
+        )),                 
 """

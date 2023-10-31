@@ -31,7 +31,6 @@ kraken:
     } #pig: 9823 plant: 33090
 
 checkm2: "CheckM2_database/uniref100.KO.1.dmnd"
-
 kaiju:
   download: "https://kaiju-idx.s3.eu-central-1.amazonaws.com/2023/kaiju_db_refseq_nr_2023-06-17.tgz"
   fmi-file: "kaiju_db/kaiju_db_refseq_nr.fmi"

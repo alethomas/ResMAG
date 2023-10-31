@@ -103,7 +103,7 @@ rule dastool_run:
         "--debug --write_bins "
         "-i {params.path_bin_list[0]} "
         "-l {params.path_bin_list[1]} "
-        "-c {input.contigs} "
+        "-c {input.contigs[0]} "
         "-o {params.outdir}/{wildcards.sample} "
         "> {log} 2>&1 "
 

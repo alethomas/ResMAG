@@ -121,7 +121,9 @@ rule kraken_summary:
         csv="results/{project}/report/kraken2_summary.csv",
         html=report(
             "results/{project}/report/kraken2_summary.html",
-            category="Kraken2 organism composition",
+            category="1. Species diversity",
+            subcategory="before host read filtering",
+            caption="../report/kraken.rst",
         ),
     log:
         "logs/{project}/kraken2/summary.log",
@@ -202,7 +204,9 @@ rule create_bracken_plot:
         "results/{project}/filtered/bracken/merged.bracken.txt",
     output:
         report(
-            "results/{project}/report/bracken_plot.png", category="Species diversity"
+            "results/{project}/report/bracken_plot.png",
+            category="1. Species diversity",
+            subcategory="after host read filtering",
         ),
     params:
         threshold=0.001,
@@ -233,7 +237,12 @@ rule krona_html:
     input:
         "results/{project}/filtered/krona/{sample}.krona",
     output:
-        "results/{project}/report/{sample}/kraken.krona.html",
+        report(
+            "results/{project}/report/{sample}/kraken.krona.html",
+            category="1. Species diversity",
+            subcategory="after host read filtering",
+            caption="../report/kraken.rst",
+        ),
     threads: 1
     log:
         "logs/{project}/krona/{sample}.log",

@@ -73,13 +73,13 @@ rule rosella_run:
         log_install="logs/rosella_install.log",
         checkm_init="logs/checkm_init.log",
     output:
-        outfile="results/{project}/rosella/{sample}/rosella_kmer_table.tsv",
-        outdir=directory("results/{project}/rosella/{sample}/"),
+        #outfile=temp("results/{project}/rosella/{sample}/rosella_kmer_table.tsv"),
+        outdir=temp(directory("results/{project}/rosella/{sample}/")),
     threads: 32
     log:
         "logs/{project}/rosella/{sample}/rosella_run.log",
     conda:
         "../envs/rosella.yml"
     shell:
-        "rosella recover -r {input.contigs} --coverage-values {input.abd} "
+        "rosella recover -r {input.contigs[0]} --coverage-values {input.abd} "
         "-o {output.outdir} -t {threads} > {log} 2>&1"

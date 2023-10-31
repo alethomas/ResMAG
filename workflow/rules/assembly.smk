@@ -8,6 +8,7 @@ rule megahit:
         fastqs=get_filtered_gz_fastqs,
     output:
         contigs="results/{project}/megahit/{sample}/final.contigs.fa",
+        folder=temp(directory("results/{project}/megahit/{sample}/")),
         #contigs_len=f"results/{{project}}/megahit/{{sample}}/final.contigs_{MIN_CONTIG_LEN}.fa",
     params:
         outdir=lambda wildcards, output: Path(output.contigs).parent,
@@ -26,7 +27,7 @@ rule megahit:
 
 rule gzip_assembly:
     input:
-        get_assembly,
+        contigs=get_assembly,
     output:
         "results/{project}/assembly/{sample}_final.contigs.fa.gz",
     threads: 4
@@ -35,7 +36,7 @@ rule gzip_assembly:
     conda:
         "../envs/unix.yaml"
     shell:
-        "gzip -c {input} > {output} 2> {log}"
+        "gzip -c {input.contigs[0]} > {output} 2> {log}"
 
 
 rule assembly_summary:
@@ -56,3 +57,16 @@ rule assembly_summary:
         "../envs/python.yaml"
     script:
         "../scripts/assembly_summary.py"
+
+
+rule csv_report:
+    input:
+        # a csv formatted file containing the data for the report
+        "results/{project}/report/assembly_summary.csv",
+    output:
+        # path to the resulting report directory
+        directory("results/{project}/report/assembly_test/"),
+    log:
+        "logs/{project}/assembly/rbt-csv-report.log",
+    wrapper:
+        "v2.6.0/bio/rbt/csvreport"

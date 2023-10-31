@@ -36,7 +36,10 @@ rule kaiju2krona:
         kaiju_report="results/{project}/kaiju/{sample}/kaiju.out",
     output:
         krona=temp("results/{project}/kaiju/{sample}/kaiju.out.krona"),
-        html="results/{project}/report/{sample}/kaiju.out.html",
+        html=report(
+            "results/{project}/report/{sample}/kaiju.out.html",
+            category="Kaiju read classification krona plot",
+        ),
     log:
         "logs/{project}/kaiju/{sample}_2krona.log",
     conda:
