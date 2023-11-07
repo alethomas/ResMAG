@@ -1,4 +1,4 @@
-# ResMAG
+# ResMAG - name pending
 
 [![Snakemake](https://img.shields.io/badge/snakemake-≥6.3.0-brightgreen.svg)](https://snakemake.github.io)
 [![GitHub actions status](https://github.com/<owner>/<repo>/workflows/Tests/badge.svg?branch=main)](https://github.com/<owner>/<repo>/actions?query=branch%3Amain+workflow%3ATests)
@@ -79,7 +79,6 @@ To prepare the workflow
 1. Clone it to your desired working folder via git or your preferred IDE
 2. Edit the `config/config.yaml` file:
    - Specify a project name (`project-name`)
-   - Download a kraken reference database for the host read filtering and specify the path to it (`kraken-db`)
 3. Provide a sample information in the `config/pep/samples.csv` file with keeping the header and format as `.csv`:
 
 ```
@@ -107,7 +106,7 @@ ResMAG is released under the [BSD-2 Clause](https://www.open-xchange.com/hubfs/2
 
 ## Contact Information
 
-For any questions, or feedback, please contact the project maintainer at katharina.block@uk-essen.de or josefa.welling@uk-essen.de. We appreciate your input and support in using and improving ResMAG.
+For any questions, or feedback, please contact the project maintainer at josefa.welling@uk-essen.de or katharina.block@uk-essen.de. We appreciate your input and support in using and improving ResMAG.
 
 ## Acknowledgements
 
