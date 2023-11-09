@@ -20,7 +20,7 @@ rule run_kaiju:
         fastqs=get_filtered_gz_fastqs,
     output:
         "results/{project}/kaiju/{sample}/kaiju.out",
-    threads: 20
+    threads: 64
     log:
         "logs/{project}/kaiju/{sample}_run.log",
     conda:
@@ -38,6 +38,7 @@ rule kaiju2krona:
         krona=temp("results/{project}/kaiju/{sample}/kaiju.out.krona"),
         html=report(
             "results/{project}/report/{sample}/kaiju.out.html",
+            htmlindex="kaiju.out.html",
             category="Kaiju read classification krona plot",
         ),
     log:

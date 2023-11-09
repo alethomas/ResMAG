@@ -40,7 +40,8 @@ use rule postprocess_metabat as postprocess_rosella with:
 
 rule postprocess_metacoag:
     input:
-        "results/{project}/metacoag/{sample}/contig_to_bin.tsv",
+        c2bin="results/{project}/metacoag/{sample}/contig_to_bin.tsv",
+        folder="results/{project}/metacoag/{sample}/",
     output:
         "results/{project}/contig2bins/{sample}/metacoag_contig2bin.tsv",
     log:
@@ -48,7 +49,7 @@ rule postprocess_metacoag:
     conda:
         "../envs/unix.yaml"
     shell:
-        "(awk '{{print $1 \"\t\" $NF}}' {input} | "
+        "(awk '{{print $1 \"\t\" $NF}}' {input.c2bin} | "
         "sed 's/len=[0-9]*,/metacoag_/g' > {output}) > {log} 2>&1"
 
 

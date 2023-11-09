@@ -81,11 +81,31 @@ rule bin_summary:
         csv_tax="results/{project}/report/{sample}/bin_taxonomy.csv",
         csv_checkm="results/{project}/report/{sample}/checkm_summary.csv",
         csv_dastool="results/{project}/report/{sample}/DASTool_summary.csv",
-        html_mags="results/{project}/report/{sample}/mags_summary.html",
-        html_bins="results/{project}/report/{sample}/bin_summary.html",
-        html_tax="results/{project}/report/{sample}/bin_taxonomy.html",
-        html_checkm="results/{project}/report/{sample}/checkm_summary.html",
-        html_dastool="results/{project}/report/{sample}/DASTool_summary.html",
+        html_mags=report(
+            "results/{project}/report/{sample}/mags_summary.html",
+            htmlindex="mags_summary.html",
+            category="MAGs",
+        ),
+        html_bins=report(
+            "results/{project}/report/{sample}/bin_summary.html",
+            htmlindex="bin_summary.html",
+            category="Bins",
+        ),
+        html_tax=report(
+            "results/{project}/report/{sample}/bin_taxonomy.html",
+            htmlindex="bin_taxonomy.html",
+            category="Bins",
+        ),
+        html_checkm=report(
+            "results/{project}/report/{sample}/checkm_summary.html",
+            htmlindex="checkm_summary.html",
+            category="Bins",
+        ),
+        html_dastool=report(
+            "results/{project}/report/{sample}/DASTool_summary.html",
+            htmlindex="DASTool_summary.html",
+            category="Bins",
+        ),
     params:
         max_cont=config["MAG-criteria"]["max-contamination"],  #snakemake.params.contamination
         min_comp=config["MAG-criteria"]["min-completeness"],

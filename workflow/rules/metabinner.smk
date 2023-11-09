@@ -7,7 +7,6 @@ rule metabinner_coverage_profile:
         fastqs=get_filtered_fastqs,
     output:
         outfile=temp("results/{project}/metabinner/{sample}/coverage_profile_{threshold}/coverage_profile.tsv"),
-        folder=temp(directory("results/{project}/metabinner/{sample}/coverage_profile_{threshold}/")),
     threads: 32
     params:
         threads=config["binning"]["threads"],
@@ -58,7 +57,6 @@ rule metabinner_run:
         ),
     output:
         outfile=temp("results/{project}/metabinner/{sample}/metabinner_res/metabinner_result.tsv"),
-        folder=temp(directory("results/{project}/metabinner/{sample}/metabinner_res/")),
     threads: 64
     params:
         threads=config["binning"]["threads"],

@@ -121,6 +121,7 @@ rule kraken_summary:
         csv="results/{project}/report/kraken2_summary.csv",
         html=report(
             "results/{project}/report/kraken2_summary.html",
+            htmlindex="kraken2_summary.html",
             category="1. Species diversity",
             subcategory="before host read filtering",
             caption="../report/kraken.rst",
@@ -239,6 +240,7 @@ rule krona_html:
     output:
         report(
             "results/{project}/report/{sample}/kraken.krona.html",
+            htmlindex="kraken.krona.html",
             category="1. Species diversity",
             subcategory="after host read filtering",
             caption="../report/kraken.rst",
