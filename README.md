@@ -42,7 +42,7 @@ flowchart TB;
       F["<b>Bin refinement</b> <br> <i>DAS Tool<i>"]
       G[/MAGs/]
       H["<b>Resistance analysis</b> <br> <i>HyDRA<i>"]
-      I["<b>taxonomic classification</b>"]
+      I["<b>taxonomic classification</b> <br> <i>Kaiju and GTDBTk<i>"]
       J[/MultiQC report/]
       K[/Assembly summary/]
 
