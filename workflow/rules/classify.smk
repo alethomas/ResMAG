@@ -41,11 +41,9 @@ rule kaiju2krona:
             htmlindex="index.html",
             category="5. Taxonomic classification",
             subcategory="5.2 Read classification",
-            labels={
-              "sample": "{sample}",
-              "type": "view"
-            }
-        ),#Kaiju read classification krona plot
+            labels={"sample": "{sample}", "type": "view"},
+        ),
+        #Kaiju read classification krona plot
     log:
         "logs/{project}/kaiju/{sample}_2krona.log",
     conda:

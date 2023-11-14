@@ -4,31 +4,55 @@ rule snakemake_report:
         "results/{project}/report/kraken2_summary.html",
         "results/{project}/report/kraken2_summary.csv",
         "results/{project}/report/bracken_plot.png",
-        expand("results/{{project}}/report/{sample}/kraken.krona.html",sample=get_samples(),
+        expand(
+            "results/{{project}}/report/{sample}/kraken.krona.html",
+            sample=get_samples(),
         ),
         "results/{project}/report/assembly_summary.html",
         "results/{project}/report/assembly_summary.csv",
-        expand("results/{{project}}/report/{sample}/bin_summary.html",sample=get_samples(),
+        expand(
+            "results/{{project}}/report/{sample}/bin_summary.html",
+            sample=get_samples(),
         ),
-        expand("results/{{project}}/report/{sample}/bin_summary.csv",sample=get_samples(),
+        expand(
+            "results/{{project}}/report/{sample}/bin_summary.csv",
+            sample=get_samples(),
         ),
-        expand("results/{{project}}/report/{sample}/checkm_summary.html",sample=get_samples(),
+        expand(
+            "results/{{project}}/report/{sample}/checkm_summary.html",
+            sample=get_samples(),
         ),
-        expand("results/{{project}}/report/{sample}/DASTool_summary.html",sample=get_samples(),
+        expand(
+            "results/{{project}}/report/{sample}/DASTool_summary.html",
+            sample=get_samples(),
         ),
-        expand("results/{{project}}/report/{sample}/checkm_summary.csv",sample=get_samples(),
+        expand(
+            "results/{{project}}/report/{sample}/checkm_summary.csv",
+            sample=get_samples(),
         ),
-        expand("results/{{project}}/report/{sample}/DASTool_summary.csv",sample=get_samples(),
+        expand(
+            "results/{{project}}/report/{sample}/DASTool_summary.csv",
+            sample=get_samples(),
         ),
-        expand("results/{{project}}/report/{sample}/bin_taxonomy.html",sample=get_samples(),
+        expand(
+            "results/{{project}}/report/{sample}/bin_taxonomy.html",
+            sample=get_samples(),
         ),
-        expand("results/{{project}}/report/{sample}/bin_taxonomy.csv",sample=get_samples(),
+        expand(
+            "results/{{project}}/report/{sample}/bin_taxonomy.csv",
+            sample=get_samples(),
         ),
-        expand("results/{{project}}/report/{sample}/mags_summary.html",sample=get_samples(),
+        expand(
+            "results/{{project}}/report/{sample}/mags_summary.html",
+            sample=get_samples(),
         ),
-        expand("results/{{project}}/report/{sample}/mags_summary.csv",sample=get_samples(),
+        expand(
+            "results/{{project}}/report/{sample}/mags_summary.csv",
+            sample=get_samples(),
         ),
-        expand("results/{{project}}/report/{sample}/kaiju.out.html",sample=get_samples(),
+        expand(
+            "results/{{project}}/report/{sample}/kaiju.out.html",
+            sample=get_samples(),
         ),
     output:
         "results/{project}/report/report.zip",
@@ -41,9 +65,11 @@ rule snakemake_report:
         "../envs/snakemake.yaml"
     shell:
         "snakemake --nolock --report {output} --report-stylesheet {params.style} "
-        #"{params.for_testing} "
+
         "> {log} 2>&1"
-        
+        #"{params.for_testing} "
+
+
 """
         "results/{project}/qc/multiqc.html",
         expand("results/{{project}}/report/{sample}/kaiju.out.html",sample=get_samples(),

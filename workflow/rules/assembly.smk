@@ -49,17 +49,12 @@ rule assembly_summary:
         html=report(
             "results/{project}/report/assembly_summary.html",
             category="3. Assembly results",
-            labels={
-                "sample": "all samples",
-                "type": "view"
-            }
+            labels={"sample": "all samples", "type": "view"},
         ),
-        csv=report("results/{project}/report/assembly_summary.csv",
+        csv=report(
+            "results/{project}/report/assembly_summary.csv",
             category="3. Assembly results",
-            labels={
-                "sample": "all samples",
-                "type": "download"
-            }
+            labels={"sample": "all samples", "type": "download"},
         ),
     log:
         "logs/{project}/assembly/summary.log",

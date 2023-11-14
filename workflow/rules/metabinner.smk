@@ -6,7 +6,9 @@ rule metabinner_coverage_profile:
         contig_file=get_assembly,
         fastqs=get_filtered_fastqs,
     output:
-        outfile=temp("results/{project}/metabinner/{sample}/coverage_profile_{threshold}/coverage_profile.tsv"),
+        outfile=temp(
+            "results/{project}/metabinner/{sample}/coverage_profile_{threshold}/coverage_profile.tsv"
+        ),
     threads: 32
     params:
         threads=config["binning"]["threads"],
@@ -28,7 +30,9 @@ rule metabinner_composition_profile:
     input:
         contigs=get_assembly,
     output:
-        outfile=temp("results/{project}/metabinner/{sample}/composition_profile/final.contigs_kmer_{kmer_size}_f{threshold}.csv"),
+        outfile=temp(
+            "results/{project}/metabinner/{sample}/composition_profile/final.contigs_kmer_{kmer_size}_f{threshold}.csv"
+        ),
     threads: 32
     params:
         script_path="{}/workflow/scripts/gen_kmer.py".format(get_root()),  ## does it work when we change this to ../scripts?, AD what is changed?
@@ -56,7 +60,9 @@ rule metabinner_run:
             threshold=get_contig_length_filter(),
         ),
     output:
-        outfile=temp("results/{project}/metabinner/{sample}/metabinner_res/metabinner_result.tsv"),
+        outfile=temp(
+            "results/{project}/metabinner/{sample}/metabinner_res/metabinner_result.tsv"
+        ),
     threads: 64
     params:
         threads=config["binning"]["threads"],

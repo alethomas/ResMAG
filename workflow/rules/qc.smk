@@ -25,10 +25,7 @@ rule multiqc:
             "results/{project}/qc/multiqc.html",
             htmlindex="multiqc.html",
             category="1. Quality control",
-            labels={
-              "sample": "all samples",
-              "type": "view"
-            }
+            labels={"sample": "all samples", "type": "view"},
         ),
     params:
         extra=(
@@ -85,99 +82,65 @@ rule bin_summary:
             htmlindex="bin_summary.html",
             category="4. Binning results",
             subcategory="4.1 Summary",
-            labels={
-              "sample": "{sample}",
-              "type": "1. view"
-            }
+            labels={"sample": "{sample}", "type": "1. view"},
         ),
         csv_bins=report(
             "results/{project}/report/{sample}/bin_summary.csv",
             category="4. Binning results",
             subcategory="4.1 Summary",
-            labels={
-              "sample": "{sample}",
-              "type": "2. download"
-            }
+            labels={"sample": "{sample}", "type": "2. download"},
         ),
         html_checkm=report(
             "results/{project}/report/{sample}/checkm_summary.html",
             htmlindex="checkm_summary.html",
             category="4. Binning results",
             subcategory="4.2 Quality control",
-            labels={
-              "sample": "{sample}",
-              "tool": "CheckM 2",
-              "type": "1. view"
-            }
+            labels={"sample": "{sample}", "tool": "CheckM 2", "type": "1. view"},
         ),
         csv_checkm=report(
             "results/{project}/report/{sample}/checkm_summary.csv",
             category="4. Binning results",
             subcategory="4.2 Quality control",
-            labels={
-              "sample": "{sample}",
-              "tool": "CheckM 2",
-              "type": "2. download"
-            }
+            labels={"sample": "{sample}", "tool": "CheckM 2", "type": "2. download"},
         ),
         html_dastool=report(
             "results/{project}/report/{sample}/DASTool_summary.html",
             htmlindex="DASTool_summary.html",
             category="4. Binning results",
             subcategory="4.2 Quality control",
-            labels={
-              "sample": "{sample}",
-              "tool": "DAS Tool",
-              "type": "1. view"
-            }
+            labels={"sample": "{sample}", "tool": "DAS Tool", "type": "1. view"},
         ),
         csv_dastool=report(
             "results/{project}/report/{sample}/DASTool_summary.csv",
             category="4. Binning results",
             subcategory="4.2 Quality control",
-            labels={
-              "sample": "{sample}",
-              "tool": "DAS Tool",
-              "type": "2. download"
-            }
+            labels={"sample": "{sample}", "tool": "DAS Tool", "type": "2. download"},
         ),
         html_tax=report(
             "results/{project}/report/{sample}/bin_taxonomy.html",
             htmlindex="bin_taxonomy.html",
             category="4. Binning results",
             subcategory="4.3 Taxonomy classification",
-            labels={
-              "sample": "{sample}",
-              "type": "1. view"
-            }
+            labels={"sample": "{sample}", "type": "1. view"},
         ),
         csv_tax=report(
             "results/{project}/report/{sample}/bin_taxonomy.csv",
             category="4. Binning results",
             subcategory="4.3 Taxonomy classification",
-            labels={
-              "sample": "{sample}",
-              "type": "2. download"
-            }
+            labels={"sample": "{sample}", "type": "2. download"},
         ),
         html_mags=report(
             "results/{project}/report/{sample}/mags_summary.html",
             htmlindex="mags_summary.html",
             category="5. Taxonomic classification",
             subcategory="5.1 MAGs classification",
-            labels={
-              "sample": "{sample}",
-              "type": "1. view"
-            }
+            labels={"sample": "{sample}", "type": "1. view"},
         ),
         csv_mags=report(
             "results/{project}/report/{sample}/mags_summary.csv",
             category="5. Taxonomic classification",
             subcategory="5.1 MAGs classification",
-            labels={
-              "sample": "{sample}",
-              "type": "2. download"
-            }
+            labels={"sample": "{sample}", "type": "2. download"},
         ),
     params:
         max_cont=config["MAG-criteria"]["max-contamination"],  #snakemake.params.contamination
