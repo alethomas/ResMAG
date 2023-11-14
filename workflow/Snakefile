@@ -28,20 +28,57 @@ include: "rules/rosella.smk"
 include: "rules/vamb.smk"
 include: "rules/das_tool.smk"
 include: "rules/classify.smk"
+include: "rules/report.smk"
 
 
 rule all:
     input:
         expand(
+            "results/{project}/report/report.zip",
+            project=get_project(),
+        ),
+        expand(
             "results/{project}/assembly/{sample}_final.contigs.fa.gz",
             project=get_project(),
             sample=get_samples(),
         ),
+
+
+"""
+
+        
         expand(
             "results/{project}/das_tool/{sample}/{sample}_DASTool_summary.tsv",
             project=get_project(),
             sample=get_samples(),
         ),
+        
+        expand(
+            "results/{project}/qc/checkm2/{sample}/quality_report.tsv",
+            project=get_project(),
+            sample=get_samples(),
+        ),
+        
+        expand(
+            "results/{project}/classification/{sample}/{sample}.bac120.summary.tsv",
+            project=get_project(),
+            sample=get_samples(),
+        ),  
+   directory(expand(
+            "results/{project}/report/assembly_test/",
+            project=get_project(),
+            sample=get_samples(),
+        )),    
+        expand(
+            "results/{project}/report/{sample}/kraken.krona.html",
+            project=get_project(),
+            sample=get_samples(),
+        ),
+        expand(
+            "results/{project}/report/{sample}/kaiju.out.html",
+            project=get_project(),
+            sample=get_samples(),
+        ),      
         expand(
             "results/{project}/qc/multiqc.html",
             project=get_project(),
@@ -82,35 +119,5 @@ rule all:
             "results/{project}/report/{sample}/DASTool_summary.html",
             project=get_project(),
             sample=get_samples(),
-        ),
-        expand(
-            "results/{project}/qc/checkm2/{sample}/quality_report.tsv",
-            project=get_project(),
-            sample=get_samples(),
-        ),
-        expand(
-            "results/{project}/report/{sample}/kraken.krona.html",
-            project=get_project(),
-            sample=get_samples(),
-        ),
-        expand(
-            "results/{project}/report/{sample}/kaiju.out.html",
-            project=get_project(),
-            sample=get_samples(),
-        ),
-        expand(
-            "results/{project}/classification/{sample}/{sample}.bac120.summary.tsv",
-            project=get_project(),
-            sample=get_samples(),
-        ),
-        
-        
-
-
-"""  
-   directory(expand(
-            "results/{project}/report/assembly_test/",
-            project=get_project(),
-            sample=get_samples(),
-        )),                 
+        ),       
 """

@@ -18,7 +18,7 @@ rule postprocess_metabat:
     output:
         "results/{project}/contig2bins/{sample}/metabat2_contig2bin.tsv",
     params:
-        binner="metabat2"
+        binner="metabat2",
     log:
         "logs/{project}/contig2bins/{sample}/postprocess_metabat2.log",
     conda:
@@ -33,7 +33,7 @@ use rule postprocess_metabat as postprocess_rosella with:
     output:
         "results/{project}/contig2bins/{sample}/rosella_contig2bin.tsv",
     params:
-        binner="rosella"
+        binner="rosella",
     log:
         "logs/{project}/contig2bins/{sample}/postprocess_rosella.log",
 
@@ -108,7 +108,7 @@ rule dastool_run:
         "-o {params.outdir}/{wildcards.sample} "
         "> {log} 2>&1 "
 
-
+'''
 ## gzip DAS Tool bins, checkm2 them
 rule gzip_bins:
     input:
@@ -117,5 +117,4 @@ rule gzip_bins:
         directory("results/{project}/MAGs/{sample}/"),
     shell:
         "gzip -k {input}*.fa && mv {input}*.fa.gz {output}"
-
-
+'''

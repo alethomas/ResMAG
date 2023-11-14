@@ -118,13 +118,20 @@ rule kraken_summary:
             sample=get_samples(),
         ),
     output:
-        csv="results/{project}/report/kraken2_summary.csv",
         html=report(
             "results/{project}/report/kraken2_summary.html",
-            htmlindex="kraken2_summary.html",
-            category="1. Species diversity",
-            subcategory="before host read filtering",
+            htmlindex="index.html",
             caption="../report/kraken.rst",
+            category="2. Species diversity",
+            subcategory="2.1 pre-filtering human reads",
+            labels={"sample": "all samples", "type": "1. view"},
+        ),
+        csv=report(
+            "results/{project}/report/kraken2_summary.csv",
+            caption="../report/kraken.rst",
+            category="2. Species diversity",
+            subcategory="2.1 pre-filtering human reads",
+            labels={"sample": "all samples", "type": "2. download"},
         ),
     log:
         "logs/{project}/kraken2/summary.log",
@@ -176,7 +183,7 @@ rule bracken_analysis:
     conda:
         "../envs/bracken.yaml"
     shell:
-        "bracken -d {params.db} -i {input.kreport} -l F -o {output.bfile} -w {output.breport} > {log} 2>&1"
+        "bracken -d {params.db} -i {input.kreport} -l G -o {output.bfile} -w {output.breport} > {log} 2>&1"
 
 
 rule merge_bracken:
@@ -206,8 +213,10 @@ rule create_bracken_plot:
     output:
         report(
             "results/{project}/report/bracken_plot.png",
-            category="1. Species diversity",
-            subcategory="after host read filtering",
+            caption="../report/bracken_plot.rst",
+            category="2. Species diversity",
+            subcategory="2.2 post-filtering human reads",
+            labels={"sample": "all samples", "type": "view"},
         ),
     params:
         threshold=0.001,
@@ -240,10 +249,11 @@ rule krona_html:
     output:
         report(
             "results/{project}/report/{sample}/kraken.krona.html",
-            htmlindex="kraken.krona.html",
-            category="1. Species diversity",
-            subcategory="after host read filtering",
-            caption="../report/kraken.rst",
+            caption="../report/kraken_krona.rst",
+            htmlindex="index.html",
+            category="2. Species diversity",
+            subcategory="2.2 post-filtering human reads",
+            labels={"sample": "{sample}", "type": "view"},
         ),
     threads: 1
     log:
