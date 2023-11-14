@@ -108,7 +108,8 @@ rule dastool_run:
         "-o {params.outdir}/{wildcards.sample} "
         "> {log} 2>&1 "
 
-'''
+
+"""
 ## gzip DAS Tool bins, checkm2 them
 rule gzip_bins:
     input:
@@ -117,4 +118,4 @@ rule gzip_bins:
         directory("results/{project}/MAGs/{sample}/"),
     shell:
         "gzip -k {input}*.fa && mv {input}*.fa.gz {output}"
-'''
+"""

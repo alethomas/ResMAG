@@ -1,5 +1,5 @@
 # when assembly.gz & "results/{project}/das_tool/{sample}/{sample}_DASTool_summary.tsv" are there
-# rm results/strawpigs/megahit/ 
+# rm results/strawpigs/megahit/
 # rm results/strawpigs/metacoag/
 # rm results/strawpigs/metabat2
 # rm results/strawpigs/rosella

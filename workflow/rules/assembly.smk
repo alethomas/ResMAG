@@ -65,11 +65,11 @@ rule assembly_summary:
 
 
 rule csv_report:
+    # a csv formatted file containing the data for the report
     input:
-        # a csv formatted file containing the data for the report
         "results/{project}/report/assembly_summary.csv",
+    # path to the resulting report directory
     output:
-        # path to the resulting report directory
         directory("results/{project}/report/assembly_test/"),
     log:
         "logs/{project}/assembly/rbt-csv-report.log",
