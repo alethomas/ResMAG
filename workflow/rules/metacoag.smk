@@ -1,9 +1,9 @@
 rule coverm_metacoag:
     input:
-        bact_reads=get_filtered_gz_reads,
-        contigs="results/{project}/assembly/{sample}/final.contigs.fa",
+        bact_reads=get_filtered_gz_fastqs,
+        contigs=get_assembly,
     output:
-        "results/{project}/binning_prep/{sample}/abundance.tsv",
+        temp("results/{project}/binning_prep/{sample}/abundance.tsv"),
     threads: 2
     log:
         "logs/{project}/coverm/{sample}.log",
@@ -11,14 +11,14 @@ rule coverm_metacoag:
         "../envs/coverm.yaml"
     shell:
         "coverm contig -1 {input.bact_reads[0]} -2 {input.bact_reads[1]} "
-        "-r {input.contigs} -o {output} -t {threads} > {log} 2>&1"
+        "-r {input.contigs[0]} -o {output} -t {threads} > {log} 2>&1"
 
 
 rule edit_abundance_file:
     input:
         "results/{project}/binning_prep/{sample}/abundance.tsv",
     output:
-        "results/{project}/binning_prep/{sample}/abundance_metacoag.tsv",
+        temp("results/{project}/binning_prep/{sample}/abundance_metacoag.tsv"),
     threads: 1
     log:
         "logs/{project}/coverm/{sample}.log",
@@ -30,9 +30,9 @@ rule edit_abundance_file:
 
 rule fastg_assembly_tree:
     input:
-        "results/{project}/assembly/{sample}/final.contigs.fa",
+        contigs=get_assembly,
     output:
-        "results/{project}/binning_prep/{sample}/assembly_tree.fastg",
+        temp("results/{project}/binning_prep/{sample}/assembly_tree.fastg"),
     threads: 2
     log:
         "logs/{project}/fastg_assembly_tree/{sample}.log",
@@ -46,7 +46,7 @@ rule fastg2gfa:
     input:
         "results/{project}/binning_prep/{sample}/assembly_tree.fastg",
     output:
-        "results/{project}/binning_prep/{sample}/assembly_tree.gfa",
+        temp("results/{project}/binning_prep/{sample}/assembly_tree.gfa"),
     params:
         fastg2gfa_program="workflow/scripts/fastg2gfa",
     threads: 2
@@ -60,11 +60,12 @@ rule fastg2gfa:
 
 rule metacoag_run:
     input:
-        contigs="results/{project}/assembly/{sample}/final.contigs.fa",
+        contigs=get_assembly,
         gfa="results/{project}/binning_prep/{sample}/assembly_tree.gfa",
         abd="results/{project}/binning_prep/{sample}/abundance_metacoag.tsv",
     output:
-        out_tsv="results/{project}/metacoag/{sample}/contig_to_bin.tsv",
+        out_tsv=temp("results/{project}/metacoag/{sample}/contig_to_bin.tsv"),
+        folder=temp(directory("results/{project}/metacoag/{sample}/")),
     params:
         outdir=lambda wildcards, output: Path(output.out_tsv).parent,
     threads: 64
@@ -74,5 +75,5 @@ rule metacoag_run:
         "../envs/metacoag.yaml"
     shell:
         "metacoag --assembler megahit --graph {input.gfa} "
-        "--contigs {input.contigs} --abundance {input.abd} "
+        "--contigs {input.contigs[0]} --abundance {input.abd} "
         "--output {params.outdir} > {log} 2>&1"

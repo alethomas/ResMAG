@@ -1,9 +1,9 @@
 rule coverm_metabat:
     input:
-        bact_reads=get_filtered_gz_reads,
-        contigs="results/{project}/assembly/{sample}/final.contigs.fa",
+        bact_reads=get_filtered_gz_fastqs,
+        contigs=get_assembly,
     output:
-        "results/{project}/binning_prep/{sample}/abundance_metabat.tsv",
+        temp("results/{project}/binning_prep/{sample}/abundance_metabat.tsv"),
     threads: 2
     log:
         "logs/{project}/coverm_metabat/{sample}.log",
@@ -11,16 +11,16 @@ rule coverm_metabat:
         "../envs/coverm.yaml"
     shell:
         "coverm contig -m metabat -1 {input.bact_reads[0]} "
-        "-2 {input.bact_reads[1]} -r {input.contigs} "
+        "-2 {input.bact_reads[1]} -r {input.contigs[0]} "
         "-t {threads} -o {output} > {log} 2>&1"
 
 
 rule metabat2:
     input:
-        contigs="results/{project}/assembly/{sample}/final.contigs.fa",
+        contigs=get_assembly,
         abd="results/{project}/binning_prep/{sample}/abundance_metabat.tsv",
     output:
-        directory("results/{project}/metabat2/{sample}/"),
+        temp(directory("results/{project}/metabat2/{sample}/")),
     threads: 32
     params:
         prefix="bin",
@@ -29,5 +29,5 @@ rule metabat2:
     conda:
         "../envs/metabat2.yaml"
     shell:
-        "metabat2 -i {input.contigs} -a {input.abd} "
+        "metabat2 -i {input.contigs[0]} -a {input.abd} "
         "-t {threads} -v -o {output}/{params.prefix} > {log} 2>&1"
