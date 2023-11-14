@@ -46,10 +46,20 @@ rule assembly_summary:
             sample=get_samples(),
         ),
     output:
-        csv="results/{project}/report/assembly_summary.csv",
         html=report(
             "results/{project}/report/assembly_summary.html",
-            category="Assembly Summary",
+            category="3. Assembly results",
+            labels={
+                "sample": "all samples",
+                "type": "view"
+            }
+        ),
+        csv=report("results/{project}/report/assembly_summary.csv",
+            category="3. Assembly results",
+            labels={
+                "sample": "all samples",
+                "type": "download"
+            }
         ),
     log:
         "logs/{project}/assembly/summary.log",

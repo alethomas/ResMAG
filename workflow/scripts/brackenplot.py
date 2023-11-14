@@ -50,7 +50,6 @@ def plot_bracken(bracken_df, png_file):
     labelsize = 16
     colors = distinctipy.get_colors(len(bracken_df.columns))
     clrs = distinctipy.get_colormap(colors)
-    print(clrs)
 
     ax = bracken_df.plot(
         x="sample",
@@ -87,23 +86,23 @@ def plot_bracken(bracken_df, png_file):
     legend = plt.legend(
         handles=handles,
         labels=new_labels,
-        title="family",
+        title="genus",
         bbox_to_anchor=(1.35, 0.5),
         loc="center right",
         fontsize=(labelsize - 4),
     )
     legend.get_title().set_fontsize(labelsize - 2)
 
-    # annotate percentage values (over 1%) to bars
+    # annotate percentage values (over 10%) to bars
     for p in ax.patches:
-        if p.get_height() >= 0.01:
+        if p.get_height() >= 0.1:
             perc = str(np.round((p.get_height() * 100), 2)) + "%"
             xpos = p.get_x() + (p.get_width() * 0.5)
             ypos = p.get_y() + (p.get_height() * 0.5)
             ax.annotate(
                 perc,
                 (xpos, ypos),
-                fontsize=(labelsize - 4),
+                fontsize=(labelsize - 8),
                 ha="center",
                 va="center",
                 # rotation=45,
@@ -114,5 +113,4 @@ def plot_bracken(bracken_df, png_file):
 
 
 df_plot = bracken2df(infile, threshold)
-print(df_plot)
 plot_bracken(df_plot, png)

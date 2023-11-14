@@ -1,1 +1,1 @@
-krona plot for Kraken2 results after host filtering
+Krona plot showing the results for `Kraken2 <https://github.com/DerrickWood/kraken2>`_ analysis after human reads where filtered out.
