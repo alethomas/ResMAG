@@ -1,53 +1,36 @@
 rule snakemake_report:
     input:
+        # 1. Quality control
         "results/{project}/qc/multiqc.html",
-        "results/{project}/report/kraken2_summary.html",
-        "results/{project}/report/kraken2_summary.csv",
+        # 2. Species diversity
+        "results/{project}/report/kraken2/",
         "results/{project}/report/bracken_plot.png",
         expand(
             "results/{{project}}/report/{sample}/kraken.krona.html",
             sample=get_samples(),
         ),
-        "results/{project}/report/assembly_summary.html",
-        "results/{project}/report/assembly_summary.csv",
+        # 3. Assembly results
+        "results/{project}/report/assembly/",
+        # 4. Binning results
         expand(
-            "results/{{project}}/report/{sample}/bin_summary.html",
+            "results/{{project}}/report/{sample}/bin/",
             sample=get_samples(),
         ),
         expand(
-            "results/{{project}}/report/{sample}/bin_summary.csv",
+            "results/{{project}}/report/{sample}/checkm2/",
             sample=get_samples(),
         ),
         expand(
-            "results/{{project}}/report/{sample}/checkm_summary.html",
+            "results/{{project}}/report/{sample}/dastool/",
             sample=get_samples(),
         ),
         expand(
-            "results/{{project}}/report/{sample}/DASTool_summary.html",
+            "results/{{project}}/report/{sample}/taxonomy/",
             sample=get_samples(),
         ),
+        # 5. Taxonomic classification
         expand(
-            "results/{{project}}/report/{sample}/checkm_summary.csv",
-            sample=get_samples(),
-        ),
-        expand(
-            "results/{{project}}/report/{sample}/DASTool_summary.csv",
-            sample=get_samples(),
-        ),
-        expand(
-            "results/{{project}}/report/{sample}/bin_taxonomy.html",
-            sample=get_samples(),
-        ),
-        expand(
-            "results/{{project}}/report/{sample}/bin_taxonomy.csv",
-            sample=get_samples(),
-        ),
-        expand(
-            "results/{{project}}/report/{sample}/mags_summary.html",
-            sample=get_samples(),
-        ),
-        expand(
-            "results/{{project}}/report/{sample}/mags_summary.csv",
+            "results/{{project}}/report/{sample}/mags/",
             sample=get_samples(),
         ),
         expand(
@@ -55,9 +38,9 @@ rule snakemake_report:
             sample=get_samples(),
         ),
     output:
-        "results/{project}/report/report.zip",
+        "results/{project}/report/report.zip",#html",
     params:
-        style="resources/custom-stylesheet.css",
+        style="resources/report/custom-stylesheet.css",
     #    for_testing=get_if_testing("--snakefile ../workflow/Snakefile"),
     log:
         "logs/{project}/snakemake-report.log",
@@ -71,6 +54,47 @@ rule snakemake_report:
 
 
 """
+expand(
+            "results/{{project}}/report/{sample}/bin_summary.html",
+            sample=get_samples(),
+        ),
+        expand(
+            "results/{{project}}/report/{sample}/bin_summary.csv",
+            sample=get_samples(),
+        ),
+        expand(
+            "results/{{project}}/report/{sample}/checkm2_summary.html",
+            sample=get_samples(),
+        ),
+        expand(
+            "results/{{project}}/report/{sample}/DASTool_summary.html",
+            sample=get_samples(),
+        ),
+        expand(
+            "results/{{project}}/report/{sample}/checkm2_summary.csv",
+            sample=get_samples(),
+        ),
+        expand(
+            "results/{{project}}/report/{sample}/DASTool_summary.csv",
+            sample=get_samples(),
+        ),
+        expand(
+            "results/{{project}}/report/{sample}/bin_taxonomy.html",
+            sample=get_samples(),
+        ),
+        expand(
+            "results/{{project}}/report/{sample}/bin_taxonomy.csv",
+            sample=get_samples(),
+        ),expand(
+            "results/{{project}}/report/{sample}/mags_summary.html",
+            sample=get_samples(),
+        ),
+        expand(
+            "results/{{project}}/report/{sample}/mags_summary.csv",
+            sample=get_samples(),
+        ),
+
+
         "results/{project}/qc/multiqc.html",
         expand("results/{{project}}/report/{sample}/kaiju.out.html",sample=get_samples(),
         ),
@@ -82,7 +106,7 @@ rule snakemake_report:
         ),
         expand("results/{{project}}/report/{sample}/bin_taxonomy.csv",sample=get_samples(),
         ),
-        expand("results/{{project}}/report/{sample}/checkm_summary.csv",sample=get_samples(),
+        expand("results/{{project}}/report/{sample}/checkm2_summary.csv",sample=get_samples(),
         ),
         expand("results/{{project}}/report/{sample}/DASTool_summary.csv",sample=get_samples(),
         ),
@@ -92,7 +116,7 @@ rule snakemake_report:
         ),
         expand("results/{{project}}/report/{sample}/bin_taxonomy.html",sample=get_samples(),
         ),
-        expand("results/{{project}}/report/{sample}/checkm_summary.html",sample=get_samples(),
+        expand("results/{{project}}/report/{sample}/checkm2_summary.html",sample=get_samples(),
         ),
         expand("results/{{project}}/report/{sample}/DASTool_summary.html",sample=get_samples(),
         ),"""

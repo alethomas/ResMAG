@@ -1,3 +1,4 @@
+include: "host_filtering.smk"
 ## read QC
 rule fastqc:
     input:
@@ -50,7 +51,7 @@ rule checkm2_DB_download:
     shell:
         "checkm2 database --download --path {params.direct} > {log} 2>&1"
 
-
+#change to new folder of gz bins
 rule checkm2_run:
     input:
         bins="results/{project}/das_tool/{sample}/{sample}_DASTool_bins/",
@@ -77,71 +78,11 @@ rule bin_summary:
         checkm="results/{project}/qc/checkm2/{sample}/quality_report.tsv",
         gtdb="results/{project}/classification/{sample}/{sample}.bac120.summary.tsv",
     output:
-        html_bins=report(
-            "results/{project}/report/{sample}/bin_summary.html",
-            htmlindex="bin_summary.html",
-            category="4. Binning results",
-            subcategory="4.1 Summary",
-            labels={"sample": "{sample}", "type": "1. view"},
-        ),
-        csv_bins=report(
-            "results/{project}/report/{sample}/bin_summary.csv",
-            category="4. Binning results",
-            subcategory="4.1 Summary",
-            labels={"sample": "{sample}", "type": "2. download"},
-        ),
-        html_checkm=report(
-            "results/{project}/report/{sample}/checkm_summary.html",
-            htmlindex="checkm_summary.html",
-            category="4. Binning results",
-            subcategory="4.2 Quality control",
-            labels={"sample": "{sample}", "tool": "CheckM 2", "type": "1. view"},
-        ),
-        csv_checkm=report(
-            "results/{project}/report/{sample}/checkm_summary.csv",
-            category="4. Binning results",
-            subcategory="4.2 Quality control",
-            labels={"sample": "{sample}", "tool": "CheckM 2", "type": "2. download"},
-        ),
-        html_dastool=report(
-            "results/{project}/report/{sample}/DASTool_summary.html",
-            htmlindex="DASTool_summary.html",
-            category="4. Binning results",
-            subcategory="4.2 Quality control",
-            labels={"sample": "{sample}", "tool": "DAS Tool", "type": "1. view"},
-        ),
-        csv_dastool=report(
-            "results/{project}/report/{sample}/DASTool_summary.csv",
-            category="4. Binning results",
-            subcategory="4.2 Quality control",
-            labels={"sample": "{sample}", "tool": "DAS Tool", "type": "2. download"},
-        ),
-        html_tax=report(
-            "results/{project}/report/{sample}/bin_taxonomy.html",
-            htmlindex="bin_taxonomy.html",
-            category="4. Binning results",
-            subcategory="4.3 Taxonomy classification",
-            labels={"sample": "{sample}", "type": "1. view"},
-        ),
-        csv_tax=report(
-            "results/{project}/report/{sample}/bin_taxonomy.csv",
-            category="4. Binning results",
-            subcategory="4.3 Taxonomy classification",
-            labels={"sample": "{sample}", "type": "2. download"},
-        ),
-        html_mags=report(
-            "results/{project}/report/{sample}/mags_summary.html",
-            htmlindex="mags_summary.html",
-            category="5. Taxonomic classification",
-            subcategory="5.1 MAGs classification",
-            labels={"sample": "{sample}", "type": "1. view"},
-        ),
-        csv_mags=report(
-            "results/{project}/report/{sample}/mags_summary.csv",
-            category="5. Taxonomic classification",
-            subcategory="5.1 MAGs classification",
-            labels={"sample": "{sample}", "type": "2. download"},
-        ),
+        csv_bins="results/{project}/report/{sample}/bin_summary.csv",
+        csv_checkm="results/{project}/report/{sample}/checkm2_summary.csv",
+        csv_dastool="results/{project}/report/{sample}/DASTool_summary.csv",
+        csv_tax="results/{project}/report/{sample}/bin_taxonomy.csv",
+        csv_mags="results/{project}/report/{sample}/mags_summary.csv",
     params:
         max_cont=config["MAG-criteria"]["max-contamination"],  #snakemake.params.contamination
         min_comp=config["MAG-criteria"]["min-completeness"],
@@ -152,3 +93,98 @@ rule bin_summary:
         "../envs/python.yaml"
     script:
         "../scripts/bin_summary.py"
+
+
+use rule kraken2_report as bin_report with:
+    input:
+        "results/{project}/report/{sample}/bin_summary.csv",
+    output:
+        report(directory("results/{project}/report/{sample}/bin/"),
+            htmlindex="index.html",
+            category="4. Binning results",
+            subcategory="4.1 Summary",
+            labels={"sample": "{sample}"},
+        ),
+    params:
+        pin_until="bin",
+        styles="resources/report/tables/",
+        name="{sample}_bin_summary",
+        header="Bin summary for sample {sample}",
+    log:
+        "logs/{project}/report/{sample}/bin_rbt_csv.log",
+
+
+use rule kraken2_report as dastool_report with:
+    input:
+        "results/{project}/report/{sample}/DASTool_summary.csv",
+    output:
+        report(directory("results/{project}/report/{sample}/dastool/"),
+            htmlindex="index.html",
+            category="4. Binning results",
+            subcategory="4.2 Quality control",
+            labels={"sample": "{sample}", "tool": "DAS Tool",},
+        ),
+    params:
+        pin_until="bin",
+        styles="resources/report/tables/",
+        name="{sample}_DASTool_summary",
+        header="DAS Tool summary for sample {sample}",
+    log:
+        "logs/{project}/report/{sample}/dastool_rbt_csv.log",
+
+
+use rule kraken2_report as checkm2_report with:
+    input:
+        "results/{project}/report/{sample}/checkm2_summary.csv",
+    output:
+        report(directory("results/{project}/report/{sample}/checkm2/"),
+            htmlindex="index.html",
+            category="4. Binning results",
+            subcategory="4.2 Quality control",
+            labels={"sample": "{sample}", "tool": "CheckM 2",},
+        ),
+    params:
+        pin_until="bin",
+        styles="resources/report/tables/",
+        name="{sample}_CheckM2_summary",
+        header="CheckM2 summary for sample {sample}",
+    log:
+        "logs/{project}/report/{sample}/checkm2_rbt_csv.log",
+
+
+use rule kraken2_report as taxonomy_report with:
+    input:
+        "results/{project}/report/{sample}/bin_taxonomy.csv",
+    output:
+        report(directory("results/{project}/report/{sample}/taxonomy/"),
+            htmlindex="index.html",
+            category="4. Binning results",
+            subcategory="4.3 Taxonomy classification",
+            labels={"sample": "{sample}"},
+        ),
+    params:
+        pin_until="bin",
+        styles="resources/report/tables/",
+        name="{sample}_taxonomy_summary",
+        header="Taxonomy summary for sample {sample}",
+    log:
+        "logs/{project}/report/{sample}/taxonomy_rbt_csv.log",
+
+
+use rule kraken2_report as mag_report with:
+    input:
+        "results/{project}/report/{sample}/mags_summary.csv",
+    output:
+        report(directory("results/{project}/report/{sample}/mags/"),
+            htmlindex="index.html",
+            category="5. Taxonomic classification",
+            subcategory="5.1 MAGs classification",
+            labels={"sample": "{sample}"},
+        ),
+    params:
+        pin_until="MAG",
+        styles="resources/report/tables/",
+        name="{sample}_MAG_summary",
+        header="MAG summary for sample {sample}",
+    log:
+        "logs/{project}/report/{sample}/mag_rbt_csv.log",

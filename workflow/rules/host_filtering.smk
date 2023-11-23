@@ -118,21 +118,7 @@ rule kraken_summary:
             sample=get_samples(),
         ),
     output:
-        html=report(
-            "results/{project}/report/kraken2_summary.html",
-            htmlindex="index.html",
-            caption="../report/kraken.rst",
-            category="2. Species diversity",
-            subcategory="2.1 pre-filtering human reads",
-            labels={"sample": "all samples", "type": "1. view"},
-        ),
-        csv=report(
-            "results/{project}/report/kraken2_summary.csv",
-            caption="../report/kraken.rst",
-            category="2. Species diversity",
-            subcategory="2.1 pre-filtering human reads",
-            labels={"sample": "all samples", "type": "2. download"},
-        ),
+        csv="results/{project}/report/kraken2_summary.csv",
     log:
         "logs/{project}/kraken2/summary.log",
     params:
@@ -142,6 +128,36 @@ rule kraken_summary:
         "../envs/python.yaml"
     script:
         "../scripts/kraken_summary.py"
+
+
+rule kraken2_report:
+    input:
+        "results/{project}/report/kraken2_summary.csv",
+    output:
+        report(directory("results/{project}/report/kraken2/"),
+            htmlindex="index.html",
+            caption="../report/kraken.rst",
+            category="2. Species diversity",
+            subcategory="2.1 pre-filtering human reads",
+            labels={"sample": "all samples",},
+        ),
+    params:
+        pin_until="sample",
+        styles="resources/report/tables/",
+        name="kraken2_summary",
+        header="Kraken2 summary",
+    log:
+        "logs/{project}/report/kraken2_rbt_csv.log",
+    conda:
+        "../envs/rbt.yaml"
+    shell:
+        "rbt csv-report {input} --pin-until {params.pin_until} {output} && "
+        "(sed -i '/>github<\/a>/a \\\\t\\t\\t</li>\\n\\t\\t\\t<li class=\"nav-item\">"
+        "\\n\\t\\t\\t\\t<a class=\"nav-link\" href=\"#\">{params.header}</a>' "
+        "{output}/indexes/index1.html && "
+        "sed -i 's/report.xlsx/{params.name}_report.xlsx/g' {output}/indexes/index1.html) && "
+        "mv {output}/report.xlsx {output}/{params.name}_report.xlsx && "
+        "cp {params.styles}* {output}/css/ > {log} 2>&1"
 
 
 rule kraken2_postfilt:
@@ -216,7 +232,7 @@ rule create_bracken_plot:
             caption="../report/bracken_plot.rst",
             category="2. Species diversity",
             subcategory="2.2 post-filtering human reads",
-            labels={"sample": "all samples", "type": "view"},
+            labels={"sample": "all samples"},
         ),
     params:
         threshold=0.001,
@@ -250,10 +266,9 @@ rule krona_html:
         report(
             "results/{project}/report/{sample}/kraken.krona.html",
             caption="../report/kraken_krona.rst",
-            htmlindex="index.html",
             category="2. Species diversity",
             subcategory="2.2 post-filtering human reads",
-            labels={"sample": "{sample}", "type": "view"},
+            labels={"sample": "{sample}"},
         ),
     threads: 1
     log:
@@ -262,6 +277,3 @@ rule krona_html:
         "../envs/kaiju.yaml"
     shell:
         "(ktImportText -o {output} {input}) > {log} 2>&1"
-
-
-#  results/autobrewer/filtered/krona/ABS_24_07.krona.html results/autobrewer/filtered/krona/ABS_24_07.krona

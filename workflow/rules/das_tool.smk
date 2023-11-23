@@ -110,12 +110,35 @@ rule dastool_run:
 
 
 """
-## gzip DAS Tool bins, checkm2 them
+
 rule gzip_bins:
     input:
         "results/{project}/das_tool/{sample}/{sample}_DASTool_bins/",
     output:
-        directory("results/{project}/MAGs/{sample}/"),
+        directory("results/{project}/bins/{sample}/"),
+    threads: 2
+    log:
+        "logs/{project}/das_tool/{sample}/gz_bins.log",
+    conda:
+        "../envs/unix.yaml"
     shell:
         "gzip -k {input}*.fa && mv {input}*.fa.gz {output}"
+
+
+rule mv_dastool_output:
+    input:
+        contig2bin="results/{project}/das_tool/{sample}/{sample}_DASTool_contig2bin.tsv",
+        summary="results/{project}/das_tool/{sample}/{sample}_DASTool_summary.tsv",
+    output:
+        contig2bin="results/{project}/contig2bins/{sample}/DASTool_contig2bin.tsv",
+        summary="results/{project}/bins/summaries/{sample}_DASTool_summary.tsv",
+    threads: 2
+    log:
+        "logs/{project}/das_tool/{sample}/mv_dastool_output.log",
+    conda:
+        "../envs/unix.yaml"
+    shell:
+        "cp {input.contig2bin} {output.contig2bin} && "
+        "cp {input.summary} {output.summary} "
+        "> {log} 2>&1 "
 """

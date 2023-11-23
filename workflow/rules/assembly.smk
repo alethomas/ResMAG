@@ -1,4 +1,5 @@
 from pathlib import Path
+include: "host_filtering.smk"
 
 # MIN_CONTIG_LEN=get_contig_length_threshold()
 
@@ -46,16 +47,7 @@ rule assembly_summary:
             sample=get_samples(),
         ),
     output:
-        html=report(
-            "results/{project}/report/assembly_summary.html",
-            category="3. Assembly results",
-            labels={"sample": "all samples", "type": "view"},
-        ),
-        csv=report(
-            "results/{project}/report/assembly_summary.csv",
-            category="3. Assembly results",
-            labels={"sample": "all samples", "type": "download"},
-        ),
+        csv="results/{project}/report/assembly_summary.csv",
     log:
         "logs/{project}/assembly/summary.log",
     conda:
@@ -64,14 +56,19 @@ rule assembly_summary:
         "../scripts/assembly_summary.py"
 
 
-rule csv_report:
-    # a csv formatted file containing the data for the report
+use rule kraken2_report as assembly_report with:
     input:
         "results/{project}/report/assembly_summary.csv",
-    # path to the resulting report directory
     output:
-        directory("results/{project}/report/assembly_test/"),
+        report(directory("results/{project}/report/assembly/"),
+            htmlindex="index.html",
+            category="3. Assembly results",
+            labels={"sample": "all samples",},
+        ),
+    params:
+        pin_until="sample",
+        styles="resources/report/tables/",
+        name="assembly_summary",
+        header="Assembly summary",
     log:
-        "logs/{project}/assembly/rbt-csv-report.log",
-    wrapper:
-        "v2.6.0/bio/rbt/csvreport"
+        "logs/{project}/report/assembly_rbt_csv.log",
