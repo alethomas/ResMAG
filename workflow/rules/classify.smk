@@ -41,7 +41,7 @@ rule kaiju2krona:
             htmlindex="index.html",
             category="5. Taxonomic classification",
             subcategory="5.2 Read classification",
-            labels={"sample": "{sample}", "type": "view"},
+            labels={"sample": "{sample}"},
         ),
         #Kaiju read classification krona plot
     log:
@@ -54,6 +54,7 @@ rule kaiju2krona:
         "ktImportText -o {output.html} {output.krona}) > {log} 2>&1"
 
 
+##remove output here, log can be used as input too
 rule download_GTDB:
     output:
         "logs/gtdbtk_download_DB.log",
@@ -65,9 +66,7 @@ rule download_GTDB:
         "download-db.sh > {log} 2>&1"
 
 
-##remove output here, log can be used as input too
-
-
+## also working with gz input?
 rule gtdbtk_classify_wf:
     input:
         bins="results/{project}/das_tool/{sample}/{sample}_DASTool_bins/",

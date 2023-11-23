@@ -1,5 +1,8 @@
 from pathlib import Path
+
+
 include: "host_filtering.smk"
+
 
 # MIN_CONTIG_LEN=get_contig_length_threshold()
 
@@ -60,10 +63,13 @@ use rule kraken2_report as assembly_report with:
     input:
         "results/{project}/report/assembly_summary.csv",
     output:
-        report(directory("results/{project}/report/assembly/"),
+        report(
+            directory("results/{project}/report/assembly/"),
             htmlindex="index.html",
             category="3. Assembly results",
-            labels={"sample": "all samples",},
+            labels={
+                "sample": "all samples",
+            },
         ),
     params:
         pin_until="sample",

@@ -134,12 +134,15 @@ rule kraken2_report:
     input:
         "results/{project}/report/kraken2_summary.csv",
     output:
-        report(directory("results/{project}/report/kraken2/"),
+        report(
+            directory("results/{project}/report/kraken2/"),
             htmlindex="index.html",
             caption="../report/kraken.rst",
             category="2. Species diversity",
             subcategory="2.1 pre-filtering human reads",
-            labels={"sample": "all samples",},
+            labels={
+                "sample": "all samples",
+            },
         ),
     params:
         pin_until="sample",

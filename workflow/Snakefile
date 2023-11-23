@@ -43,7 +43,21 @@ rule all:
             project=get_project(),
             sample=get_samples(),
         ),
-        
+        expand(
+            "results/{project}/output/{sample}/mags/",
+            project=get_project(),
+            sample=get_samples(),
+        ),
+        expand(
+            "results/{project}/output/{sample}/bins/",
+            project=get_project(),
+            sample=get_samples(),
+        ),
+        expand(
+            "results/{project}/output/{sample}/{sample}_DASTool_summary.tsv",
+            project=get_project(),
+            sample=get_samples(),
+        ),
 
 
 """expand("results/{project}/report/{sample}/bin/",project=get_project(),sample=get_samples(),

@@ -38,7 +38,7 @@ rule snakemake_report:
             sample=get_samples(),
         ),
     output:
-        "results/{project}/report/report.zip",#html",
+        "results/{project}/report/report.zip",  #html",
     params:
         style="resources/report/custom-stylesheet.css",
     #    for_testing=get_if_testing("--snakefile ../workflow/Snakefile"),
