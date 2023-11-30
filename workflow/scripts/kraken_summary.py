@@ -39,11 +39,20 @@ for report in reports:
     sample_results_dict["unclassified (%)"] = prct_reads
     sample_results_dict["unclassified (#)"] = f'{no_reads:,}'
 
+    line = report_df.loc[report_df["tax_id"] == 1]
+    total_reads = no_reads + line.iloc[0]["total_reads"]
+
+    sample_results_dict["total reads (#)"] = f'{total_reads:,}'
+
     sample = report[report.rfind("/") + 1 : report.rfind("_report")]
     results_dict[sample] = sample_results_dict
 
 
 results_df = pd.DataFrame.from_dict(results_dict, orient="index")
 results_df.index.name = "sample"
+
+# move total reads column to the front of the table
+first_column = results_df.pop("total reads (#)") 
+results_df.insert(0, "total reads (#)", first_column)
 
 results_df.to_csv(outfile)

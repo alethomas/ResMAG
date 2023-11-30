@@ -22,7 +22,7 @@ if not config["testing"]:
     rule kraken2:
         input:
             hfile=get_kraken_db_file(),
-            fastqs=get_trimmed_fastqs,
+            fastqs=get_prefiltered_fastqs,
         output:
             clf1=temp("results/{project}/filtered/{sample}_clf_1.fastq"),
             clf2=temp("results/{project}/filtered/{sample}_clf_2.fastq"),
@@ -70,7 +70,7 @@ rule remove_human_reads:
     log:
         "logs/{project}/kraken2/remove_human/{sample}.log",
     params:
-        human_tax=9606,
+        human_tax=get_human_tax_ID(),
     threads: 4
     conda:
         "../envs/kraken2.yaml"
@@ -78,9 +78,6 @@ rule remove_human_reads:
         "extract_kraken_reads.py -s1 {input.clf1} -s2 {input.clf2} -k {input.outfile} "
         "-r {input.report} -t {params.human_tax}  --exclude "
         "-o {output.out1} -o2 {output.out2} --fastq-output > {log} 2>&1"
-
-
-## Add possibility to also remove other hosts eg pig
 
 
 rule add_unclf_reads:
@@ -115,6 +112,10 @@ rule kraken_summary:
     input:
         reports=expand(
             "results/{{project}}/filtered/kraken/{sample}_report.tsv",
+            sample=get_samples(),
+        ),
+        jsons=expand(
+            "results/{{project}}/trimmed/fastp/{sample}.fastp.json",
             sample=get_samples(),
         ),
     output:
@@ -161,6 +162,94 @@ rule kraken2_report:
         "sed -i 's/report.xlsx/{params.name}_report.xlsx/g' {output}/indexes/index1.html) && "
         "mv {output}/report.xlsx {output}/{params.name}_report.xlsx && "
         "cp {params.styles}* {output}/css/ > {log} 2>&1"
+
+
+if config["host_filtering"]["do_host_filtering"]:
+    rule map_to_host:
+        input:
+            fastqs=get_trimmed_fastqs,
+        output:
+            temp("results/{project}/host_filtering/alignments/{sample}.bam"),
+        params:
+            ref=config["host_filtering"]["ref_genome"],
+        threads: 10
+        log:
+            "logs/{project}/host_filtering/map_to_host_{sample}.log",
+        conda:
+            "../envs/minimap2.yaml"
+        shell:
+            "(minimap2 -a -xsr -t {threads} {params.ref} {input.fastqs} | "
+            "samtools view -bh | "
+            "samtools sort --threads {threads} -o {output}) > {log} 2>&1"
+
+
+    rule index_host_alignment:
+        input:
+            "results/{project}/host_filtering/alignments/{sample}.bam",
+        output:
+            temp("results/{project}/host_filtering/alignments/{sample}.bam.bai"),
+        threads: 3
+        log:
+            "logs/{project}/host_filtering/index_host_alignment_{sample}.log",
+        conda:
+            "../envs/minimap2.yaml"
+        shell:
+            "samtools index {input} > {log} 2>&1"
+
+
+    rule filter_host:
+        input:
+            bam="results/{project}/host_filtering/alignments/{sample}.bam",
+            bai="results/{project}/host_filtering/alignments/{sample}.bam.bai",
+        output:
+            non_host=expand("results/{{project}}/host_filtering/non_host/{{sample}}_{reads}.fastq.gz",reads=["R1","R2"]),
+        threads: 3
+        log:
+            "logs/{project}/host_filtering/filter_host_{sample}.log", 
+        conda:
+            "../envs/minimap2.yaml"
+        shell:
+            "(samtools fastq -F 3584 -f 77 {input.bam} | gzip -c > {output.non_host[0]} && "
+            "samtools fastq -F 3584 -f 141 {input.bam} | gzip -c > {output.non_host[1]}) > {log} 2>&1"
+    
+
+    rule host_filtering_summary:
+        input:
+            csv="results/{project}/report/kraken2_summary.csv",
+            jsons=expand(
+                "results/{{project}}/trimmed/fastp/{sample}.fastp.json",
+                sample=get_samples(),
+            ),
+        output:
+            csv="results/{project}/report/host_filtering_summary.csv",
+        params:
+            host_name=config["host_filtering"]["host_name"]
+        log:
+            "logs/{project}/host_filtering/summary.log",
+        threads: 2
+        conda:
+            "../envs/python.yaml"
+        script:
+            "../scripts/host_filtering_summary.py"
+
+        
+    use rule kraken2_report as host_filtering_report with:
+        input:
+            "results/{project}/report/host_filtering_summary.csv",
+        output:
+            report(
+                directory("results/{project}/report/host_filtering/"),
+                htmlindex="index.html",
+                category="1. Quality control",
+                labels={"sample": "all samples"},
+            ),
+        params:
+            pin_until="sample",
+            styles="resources/report/tables/",
+            name="host_filtering",
+            header="Filtering out {} reads".format(config["host_filtering"]["host_name"]),
+        log:
+            "logs/{project}/report/host_filtering_rbt_csv.log",
 
 
 rule kraken2_postfilt:

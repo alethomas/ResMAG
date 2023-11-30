@@ -61,6 +61,16 @@ def get_trimmed_fastqs(wildcards):
     ]
 
 
+def get_prefiltered_fastqs(wildcards):
+    if config["host_filtering"]["do_host_filtering"]:
+        return [
+            "results/{project}/host_filtering/non_host/{sample}_R1.fastq.gz",
+            "results/{project}/host_filtering/non_host/{sample}_R2.fastq.gz",
+        ]
+    else:
+        get_trimmed_fastqs
+
+
 def get_kraken_db_file():
     file = "{}{}/hash.k2d".format(get_resource_path(), config["kraken"]["db-name"])
     return file
@@ -73,6 +83,11 @@ def get_checkm2_db():
 
 def get_taxID_dict():
     return config["kraken"]["taxIDs-ref"]
+
+
+def get_human_tax_ID():
+    return(get_taxID_dict()["human"])
+
 
 
 def get_filtered_fastqs(wildcards):

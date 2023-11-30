@@ -1,6 +1,11 @@
+report_input=list()
+if config["host_filtering"]["do_host_filtering"]:
+    report_input.append("results/{project}/report/host_filtering/")
+
 rule snakemake_report:
     input:
         # 1. Quality control
+        report_input,
         "results/{project}/qc/multiqc.html",
         # 2. Species diversity
         "results/{project}/report/kraken2/",

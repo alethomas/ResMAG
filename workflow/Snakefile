@@ -60,7 +60,22 @@ rule all:
         ),
 
 
-"""expand("results/{project}/report/{sample}/bin/",project=get_project(),sample=get_samples(),
+"""expand(
+            "results/{project}/report/{sample}/kraken.krona.html",
+            project=get_project(),
+            sample=get_samples(),
+        ),
+        expand("results/{project}/report/kraken2/",project=get_project(),
+        ),
+        expand("results/{project}/report/bracken_plot.png",project=get_project(),
+        ),
+        expand("results/{project}/report/host_filtering/",project=get_project(),
+        ),
+
+        
+
+
+expand("results/{project}/report/{sample}/bin/",project=get_project(),sample=get_samples(),
         ),
         expand(
             "results/{project}/das_tool/{sample}/{sample}_DASTool_summary.tsv",
