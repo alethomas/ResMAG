@@ -166,5 +166,12 @@ def get_paths_binner(wildcards):
     return paths, binner
 
 
+def bins_for_sample(wildcards):
+    if len(get_paths_binner[0]) >0:
+        return(True)
+    else:
+        return(False)
+
+
 def get_DAS_Tool_threads():
     return config["das_tool"]["threads"]

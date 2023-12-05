@@ -272,38 +272,79 @@ rule kraken2_postfilt:
         "--gzip-compressed {input.fastqs} > {log} 2>&1"
 
 
-rule bracken_analysis:
+rule bracken_genus:
     input:
         hfile=get_kraken_db_file(),
         kreport="results/{project}/filtered/kraken_postfilt/{sample}_report.tsv",
     output:
-        breport="results/{project}/filtered/bracken/reports/{sample}.breport",
-        bfile="results/{project}/filtered/bracken/files/{sample}.bracken",
+        breport="results/{project}/report/bracken/reports_genus/{sample}.breport",
+        bfile="results/{project}/report/bracken/files_genus/{sample}.bracken",
     params:
         db=lambda wildcards, input: Path(input.hfile).parent,
+        level= "G",
     log:
-        "logs/{project}/bracken/{sample}.log",
+        "logs/{project}/bracken/{sample}_genus.log",
     resources:
         mem_mb=100,
     threads: 1
-    params:
-        threads=1,
     conda:
         "../envs/bracken.yaml"
     shell:
-        "bracken -d {params.db} -i {input.kreport} -l G -o {output.bfile} -w {output.breport} > {log} 2>&1"
+        "bracken -d {params.db} -i {input.kreport} -l {params.level} -o {output.bfile} -w {output.breport} > {log} 2>&1"
+
+
+use rule bracken_genus as bracken_family with:
+    input:
+        hfile=get_kraken_db_file(),
+        kreport="results/{project}/filtered/kraken_postfilt/{sample}_report.tsv",
+    output:
+        breport="results/{project}/report/bracken/reports_family/{sample}.breport",
+        bfile="results/{project}/report/bracken/files_family/{sample}.bracken",
+    params:
+        db=lambda wildcards, input: Path(input.hfile).parent,
+        level= "F",
+    log:
+        "logs/{project}/bracken/{sample}_family.log",
+
+
+use rule bracken_genus as bracken_phylum with:
+    input:
+        hfile=get_kraken_db_file(),
+        kreport="results/{project}/filtered/kraken_postfilt/{sample}_report.tsv",
+    output:
+        breport="results/{project}/report/bracken/reports_phylum/{sample}.breport",
+        bfile="results/{project}/report/bracken/files_phylum/{sample}.bracken",
+    params:
+        db=lambda wildcards, input: Path(input.hfile).parent,
+        level= "P",
+    log:
+        "logs/{project}/bracken/{sample}_phylum.log",
+
+
+use rule bracken_genus as bracken_class with:
+    input:
+        hfile=get_kraken_db_file(),
+        kreport="results/{project}/filtered/kraken_postfilt/{sample}_report.tsv",
+    output:
+        breport="results/{project}/report/bracken/reports_class/{sample}.breport",
+        bfile="results/{project}/report/bracken/files_class/{sample}.bracken",
+    params:
+        db=lambda wildcards, input: Path(input.hfile).parent,
+        level= "C",
+    log:
+        "logs/{project}/bracken/{sample}_class.log",
 
 
 rule merge_bracken:
     input:
         expand(
-            "results/{{project}}/filtered/bracken/files/{sample}.bracken",
+            "results/{{project}}/report/bracken/files_{{level}}/{sample}.bracken",
             sample=get_samples(),
         ),
     output:
-        "results/{project}/filtered/bracken/merged.bracken.txt",
+        "results/{project}/report/bracken/merged.bracken_{level}.txt",
     log:
-        "logs/{project}/bracken/merge_bracken.log",
+        "logs/{project}/bracken/merge_bracken_{level}.log",
     resources:
         mem_mb=100,
     threads: 1
@@ -317,19 +358,19 @@ rule merge_bracken:
 
 rule create_bracken_plot:
     input:
-        "results/{project}/filtered/bracken/merged.bracken.txt",
+        "results/{project}/report/bracken/merged.bracken_{level}.txt",
     output:
         report(
-            "results/{project}/report/bracken_plot.png",
+            "results/{project}/report/bracken_{level}_plot.png",
             caption="../report/bracken_plot.rst",
             category="2. Species diversity",
             subcategory="2.2 post-filtering human reads",
-            labels={"sample": "all samples"},
+            labels={"sample": "all samples", "level":"{level}"},
         ),
     params:
         threshold=0.001,
     log:
-        "logs/{project}/report/bracken_plot.log",
+        "logs/{project}/report/bracken_{level}_plot.log",
     conda:
         "../envs/python.yaml"
     script:

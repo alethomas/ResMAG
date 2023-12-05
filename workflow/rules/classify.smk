@@ -75,7 +75,7 @@ rule gtdbtk_classify_wf:
         summary="results/{project}/classification/{sample}/{sample}.bac120.summary.tsv",
     params:
         outdir=lambda wildcards, output: Path(output.summary).parent,
-    threads: 12
+    threads: 30
     log:
         "logs/{project}/gtdbtk/{sample}_classify.log",
     conda:

@@ -108,52 +108,52 @@ rule dastool_run:
         "-o {params.outdir}/{wildcards.sample} "
         "> {log} 2>&1 "
 
-
-rule move_dastool_output:
-    input:
-        contig2bin="results/{project}/das_tool/{sample}/{sample}_DASTool_contig2bin.tsv",
-        summary="results/{project}/das_tool/{sample}/{sample}_DASTool_summary.tsv",
-    output:
-        contig2bin="results/{project}/contig2bins/{sample}/DASTool_contig2bin.tsv",
-        summary="results/{project}/output/{sample}/{sample}_DASTool_summary.tsv",
-    threads: 2
-    log:
-        "logs/{project}/das_tool/{sample}/move_output.log",
-    conda:
-        "../envs/unix.yaml"
-    shell:
-        "cp {input.contig2bin} {output.contig2bin} && "
-        "cp {input.summary} {output.summary} "
-        "> {log} 2>&1 "
-
-
-rule gzip_bins:
-    input:
-        "results/{project}/das_tool/{sample}/{sample}_DASTool_bins/",
-    output:
-        directory("results/{project}/output/{sample}/bins/"),
-    threads: 2
-    log:
-        "logs/{project}/bins/{sample}/gz_bins.log",
-    conda:
-        "../envs/unix.yaml"
-    shell:
-        "gzip -k {input}/*.fa && "
-        "mkdir -p {output}/ && "
-        "mv {input}/*.fa.gz {output}/ > {log} 2>&1"
+if bins_for_sample:
+    rule move_dastool_output:
+        input:
+            contig2bin="results/{project}/das_tool/{sample}/{sample}_DASTool_contig2bin.tsv",
+            summary="results/{project}/das_tool/{sample}/{sample}_DASTool_summary.tsv",
+        output:
+            contig2bin="results/{project}/contig2bins/{sample}/DASTool_contig2bin.tsv",
+            summary="results/{project}/output/{sample}/{sample}_DASTool_summary.tsv",
+        threads: 2
+        log:
+            "logs/{project}/das_tool/{sample}/move_output.log",
+        conda:
+            "../envs/unix.yaml"
+        shell:
+            "cp {input.contig2bin} {output.contig2bin} && "
+            "cp {input.summary} {output.summary} "
+            "> {log} 2>&1 "
 
 
-rule move_MAGs:
-    input:
-        bin_dir="results/{project}/output/{sample}/bins/",
-        csv="results/{project}/report/{sample}/mags_summary.csv",
-        gz_log="logs/{project}/bins/{sample}/gz_bins.log",
-    output:
-        outdir=directory("results/{project}/output/{sample}/mags/"),
-    threads: 2
-    log:
-        "logs/{project}/bins/{sample}/move_MAGs.log",
-    conda:
-        "../envs/python.yaml"
-    script:
-        "../scripts/move_MAGs.py"
+    rule gzip_bins:
+        input:
+            "results/{project}/das_tool/{sample}/{sample}_DASTool_bins/",
+        output:
+            directory("results/{project}/output/{sample}/bins/"),
+        threads: 2
+        log:
+            "logs/{project}/bins/{sample}/gz_bins.log",
+        conda:
+            "../envs/unix.yaml"
+        shell:
+            "gzip -k {input}/*.fa && "
+            "mkdir -p {output}/ && "
+            "mv {input}/*.fa.gz {output}/ > {log} 2>&1"
+
+
+    rule move_MAGs:
+        input:
+            bin_dir="results/{project}/output/{sample}/bins/",
+            csv="results/{project}/report/{sample}/mags_summary.csv",
+            gz_log="logs/{project}/bins/{sample}/gz_bins.log",
+        output:
+            outdir=directory("results/{project}/output/{sample}/mags/"),
+        threads: 2
+        log:
+            "logs/{project}/bins/{sample}/move_MAGs.log",
+        conda:
+            "../envs/python.yaml"
+        script:
+            "../scripts/move_MAGs.py"

@@ -9,7 +9,9 @@ rule snakemake_report:
         "results/{project}/qc/multiqc.html",
         # 2. Species diversity
         "results/{project}/report/kraken2/",
-        "results/{project}/report/bracken_plot.png",
+        expand("results/{{project}}/report/bracken_{level}_plot.png",
+            level=["genus", "family", "class", "phylum"],
+        ),
         expand(
             "results/{{project}}/report/{sample}/kraken.krona.html",
             sample=get_samples(),

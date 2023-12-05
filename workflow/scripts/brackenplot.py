@@ -7,6 +7,7 @@ sys.stderr = open(snakemake.log[0], "w")
 
 infile = snakemake.input[0]
 threshold = snakemake.params.threshold
+level=snakemake.wildcards.level
 png = snakemake.output[0]
 
 
@@ -86,7 +87,7 @@ def plot_bracken(bracken_df, png_file):
     legend = plt.legend(
         handles=handles,
         labels=new_labels,
-        title="genus",
+        title=level,
         bbox_to_anchor=(1.35, 0.5),
         loc="center right",
         fontsize=(labelsize - 4),
