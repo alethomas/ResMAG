@@ -17,7 +17,9 @@ workflow/scripts/old_*
 !workflow/report/*
 !workflow/rules/*
 !workflow/scripts/*
-!resources/report/*
+!resources
+!resources/*
+!resources/report/**
 !.gitignore
 !.snakemake-workflow-catalog.yml
 !LICENSE
