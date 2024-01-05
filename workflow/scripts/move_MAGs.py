@@ -12,10 +12,8 @@ outdir= snakemake.output.outdir
 mags_df=pd.read_csv(summary, index_col=0)
 mags=mags_df.index.to_list()
 
-if len(mags) == 0:
-    cmd=f"mkdir -p {outdir}"
-    os.system(cmd)
-else:
+os.system(f"mkdir -p {outdir}")
+if len(mags) > 0:
     for mag in mags:
-        cmd=f"mkdir -p {outdir} && mv {bin_dir}/{mag}.fa.gz {outdir}/"
+        cmd=f"mv {bin_dir}/{mag}.fa.gz {outdir}/"
         os.system(cmd)

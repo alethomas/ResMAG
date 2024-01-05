@@ -6,7 +6,7 @@ rule fastqc:
     input:
         get_trimmed_fastqs,
     output:
-        html="results/{project}/qc/fastqc/{sample}_trimmed.html",
+        html=temp("results/{project}/qc/fastqc/{sample}_trimmed.html"),
         zip="results/{project}/qc/fastqc/{sample}_trimmed_fastqc.zip",
     log:
         "logs/{project}/fastqc/{sample}.log",
@@ -30,14 +30,18 @@ rule multiqc:
             category="1. Quality control",
             labels={"sample": "all samples"},
         ),
+        "results/{project}/qc/multiqc_data.zip",
     params:
         extra=(
-            "--config config/multiqc_config.yaml --title 'Results for data from {project} project'"
+            "--zip-data-dir "
+            "--config config/multiqc_config.yaml "
+            "--title 'Results for data from {project} project'"
         ),
+        use_input_files_only=True,
     log:
         "logs/{project}/multiqc.log",
     wrapper:
-        "v1.23.5/bio/multiqc"
+        "v3.3.1/bio/multiqc"
 
 
 ## bin QC
@@ -60,7 +64,7 @@ rule checkm2_run:
         bins="results/{project}/das_tool/{sample}/{sample}_DASTool_bins/",
         dbfile=get_checkm2_db(),  #"{}/{}".format(config["data-handling"]["resources"], config["checkm2"]),
     output:
-        stats="results/{project}/qc/checkm2/{sample}/quality_report.tsv",
+        stats=temp("results/{project}/qc/checkm2/{sample}/quality_report.tsv"),
     params:
         outdir=lambda wildcards, output: Path(output.stats).parent,
     log:
@@ -75,17 +79,17 @@ rule checkm2_run:
         # --remove_intermediates-x fa.gz
 
 
-rule bin_summary:
+rule bin_summary_sample:
     input:
         tool="results/{project}/das_tool/{sample}/{sample}_DASTool_summary.tsv",
         checkm="results/{project}/qc/checkm2/{sample}/quality_report.tsv",
         gtdb="results/{project}/classification/{sample}/{sample}.bac120.summary.tsv",
     output:
-        csv_bins="results/{project}/report/{sample}/bin_summary.csv",
-        csv_checkm="results/{project}/report/{sample}/checkm2_summary.csv",
-        csv_dastool="results/{project}/report/{sample}/DASTool_summary.csv",
-        csv_tax="results/{project}/report/{sample}/bin_taxonomy.csv",
-        csv_mags="results/{project}/report/{sample}/mags_summary.csv",
+        csv_bins="results/{project}/output/report/{sample}/{sample}_bin_summary.csv",
+        csv_checkm="results/{project}/output/report/{sample}/{sample}_checkm2_summary.csv",
+        csv_dastool="results/{project}/output/report/{sample}/{sample}_DASTool_summary.csv",
+        csv_tax="results/{project}/output/report/{sample}/{sample}_bin_taxonomy.csv",
+        csv_mags="results/{project}/output/report/{sample}/{sample}_mags_summary.csv",
     params:
         max_cont=config["MAG-criteria"]["max-contamination"],  #snakemake.params.contamination
         min_comp=config["MAG-criteria"]["min-completeness"],
@@ -95,15 +99,15 @@ rule bin_summary:
     conda:
         "../envs/python.yaml"
     script:
-        "../scripts/bin_summary.py"
+        "../scripts/bin_summary_sample.py"
 
 
-use rule kraken2_report as bin_report with:
+use rule kraken2_report as bin_sample_report with:
     input:
-        "results/{project}/report/{sample}/bin_summary.csv",
+        "results/{project}/output/report/{sample}/{sample}_bin_summary.csv",
     output:
         report(
-            directory("results/{project}/report/{sample}/bin/"),
+            directory("results/{project}/output/report/{sample}/bin/"),
             htmlindex="index.html",
             category="4. Binning results",
             subcategory="4.1 Summary",
@@ -120,10 +124,10 @@ use rule kraken2_report as bin_report with:
 
 use rule kraken2_report as dastool_report with:
     input:
-        "results/{project}/report/{sample}/DASTool_summary.csv",
+        "results/{project}/output/report/{sample}/{sample}_DASTool_summary.csv",
     output:
         report(
-            directory("results/{project}/report/{sample}/dastool/"),
+            directory("results/{project}/output/report/{sample}/dastool/"),
             htmlindex="index.html",
             category="4. Binning results",
             subcategory="4.2 Quality control",
@@ -143,10 +147,10 @@ use rule kraken2_report as dastool_report with:
 
 use rule kraken2_report as checkm2_report with:
     input:
-        "results/{project}/report/{sample}/checkm2_summary.csv",
+        "results/{project}/output/report/{sample}/{sample}_checkm2_summary.csv",
     output:
         report(
-            directory("results/{project}/report/{sample}/checkm2/"),
+            directory("results/{project}/output/report/{sample}/checkm2/"),
             htmlindex="index.html",
             category="4. Binning results",
             subcategory="4.2 Quality control",
@@ -166,10 +170,10 @@ use rule kraken2_report as checkm2_report with:
 
 use rule kraken2_report as taxonomy_report with:
     input:
-        "results/{project}/report/{sample}/bin_taxonomy.csv",
+        "results/{project}/output/report/{sample}/{sample}_bin_taxonomy.csv",
     output:
         report(
-            directory("results/{project}/report/{sample}/taxonomy/"),
+            directory("results/{project}/output/report/{sample}/taxonomy/"),
             htmlindex="index.html",
             category="4. Binning results",
             subcategory="4.3 Taxonomy classification",
@@ -186,10 +190,10 @@ use rule kraken2_report as taxonomy_report with:
 
 use rule kraken2_report as mag_report with:
     input:
-        "results/{project}/report/{sample}/mags_summary.csv",
+        "results/{project}/output/report/{sample}/{sample}_mags_summary.csv",
     output:
         report(
-            directory("results/{project}/report/{sample}/mags/"),
+            directory("results/{project}/output/report/{sample}/mags/"),
             htmlindex="index.html",
             category="5. Taxonomic classification",
             subcategory="5.1 MAGs classification",
@@ -202,3 +206,44 @@ use rule kraken2_report as mag_report with:
         header="MAG summary for sample {sample}",
     log:
         "logs/{project}/report/{sample}/mag_rbt_csv.log",
+
+
+rule bin_summary_all:
+    input:
+        csv_mags=expand(
+            "results/{{project}}/output/report/{sample}/{sample}_mags_summary.csv",
+            sample=get_samples(),
+        ),
+        csv_bins=expand(
+            "results/{{project}}/output/report/{sample}/{sample}_bin_summary.csv",
+            sample=get_samples(),
+        ),
+    output:
+        "results/{project}/output/report/all/binnning_summary_all.csv",
+    log:
+        "logs/{project}/bin_summary/all.log",
+    threads: 4
+    conda:
+        "../envs/python.yaml"
+    script:
+        "../scripts/bin_summary_all.py"
+
+
+use rule kraken2_report as bin_all_report with:
+    input:
+        "results/{project}/output/report/all/binnning_summary_all.csv",
+    output:
+        report(
+            directory("results/{project}/output/report/all/binning/"),
+            htmlindex="index.html",
+            category="4. Binning results",
+            subcategory="4.1 Summary",
+            labels={"sample": "all"},
+        ),
+    params:
+        pin_until="sample",
+        styles="resources/report/tables/",
+        name="bin_summary",
+        header="Bin summary for all samples",
+    log:
+        "logs/{project}/report/all_bin_rbt_csv.log",

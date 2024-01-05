@@ -9,6 +9,11 @@ rule metabinner_coverage_profile:
         outfile=temp(
             "results/{project}/metabinner/{sample}/coverage_profile_{threshold}/coverage_profile.tsv"
         ),
+        outfolder=temp(
+            directory(
+                "results/{project}/metabinner/{sample}/coverage_profile_{threshold}/"
+            )
+        ),
     threads: 32
     params:
         threads=config["binning"]["threads"],
@@ -62,6 +67,9 @@ rule metabinner_run:
     output:
         outfile=temp(
             "results/{project}/metabinner/{sample}/metabinner_res/metabinner_result.tsv"
+        ),
+        outfolder=temp(
+            directory("results/{project}/metabinner/{sample}/metabinner_res/")
         ),
     threads: 64
     params:

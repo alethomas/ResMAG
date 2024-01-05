@@ -31,7 +31,7 @@ rule fastp:
                 "results/{project}/trimmed/fastp/{sample}.2.fastq.gz",
             ]
         ),
-        html="results/{project}/trimmed/fastp/{sample}.html",
+        html=temp("results/{project}/trimmed/fastp/{sample}.html"),
         json="results/{project}/trimmed/fastp/{sample}.fastp.json",
     params:
         adapters=get_adapters,

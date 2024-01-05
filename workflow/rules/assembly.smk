@@ -50,7 +50,7 @@ rule assembly_summary:
             sample=get_samples(),
         ),
     output:
-        csv="results/{project}/report/assembly_summary.csv",
+        csv="results/{project}/output/report/all/assembly_summary.csv",
     log:
         "logs/{project}/assembly/summary.log",
     conda:
@@ -61,10 +61,10 @@ rule assembly_summary:
 
 use rule kraken2_report as assembly_report with:
     input:
-        "results/{project}/report/assembly_summary.csv",
+        "results/{project}/output/report/all/assembly_summary.csv",
     output:
         report(
-            directory("results/{project}/report/assembly/"),
+            directory("results/{project}/output/report/all/assembly/"),
             htmlindex="index.html",
             category="3. Assembly results",
             labels={

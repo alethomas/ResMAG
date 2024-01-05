@@ -64,11 +64,12 @@ def get_trimmed_fastqs(wildcards):
 def get_prefiltered_fastqs(wildcards):
     if config["host_filtering"]["do_host_filtering"]:
         return [
-            "results/{project}/host_filtering/non_host/{sample}_R1.fastq.gz",
-            "results/{project}/host_filtering/non_host/{sample}_R2.fastq.gz",
+            "results/{project}/host_filtering/non_host/{sample}_1.fastq.gz",
+            "results/{project}/host_filtering/non_host/{sample}_2.fastq.gz",
         ]
     else:
-        get_trimmed_fastqs
+        return(get_trimmed_fastqs(wildcards))
+
 
 
 def get_kraken_db_file():
@@ -102,7 +103,7 @@ def get_filtered_gz_fastqs(wildcards):
         "results/{project}/filtered/fastqs/{sample}_1.fastq.gz",
         "results/{project}/filtered/fastqs/{sample}_2.fastq.gz",
     ]
-
+   
 
 def get_assembly(wildcards):
     file = "results/{project}/megahit/{sample}/final.contigs.fa"

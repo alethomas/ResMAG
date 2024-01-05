@@ -1,4 +1,3 @@
-workflow/scripts/old_*
 *
 !.github
 !.github/**

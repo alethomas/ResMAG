@@ -119,7 +119,7 @@ rule kraken_summary:
             sample=get_samples(),
         ),
     output:
-        csv="results/{project}/report/kraken2_summary.csv",
+        csv="results/{project}/output/report/all/diversity_summary.csv",
     log:
         "logs/{project}/kraken2/summary.log",
     params:
@@ -133,10 +133,10 @@ rule kraken_summary:
 
 rule kraken2_report:
     input:
-        "results/{project}/report/kraken2_summary.csv",
+        "results/{project}/output/report/all/diversity_summary.csv",
     output:
         report(
-            directory("results/{project}/report/kraken2/"),
+            directory("results/{project}/output/report/all/diversity_summary/"),
             htmlindex="index.html",
             caption="../report/kraken.rst",
             category="2. Species diversity",
@@ -156,8 +156,8 @@ rule kraken2_report:
         "../envs/rbt.yaml"
     shell:
         "rbt csv-report {input} --pin-until {params.pin_until} {output} && "
-        "(sed -i '/>github<\/a>/a \\\\t\\t\\t</li>\\n\\t\\t\\t<li class=\"nav-item\">"
-        "\\n\\t\\t\\t\\t<a class=\"nav-link\" href=\"#\">{params.header}</a>' "
+        '(sed -i \'/>github<\/a>/a \\\\t\\t\\t</li>\\n\\t\\t\\t<li class="nav-item">'
+        '\\n\\t\\t\\t\\t<a class="nav-link" href="#">{params.header}</a>\' '
         "{output}/indexes/index1.html && "
         "sed -i 's/report.xlsx/{params.name}_report.xlsx/g' {output}/indexes/index1.html) && "
         "mv {output}/report.xlsx {output}/{params.name}_report.xlsx && "
@@ -165,6 +165,7 @@ rule kraken2_report:
 
 
 if config["host_filtering"]["do_host_filtering"]:
+
     rule map_to_host:
         input:
             fastqs=get_trimmed_fastqs,
@@ -182,7 +183,6 @@ if config["host_filtering"]["do_host_filtering"]:
             "samtools view -bh | "
             "samtools sort --threads {threads} -o {output}) > {log} 2>&1"
 
-
     rule index_host_alignment:
         input:
             "results/{project}/host_filtering/alignments/{sample}.bam",
@@ -196,34 +196,37 @@ if config["host_filtering"]["do_host_filtering"]:
         shell:
             "samtools index {input} > {log} 2>&1"
 
-
     rule filter_host:
         input:
             bam="results/{project}/host_filtering/alignments/{sample}.bam",
             bai="results/{project}/host_filtering/alignments/{sample}.bam.bai",
         output:
-            non_host=expand("results/{{project}}/host_filtering/non_host/{{sample}}_{reads}.fastq.gz",reads=["R1","R2"]),
+            non_host=temp(
+                expand(
+                    "results/{{project}}/host_filtering/non_host/{{sample}}_{reads}.fastq.gz",
+                    reads=["1", "2"],
+                )
+            ),
         threads: 3
         log:
-            "logs/{project}/host_filtering/filter_host_{sample}.log", 
+            "logs/{project}/host_filtering/filter_host_{sample}.log",
         conda:
             "../envs/minimap2.yaml"
         shell:
             "(samtools fastq -F 3584 -f 77 {input.bam} | gzip -c > {output.non_host[0]} && "
             "samtools fastq -F 3584 -f 141 {input.bam} | gzip -c > {output.non_host[1]}) > {log} 2>&1"
-    
 
     rule host_filtering_summary:
         input:
-            csv="results/{project}/report/kraken2_summary.csv",
+            csv="results/{project}/output/report/all/diversity_summary.csv",
             jsons=expand(
                 "results/{{project}}/trimmed/fastp/{sample}.fastp.json",
                 sample=get_samples(),
             ),
         output:
-            csv="results/{project}/report/host_filtering_summary.csv",
+            csv="results/{project}/output/report/host_filtering_summary.csv",
         params:
-            host_name=config["host_filtering"]["host_name"]
+            host_name=config["host_filtering"]["host_name"],
         log:
             "logs/{project}/host_filtering/summary.log",
         threads: 2
@@ -232,13 +235,12 @@ if config["host_filtering"]["do_host_filtering"]:
         script:
             "../scripts/host_filtering_summary.py"
 
-        
     use rule kraken2_report as host_filtering_report with:
         input:
-            "results/{project}/report/host_filtering_summary.csv",
+            "results/{project}/output/report/host_filtering_summary.csv",
         output:
             report(
-                directory("results/{project}/report/host_filtering/"),
+                directory("results/{project}/output/report/host_filtering/"),
                 htmlindex="index.html",
                 category="1. Quality control",
                 labels={"sample": "all samples"},
@@ -247,7 +249,9 @@ if config["host_filtering"]["do_host_filtering"]:
             pin_until="sample",
             styles="resources/report/tables/",
             name="host_filtering",
-            header="Filtering out {} reads".format(config["host_filtering"]["host_name"]),
+            header="Filtering out {} reads".format(
+                config["host_filtering"]["host_name"]
+            ),
         log:
             "logs/{project}/report/host_filtering_rbt_csv.log",
 
@@ -277,11 +281,15 @@ rule bracken_genus:
         hfile=get_kraken_db_file(),
         kreport="results/{project}/filtered/kraken_postfilt/{sample}_report.tsv",
     output:
-        breport="results/{project}/report/bracken/reports_genus/{sample}.breport",
-        bfile="results/{project}/report/bracken/files_genus/{sample}.bracken",
+        breport=temp(
+            "results/{project}/output/report/all/diversity_abundance/reports_genus/{sample}.breport"
+        ),
+        bfile=temp(
+            "results/{project}/output/report/all/diversity_abundance/files_genus/{sample}.bracken"
+        ),
     params:
         db=lambda wildcards, input: Path(input.hfile).parent,
-        level= "G",
+        level="G",
     log:
         "logs/{project}/bracken/{sample}_genus.log",
     resources:
@@ -298,11 +306,15 @@ use rule bracken_genus as bracken_family with:
         hfile=get_kraken_db_file(),
         kreport="results/{project}/filtered/kraken_postfilt/{sample}_report.tsv",
     output:
-        breport="results/{project}/report/bracken/reports_family/{sample}.breport",
-        bfile="results/{project}/report/bracken/files_family/{sample}.bracken",
+        breport=temp(
+            "results/{project}/output/report/all/diversity_abundance/reports_family/{sample}.breport"
+        ),
+        bfile=temp(
+            "results/{project}/output/report/all/diversity_abundance/files_family/{sample}.bracken"
+        ),
     params:
         db=lambda wildcards, input: Path(input.hfile).parent,
-        level= "F",
+        level="F",
     log:
         "logs/{project}/bracken/{sample}_family.log",
 
@@ -312,11 +324,15 @@ use rule bracken_genus as bracken_phylum with:
         hfile=get_kraken_db_file(),
         kreport="results/{project}/filtered/kraken_postfilt/{sample}_report.tsv",
     output:
-        breport="results/{project}/report/bracken/reports_phylum/{sample}.breport",
-        bfile="results/{project}/report/bracken/files_phylum/{sample}.bracken",
+        breport=temp(
+            "results/{project}/output/report/all/diversity_abundance/reports_phylum/{sample}.breport"
+        ),
+        bfile=temp(
+            "results/{project}/output/report/all/diversity_abundance/files_phylum/{sample}.bracken"
+        ),
     params:
         db=lambda wildcards, input: Path(input.hfile).parent,
-        level= "P",
+        level="P",
     log:
         "logs/{project}/bracken/{sample}_phylum.log",
 
@@ -326,11 +342,15 @@ use rule bracken_genus as bracken_class with:
         hfile=get_kraken_db_file(),
         kreport="results/{project}/filtered/kraken_postfilt/{sample}_report.tsv",
     output:
-        breport="results/{project}/report/bracken/reports_class/{sample}.breport",
-        bfile="results/{project}/report/bracken/files_class/{sample}.bracken",
+        breport=temp(
+            "results/{project}/output/report/all/diversity_abundance/reports_class/{sample}.breport"
+        ),
+        bfile=temp(
+            "results/{project}/output/report/all/diversity_abundance/files_class/{sample}.bracken"
+        ),
     params:
         db=lambda wildcards, input: Path(input.hfile).parent,
-        level= "C",
+        level="C",
     log:
         "logs/{project}/bracken/{sample}_class.log",
 
@@ -338,11 +358,11 @@ use rule bracken_genus as bracken_class with:
 rule merge_bracken:
     input:
         expand(
-            "results/{{project}}/report/bracken/files_{{level}}/{sample}.bracken",
+            "results/{{project}}/output/report/all/diversity_abundance/files_{{level}}/{sample}.bracken",
             sample=get_samples(),
         ),
     output:
-        "results/{project}/report/bracken/merged.bracken_{level}.txt",
+        "results/{project}/output/report/all/diversity_abundance/merged.bracken_{level}.txt",
     log:
         "logs/{project}/bracken/merge_bracken_{level}.log",
     resources:
@@ -358,17 +378,18 @@ rule merge_bracken:
 
 rule create_bracken_plot:
     input:
-        "results/{project}/report/bracken/merged.bracken_{level}.txt",
+        "results/{project}/output/report/all/diversity_abundance/merged.bracken_{level}.txt",
     output:
         report(
-            "results/{project}/report/bracken_{level}_plot.png",
+            "results/{project}/output/report/all/abundance_{level}.html",
             caption="../report/bracken_plot.rst",
             category="2. Species diversity",
             subcategory="2.2 post-filtering human reads",
-            labels={"sample": "all samples", "level":"{level}"},
+            labels={"sample": "all samples", "level": "{level}"},
         ),
     params:
-        threshold=0.001,
+        # all level values below 1% will be summed up as other
+        threshold=0.01,
     log:
         "logs/{project}/report/bracken_{level}_plot.log",
     conda:
@@ -397,7 +418,7 @@ rule krona_html:
         "results/{project}/filtered/krona/{sample}.krona",
     output:
         report(
-            "results/{project}/report/{sample}/kraken.krona.html",
+            "results/{project}/output/report/{sample}/{sample}_kraken.krona.html",
             caption="../report/kraken_krona.rst",
             category="2. Species diversity",
             subcategory="2.2 post-filtering human reads",

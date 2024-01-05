@@ -19,7 +19,7 @@ rule run_kaiju:
         db_files=get_kaiju_files(),
         fastqs=get_filtered_gz_fastqs,
     output:
-        "results/{project}/kaiju/{sample}/kaiju.out",
+        temp("results/{project}/kaiju/{sample}/kaiju.out"),
     threads: 64
     log:
         "logs/{project}/kaiju/{sample}_run.log",
@@ -37,7 +37,7 @@ rule kaiju2krona:
     output:
         krona=temp("results/{project}/kaiju/{sample}/kaiju.out.krona"),
         html=report(
-            "results/{project}/report/{sample}/kaiju.out.html",
+            "results/{project}/output/report/{sample}/{sample}_kaiju.out.html",
             htmlindex="index.html",
             category="5. Taxonomic classification",
             subcategory="5.2 Read classification",
@@ -73,6 +73,9 @@ rule gtdbtk_classify_wf:
         log="logs/gtdbtk_download_DB.log",
     output:
         summary="results/{project}/classification/{sample}/{sample}.bac120.summary.tsv",
+        align=temp(directory("results/{project}/classification/{sample}/align/")),
+        classify=temp(directory("results/{project}/classification/{sample}/classify/")),
+        identify=temp(directory("results/{project}/classification/{sample}/identify/")),
     params:
         outdir=lambda wildcards, output: Path(output.summary).parent,
     threads: 30
