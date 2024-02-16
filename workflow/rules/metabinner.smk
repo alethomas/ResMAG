@@ -9,11 +9,9 @@ rule metabinner_coverage_profile:
         outfile=temp(
             "results/{project}/metabinner/{sample}/coverage_profile_{threshold}/coverage_profile.tsv"
         ),
-        outfolder=temp(
-            directory(
-                "results/{project}/metabinner/{sample}/coverage_profile_{threshold}/"
-            )
-        ),
+        outfolder=directory(
+            "results/{project}/metabinner/{sample}/coverage_profile_{threshold}/"
+        ), ## problem when marked as temp, bc folder deleted & file gone by this
     threads: 32
     params:
         threads=config["binning"]["threads"],
@@ -68,9 +66,9 @@ rule metabinner_run:
         outfile=temp(
             "results/{project}/metabinner/{sample}/metabinner_res/metabinner_result.tsv"
         ),
-        outfolder=temp(
+        outfolder=
             directory("results/{project}/metabinner/{sample}/metabinner_res/")
-        ),
+        ,
     threads: 64
     params:
         threads=config["binning"]["threads"],

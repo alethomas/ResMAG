@@ -7,7 +7,7 @@ rule snakemake_report:
     input:
         # 1. Quality control
         report_input,
-        "results/{project}/qc/multiqc.html",
+        "results/{project}/output/report/all/multiqc.html",
         # 2. Species diversity
         "results/{project}/output/report/all/diversity_summary/",
         expand(

@@ -39,7 +39,7 @@ rule all:
             project=get_project(),
         ),
         expand(
-            "results/{project}/assembly/{sample}_final.contigs.fa.gz",
+            "results/{project}/output/fasta/{sample}/{sample}_final.contigs.fa.gz",
             project=get_project(),
             sample=get_samples(),
         ),

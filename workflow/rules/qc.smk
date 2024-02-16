@@ -7,7 +7,7 @@ rule fastqc:
         get_trimmed_fastqs,
     output:
         html=temp("results/{project}/qc/fastqc/{sample}_trimmed.html"),
-        zip="results/{project}/qc/fastqc/{sample}_trimmed_fastqc.zip",
+        zip=temp("results/{project}/qc/fastqc/{sample}_trimmed_fastqc.zip"),
     log:
         "logs/{project}/fastqc/{sample}.log",
     wrapper:
@@ -25,12 +25,12 @@ rule multiqc:
         ),
     output:
         report(
-            "results/{project}/qc/multiqc.html",
+            "results/{project}/output/report/all/multiqc.html",
             htmlindex="multiqc.html",
             category="1. Quality control",
             labels={"sample": "all samples"},
         ),
-        "results/{project}/qc/multiqc_data.zip",
+        "results/{project}/output/report/all/multiqc_data.zip",
     params:
         extra=(
             "--zip-data-dir "
