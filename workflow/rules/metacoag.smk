@@ -11,7 +11,7 @@ rule coverm_metacoag:
         "../envs/coverm.yaml"
     shell:
         "coverm contig -1 {input.bact_reads[0]} -2 {input.bact_reads[1]} "
-        "-r {input.contigs[0]} -o {output} -t {threads} > {log} 2>&1"
+        "-r {input.contigs} -o {output} -t {threads} > {log} 2>&1"
 
 
 rule edit_abundance_file:
@@ -75,5 +75,5 @@ rule metacoag_run:
         "../envs/metacoag.yaml"
     shell:
         "metacoag --assembler megahit --graph {input.gfa} "
-        "--contigs {input.contigs[0]} --abundance {input.abd} "
+        "--contigs {input.contigs} --abundance {input.abd} "
         "--output {params.outdir} > {log} 2>&1"

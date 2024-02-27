@@ -39,7 +39,7 @@ rule all:
             project=get_project(),
         ),
         expand(
-            "results/{project}/output/fasta/{sample}/{sample}_final.contigs.fa.gz",
+            "results/{project}/output/fastas/{sample}/{sample}_final.contigs.fa.gz",
             project=get_project(),
             sample=get_samples(),
         ),
@@ -55,6 +55,30 @@ rule all:
         ),
         expand(
             "results/{project}/output/fastas/{sample}/{sample}_DASTool_summary.tsv",
+            project=get_project(),
+            sample=get_samples(),
+        ),
+        # removal logs
+        expand(
+            "logs/{project}/assembly/{sample}_intermediate_removal.done",
+            project=get_project(),
+            sample=get_samples(),
+        ),
+        expand(
+            "logs/{project}/metabinner/{sample}/coverage_profile_{threshold}_removal.done",
+            project=get_project(),
+            sample=get_samples(),
+            threshold=get_contig_length_filter(),
+        ),
+        expand(
+            "logs/{project}/metabinner/{sample}/composition_profile_kmer_{kmer_size}_f{threshold}_removal.done",
+            project=get_project(),
+            sample=get_samples(),
+            kmer_size=get_kmersize(),
+            threshold=get_contig_length_filter(),
+        ),
+        expand(
+            "logs/{project}/metabinner/{sample}/metabinner_removal.done",
             project=get_project(),
             sample=get_samples(),
         ),

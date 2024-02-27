@@ -11,7 +11,7 @@ rule coverm_metabat:
         "../envs/coverm.yaml"
     shell:
         "coverm contig -m metabat -1 {input.bact_reads[0]} "
-        "-2 {input.bact_reads[1]} -r {input.contigs[0]} "
+        "-2 {input.bact_reads[1]} -r {input.contigs} "
         "-t {threads} -o {output} > {log} 2>&1"
 
 
@@ -29,5 +29,5 @@ rule metabat2:
     conda:
         "../envs/metabat2.yaml"
     shell:
-        "metabat2 -i {input.contigs[0]} -a {input.abd} "
+        "metabat2 -i {input.contigs} -a {input.abd} "
         "-t {threads} -v -o {output}/{params.prefix} > {log} 2>&1"

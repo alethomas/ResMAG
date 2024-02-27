@@ -3,7 +3,7 @@ import sys
 
 sys.stderr = open(snakemake.log[0], "w")
 
-contigs = snakemake.input.contigs[0]
+contigs = snakemake.input.contigs
 fastg = snakemake.output[0]
 
 

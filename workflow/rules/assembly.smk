@@ -12,8 +12,6 @@ rule megahit:
         fastqs=get_filtered_gz_fastqs,
     output:
         contigs="results/{project}/megahit/{sample}/final.contigs.fa",
-        folder=temp(directory("results/{project}/megahit/{sample}/")),
-        #contigs_len=f"results/{{project}}/megahit/{{sample}}/final.contigs_{MIN_CONTIG_LEN}.fa",
     params:
         outdir=lambda wildcards, output: Path(output.contigs).parent,
         threshold=get_contig_length_threshold(),
@@ -29,18 +27,33 @@ rule megahit:
         #"&& cp {output.contigs} {output.contigs_len}) "
 
 
+rule remove_megahit_intermediates:
+    input:
+        contigs=get_assembly,
+    output:
+        touch("logs/{project}/assembly/{sample}_intermediate_removal.done"),
+    params:
+        outdir=lambda wildcards, input: Path(input.contigs).parent,
+    log:
+        "logs/{project}/assembly/{sample}_intermediate_removal.log",
+    conda:
+        "../envs/unix.yaml"
+    shell:
+        "(find {params.outdir}/ -mindepth 1 -type d -exec rm -rf {{}} +) > {log} 2>&1"
+
+
 rule gzip_assembly:
     input:
         contigs=get_assembly,
     output:
-        "results/{project}/output/fasta/{sample}/{sample}_final.contigs.fa.gz",
+        "results/{project}/output/fastas/{sample}/{sample}_final.contigs.fa.gz",
     threads: 4
     log:
         "logs/{project}/assembly/{sample}_gzip.log",
     conda:
         "../envs/unix.yaml"
     shell:
-        "gzip -c {input.contigs[0]} > {output} 2> {log}"
+        "gzip -c {input.contigs} > {output} 2> {log}"
 
 
 rule assembly_summary:

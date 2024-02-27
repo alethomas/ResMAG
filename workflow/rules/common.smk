@@ -106,9 +106,7 @@ def get_filtered_gz_fastqs(wildcards):
    
 
 def get_assembly(wildcards):
-    file = "results/{project}/megahit/{sample}/final.contigs.fa"
-    folder = Path(file).parent
-    return [file, folder]
+    return "results/{project}/megahit/{sample}/final.contigs.fa"
 
 
 def get_kaiju_files():

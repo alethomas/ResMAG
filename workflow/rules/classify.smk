@@ -19,7 +19,7 @@ rule run_kaiju:
         db_files=get_kaiju_files(),
         fastqs=get_filtered_gz_fastqs,
     output:
-        temp("results/{project}/kaiju/{sample}/kaiju.out"),
+        "results/{project}/kaiju/{sample}/kaiju.out",
     threads: 64
     log:
         "logs/{project}/kaiju/{sample}_run.log",
