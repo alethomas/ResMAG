@@ -2,8 +2,8 @@ RAW_DATA_PATH = get_data_path()
 
 
 # copy files to local
-### TODO: rename rule to fastq (local copy..), change to f"{RAW_DATA_PATh}{{project}}/{{sample}}_R1.fastq.gz"
-rule copy_fastq:
+### TODO: change to copying via tar or remove & expect local path 
+'''rule copy_fastq:
     input:
         fastqs=get_fastqs,
     output:
@@ -18,7 +18,7 @@ rule copy_fastq:
     shell:
         "(mkdir -p {params.outdir} && "
         "cp -v {input.fastqs[0]} {output.raw1} && "
-        "cp -v {input.fastqs[1]} {output.raw2}) > {log} 2>&1"
+        "cp -v {input.fastqs[1]} {output.raw2}) > {log} 2>&1"'''
 
 
 # fastp in paired-end mode for Illumina paired-end data

@@ -9,7 +9,7 @@ rule metabinner_coverage_profile:
         outfile=temp(
             "results/{project}/metabinner/{sample}/coverage_profile_{threshold}/coverage_profile.tsv"
         ),
-    threads: 32
+    threads: 30
     params:
         threads=config["binning"]["threads"],
         outdir=lambda wildcards, output: Path(output.outfile).parent,
@@ -30,7 +30,9 @@ rule remove_metabinner_cov_overload:
     input:
         file="results/{project}/metabinner/{sample}/coverage_profile_{threshold}/coverage_profile.tsv",
     output:
-        touch("logs/{project}/metabinner/{sample}/coverage_profile_{threshold}_removal.done"),
+        touch(
+            "logs/{project}/metabinner/{sample}/coverage_profile_{threshold}_removal.done"
+        ),
     params:
         outdir=lambda wildcards, input: Path(input.file).parent,
         filename=lambda wildcards, input: Path(input.file).name,
@@ -51,7 +53,7 @@ rule metabinner_composition_profile:
         outfile=temp(
             "results/{project}/metabinner/{sample}/composition_profile/final.contigs_kmer_{kmer_size}_f{threshold}.csv"
         ),
-    threads: 32
+    threads: 30
     params:
         script_path="{}/workflow/scripts/gen_kmer.py".format(get_root()),  ## does it work when we change this to ../scripts?, AD what is changed?
         indir=lambda wildcards, input: Path(input.contigs).parent,
@@ -70,7 +72,9 @@ use rule remove_metabinner_cov_overload as remove_metabinner_comp_overload with:
     input:
         file="results/{project}/metabinner/{sample}/composition_profile/final.contigs_kmer_{kmer_size}_f{threshold}.csv",
     output:
-        touch("logs/{project}/metabinner/{sample}/composition_profile_kmer_{kmer_size}_f{threshold}_removal.done"),
+        touch(
+            "logs/{project}/metabinner/{sample}/composition_profile_kmer_{kmer_size}_f{threshold}_removal.done"
+        ),
     log:
         "logs/{project}/metabinner/{sample}/composition_profile_kmer_{kmer_size}_f{threshold}_removal.log",
 
@@ -91,10 +95,8 @@ rule metabinner_run:
         outfile=temp(
             "results/{project}/metabinner/{sample}/metabinner_res/metabinner_result.tsv"
         ),
-        outfolder=
-            directory("results/{project}/metabinner/{sample}/metabinner_res/")
-        ,
-    threads: 64
+        outfolder=directory("results/{project}/metabinner/{sample}/metabinner_res/"),
+    threads: 30
     params:
         threads=config["binning"]["threads"],
         outdir=lambda wildcards, output: Path(output.outfile).parent.parent,

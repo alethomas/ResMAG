@@ -4,16 +4,13 @@ from pathlib import Path
 include: "host_filtering.smk"
 
 
-# MIN_CONTIG_LEN=get_contig_length_threshold()
-
-
 rule megahit:
     input:
         fastqs=get_filtered_gz_fastqs,
     output:
-        contigs="results/{project}/megahit/{sample}/final.contigs.fa",
+        contigs=temp("results/{project}/megahit/{sample}/final.contigs.fa"),
+        outdir=temp(directory("results/{project}/megahit/{sample}/")),
     params:
-        outdir=lambda wildcards, output: Path(output.contigs).parent,
         threshold=get_contig_length_threshold(),
     threads: 64
     log:
@@ -22,9 +19,8 @@ rule megahit:
         "../envs/megahit.yaml"
     shell:
         "megahit -1 {input.fastqs[0]} -2 {input.fastqs[1]} "
-        "--min-contig-len {params.threshold} "
-        "--out-dir {params.outdir} -f > {log} 2>&1"
-        #"&& cp {output.contigs} {output.contigs_len}) "
+        "--min-contig-len {params.threshold} -t {threads} "
+        "--out-dir {output.outdir} -f > {log} 2>&1"
 
 
 rule remove_megahit_intermediates:

@@ -18,16 +18,16 @@ report: "report/workflow.rst"
 
 
 include: "rules/common.smk"
+include: "rules/assembly.smk"
+include: "rules/das_tool.smk"
 include: "rules/trimming.smk"
 include: "rules/qc.smk"
 include: "rules/host_filtering.smk"
-include: "rules/assembly.smk"
 include: "rules/metabat2.smk"
 include: "rules/metabinner.smk"
 include: "rules/metacoag.smk"
 include: "rules/rosella.smk"
 include: "rules/vamb.smk"
-include: "rules/das_tool.smk"
 include: "rules/classify.smk"
 include: "rules/report.smk"
 
@@ -54,9 +54,15 @@ rule all:
             sample=get_samples(),
         ),
         expand(
-            "results/{project}/output/fastas/{sample}/{sample}_DASTool_summary.tsv",
+            "results/{project}/output/report/{sample}/{sample}_DASTool_summary.tsv",
             project=get_project(),
             sample=get_samples(),
+        ),
+        expand(
+            "results/{project}/output/classification/reads/{sample}/{sample}_{level}_kaiju_summary.tsv",
+            project=get_project(),
+            sample=get_samples(),
+            level=["species", "genus"],
         ),
         # removal logs
         expand(

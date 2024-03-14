@@ -23,13 +23,16 @@ if not config["testing"]:
         input:
             hfile=get_kraken_db_file(),
             fastqs=get_prefiltered_fastqs,
+            dummy="logs/{project}/fastp/{sample}.log",
         output:
             clf1=temp("results/{project}/filtered/{sample}_clf_1.fastq"),
             clf2=temp("results/{project}/filtered/{sample}_clf_2.fastq"),
             unclf1=temp("results/{project}/filtered/{sample}_unclf_1.fastq"),
             unclf2=temp("results/{project}/filtered/{sample}_unclf_2.fastq"),
-            report="results/{project}/filtered/kraken/{sample}_report.tsv",
-            outfile=temp("results/{project}/filtered/kraken/{sample}_outfile.tsv"),
+            report="results/{project}/output/classification/reads/{sample}/{sample}_report.tsv",
+            outfile=temp(
+                "results/{project}/output/classification/reads/{sample}/{sample}_outfile.tsv"
+            ),
         params:
             clf=lambda wildcards, output: output.clf1.replace("_clf_1", "_clf#"),
             unclf=lambda wildcards, output: output.unclf1.replace("_unclf_1", "_unclf#"),
@@ -62,8 +65,8 @@ rule remove_human_reads:
     input:
         clf1="results/{project}/filtered/{sample}_clf_1.fastq",
         clf2="results/{project}/filtered/{sample}_clf_2.fastq",
-        report="results/{project}/filtered/kraken/{sample}_report.tsv",
-        outfile="results/{project}/filtered/kraken/{sample}_outfile.tsv",
+        report=rules.kraken2.output.report,
+        outfile=rules.kraken2.output.outfile,
     output:
         out1=temp("results/{project}/filtered/{sample}_non_human_1.fastq"),
         out2=temp("results/{project}/filtered/{sample}_non_human_2.fastq"),
@@ -98,7 +101,7 @@ rule gzip_kraken_output:
     input:
         "results/{project}/filtered/fastqs/{sample}_{read}.fastq",
     output:
-        "results/{project}/filtered/fastqs/{sample}_{read}.fastq.gz",
+        temp("results/{project}/filtered/fastqs/{sample}_{read}.fastq.gz"),
     log:
         "logs/{project}/kraken2/gzip_fastq/{sample}_{read}.log",
     threads: 4
@@ -111,7 +114,7 @@ rule gzip_kraken_output:
 rule kraken_summary:
     input:
         reports=expand(
-            "results/{{project}}/filtered/kraken/{sample}_report.tsv",
+            "results/{{project}}/output/classification/reads/{sample}/{sample}_report.tsv",
             sample=get_samples(),
         ),
         jsons=expand(
@@ -261,8 +264,10 @@ rule kraken2_postfilt:
         hfile=get_kraken_db_file(),
         fastqs=get_filtered_gz_fastqs,
     output:
-        report="results/{project}/filtered/kraken_postfilt/{sample}_report.tsv",
-        outfile=temp("results/{project}/filtered/kraken_postfilt/{sample}_outfile.tsv"),
+        report="results/{project}/output/classification/reads/{sample}/{sample}_postfilt_report.tsv",
+        outfile=temp(
+            "results/{project}/output/classification/reads/{sample}/{sample}_postfilt_outfile.tsv"
+        ),
     params:
         db=lambda wildcards, input: Path(input.hfile).parent,
     threads: 32
@@ -279,7 +284,7 @@ rule kraken2_postfilt:
 rule bracken_genus:
     input:
         hfile=get_kraken_db_file(),
-        kreport="results/{project}/filtered/kraken_postfilt/{sample}_report.tsv",
+        kreport=rules.kraken2_postfilt.output.report,
     output:
         breport=temp(
             "results/{project}/output/report/all/diversity_abundance/reports_genus/{sample}.breport"
@@ -304,7 +309,7 @@ rule bracken_genus:
 use rule bracken_genus as bracken_family with:
     input:
         hfile=get_kraken_db_file(),
-        kreport="results/{project}/filtered/kraken_postfilt/{sample}_report.tsv",
+        kreport=rules.kraken2_postfilt.output.report,
     output:
         breport=temp(
             "results/{project}/output/report/all/diversity_abundance/reports_family/{sample}.breport"
@@ -322,7 +327,7 @@ use rule bracken_genus as bracken_family with:
 use rule bracken_genus as bracken_phylum with:
     input:
         hfile=get_kraken_db_file(),
-        kreport="results/{project}/filtered/kraken_postfilt/{sample}_report.tsv",
+        kreport=rules.kraken2_postfilt.output.report,
     output:
         breport=temp(
             "results/{project}/output/report/all/diversity_abundance/reports_phylum/{sample}.breport"
@@ -340,7 +345,7 @@ use rule bracken_genus as bracken_phylum with:
 use rule bracken_genus as bracken_class with:
     input:
         hfile=get_kraken_db_file(),
-        kreport="results/{project}/filtered/kraken_postfilt/{sample}_report.tsv",
+        kreport=rules.kraken2_postfilt.output.report,
     output:
         breport=temp(
             "results/{project}/output/report/all/diversity_abundance/reports_class/{sample}.breport"
@@ -400,7 +405,7 @@ rule create_bracken_plot:
 
 rule kraken2krona:
     input:
-        "results/{project}/filtered/kraken_postfilt/{sample}_report.tsv",
+        rules.kraken2_postfilt.output.report,
     output:
         temp("results/{project}/filtered/krona/{sample}.krona"),
     threads: 4

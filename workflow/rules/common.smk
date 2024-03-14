@@ -68,8 +68,7 @@ def get_prefiltered_fastqs(wildcards):
             "results/{project}/host_filtering/non_host/{sample}_2.fastq.gz",
         ]
     else:
-        return(get_trimmed_fastqs(wildcards))
-
+        return get_trimmed_fastqs(wildcards)
 
 
 def get_kraken_db_file():
@@ -87,8 +86,7 @@ def get_taxID_dict():
 
 
 def get_human_tax_ID():
-    return(get_taxID_dict()["human"])
-
+    return get_taxID_dict()["human"]
 
 
 def get_filtered_fastqs(wildcards):
@@ -103,7 +101,7 @@ def get_filtered_gz_fastqs(wildcards):
         "results/{project}/filtered/fastqs/{sample}_1.fastq.gz",
         "results/{project}/filtered/fastqs/{sample}_2.fastq.gz",
     ]
-   
+
 
 def get_assembly(wildcards):
     return "results/{project}/megahit/{sample}/final.contigs.fa"
@@ -149,7 +147,7 @@ def get_rosella_git():
 def get_all_contig2bin_files(wildcards):
     binners = get_binners()
     file_list = [
-        f"results/{{project}}/contig2bins/{{sample}}/{binner}_contig2bin.tsv"
+        f"results/{{project}}/output/contig2bins/{{sample}}/{binner}_contig2bin.tsv"
         for binner in binners
     ]
     return file_list
@@ -158,7 +156,7 @@ def get_all_contig2bin_files(wildcards):
 ## reads in binner control file and returns list with paths to contig2bin files
 ## and a list with name of the binners that produced results
 def get_paths_binner(wildcards):
-    file = f"results/{wildcards.project}/das_tool/{wildcards.sample}/binner_control.csv"
+    file = f"results/{wildcards.project}/das_tool/{wildcards.sample}_binner_control.csv"
     lines = open(file).readlines()
     paths = str(lines[0].rstrip("\n"))
     binner = str(lines[1].rstrip("\n"))
@@ -166,10 +164,10 @@ def get_paths_binner(wildcards):
 
 
 def bins_for_sample(wildcards):
-    if len(get_paths_binner[0]) >0:
-        return(True)
+    if len(get_paths_binner[0]) > 0:
+        return True
     else:
-        return(False)
+        return False
 
 
 def get_DAS_Tool_threads():

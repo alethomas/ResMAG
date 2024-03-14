@@ -58,32 +58,32 @@ rule checkm2_DB_download:
         "checkm2 database --download --path {params.direct} > {log} 2>&1"
 
 
-# change to new folder of gz bins
 rule checkm2_run:
     input:
         bins="results/{project}/das_tool/{sample}/{sample}_DASTool_bins/",
-        dbfile=get_checkm2_db(),  #"{}/{}".format(config["data-handling"]["resources"], config["checkm2"]),
+        dbfile=get_checkm2_db(),
+        dastool=rules.dastool_run.output.outdir,
     output:
-        stats=temp("results/{project}/qc/checkm2/{sample}/quality_report.tsv"),
+        outdir=temp(directory("results/{project}/qc/checkm2/{sample}/")),
+        stats="results/{project}/output/report/{sample}/checkm2_quality_report.tsv",
     params:
-        outdir=lambda wildcards, output: Path(output.stats).parent,
+        outname="quality_report.tsv",
     log:
         "logs/{project}/checkm2/{sample}.log",
     threads: 4
     conda:
         "../envs/checkm2.yaml"
     shell:
-        "checkm2 predict -x fa --threads {threads} --force "
-        "--input {input.bins}/ --output-directory {params.outdir}/ "
-        "> {log} 2>&1"
-        # --remove_intermediates-x fa.gz
+        "(checkm2 predict -x fa --threads {threads} --force "
+        "--input {input.bins}/ --output-directory {output.outdir}/ && "
+        "cp {output.outdir}/{params.outname} {output.stats}) > {log} 2>&1"
 
 
 rule bin_summary_sample:
     input:
-        tool="results/{project}/das_tool/{sample}/{sample}_DASTool_summary.tsv",
-        checkm="results/{project}/qc/checkm2/{sample}/quality_report.tsv",
-        gtdb="results/{project}/classification/{sample}/{sample}.bac120.summary.tsv",
+        tool="results/{project}/output/report/{sample}/{sample}_DASTool_summary.tsv",
+        checkm="results/{project}/output/report/{sample}/checkm2_quality_report.tsv",
+        gtdb="results/{project}/output/classification/bins/{sample}/{sample}.bac120.summary.tsv",
     output:
         csv_bins="results/{project}/output/report/{sample}/{sample}_bin_summary.csv",
         csv_checkm="results/{project}/output/report/{sample}/{sample}_checkm2_summary.csv",
