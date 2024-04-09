@@ -2,7 +2,7 @@ RAW_DATA_PATH = get_data_path()
 
 
 # copy files to local
-### TODO: change to copying via tar or remove & expect local path 
+### TODO: change to copying via tar or remove & expect local path
 '''rule copy_fastq:
     input:
         fastqs=get_fastqs,
