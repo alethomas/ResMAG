@@ -3,7 +3,7 @@ pepfile: config/pep/config.yaml
 # If testing set true
 testing: False
 
-project-name: "strawpigs"
+project-name: "pp2_1"
 
 data-handling:
   # path to store data within the workflow
@@ -17,6 +17,12 @@ quality-criteria:
   min-PHRED: 20
 
 adapter_seqs: "-a CTGTCTCTTATACACATCT -g AGATGTGTATAAGAGACAG"
+
+# if host filtering is wanted
+host_filtering:
+  do_host_filtering: False
+  host_name: ""
+  ref_genome: ""
 
 kraken:
   download-path: "https://genome-idx.s3.amazonaws.com/kraken/k2_pluspf_20230605.tar.gz"
@@ -54,3 +60,6 @@ das_tool:
 MAG-criteria:
   min-completeness: 85.00
   max-contamination: 5.00
+
+## string term used for formatting output tables
+tablular-config: '/>github<\/a>/a \\t\t\t</li>\n\t\t\t<li class="nav-item"> \n\t\t\t\t<a class="nav-link" href="#">'

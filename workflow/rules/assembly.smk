@@ -1,17 +1,16 @@
 from pathlib import Path
 
-# MIN_CONTIG_LEN=get_contig_length_threshold()
+
+include: "host_filtering.smk"
 
 
 rule megahit:
     input:
         fastqs=get_filtered_gz_fastqs,
     output:
-        contigs="results/{project}/megahit/{sample}/final.contigs.fa",
-        folder=temp(directory("results/{project}/megahit/{sample}/")),
-        #contigs_len=f"results/{{project}}/megahit/{{sample}}/final.contigs_{MIN_CONTIG_LEN}.fa",
+        contigs=temp("results/{project}/megahit/{sample}/final.contigs.fa"),
+        outdir=temp(directory("results/{project}/megahit/{sample}/")),
     params:
-        outdir=lambda wildcards, output: Path(output.contigs).parent,
         threshold=get_contig_length_threshold(),
     threads: 64
     log:
@@ -20,23 +19,37 @@ rule megahit:
         "../envs/megahit.yaml"
     shell:
         "megahit -1 {input.fastqs[0]} -2 {input.fastqs[1]} "
-        "--min-contig-len {params.threshold} "
-        "--out-dir {params.outdir} -f > {log} 2>&1"
-        #"&& cp {output.contigs} {output.contigs_len}) "
+        "--min-contig-len {params.threshold} -t {threads} "
+        "--out-dir {output.outdir} -f > {log} 2>&1"
+
+
+rule remove_megahit_intermediates:
+    input:
+        contigs=get_assembly,
+    output:
+        touch("logs/{project}/assembly/{sample}_intermediate_removal.done"),
+    params:
+        outdir=lambda wildcards, input: Path(input.contigs).parent,
+    log:
+        "logs/{project}/assembly/{sample}_intermediate_removal.log",
+    conda:
+        "../envs/unix.yaml"
+    shell:
+        "(find {params.outdir}/ -mindepth 1 -type d -exec rm -rf {{}} +) > {log} 2>&1"
 
 
 rule gzip_assembly:
     input:
         contigs=get_assembly,
     output:
-        "results/{project}/assembly/{sample}_final.contigs.fa.gz",
+        "results/{project}/output/fastas/{sample}/{sample}_final.contigs.fa.gz",
     threads: 4
     log:
         "logs/{project}/assembly/{sample}_gzip.log",
     conda:
         "../envs/unix.yaml"
     shell:
-        "gzip -c {input.contigs[0]} > {output} 2> {log}"
+        "gzip -c {input.contigs} > {output} 2> {log}"
 
 
 rule assembly_summary:
@@ -46,16 +59,7 @@ rule assembly_summary:
             sample=get_samples(),
         ),
     output:
-        html=report(
-            "results/{project}/report/assembly_summary.html",
-            category="3. Assembly results",
-            labels={"sample": "all samples", "type": "view"},
-        ),
-        csv=report(
-            "results/{project}/report/assembly_summary.csv",
-            category="3. Assembly results",
-            labels={"sample": "all samples", "type": "download"},
-        ),
+        csv="results/{project}/output/report/all/assembly_summary.csv",
     log:
         "logs/{project}/assembly/summary.log",
     conda:
@@ -64,14 +68,22 @@ rule assembly_summary:
         "../scripts/assembly_summary.py"
 
 
-rule csv_report:
-    # a csv formatted file containing the data for the report
+use rule kraken2_report as assembly_report with:
     input:
-        "results/{project}/report/assembly_summary.csv",
-    # path to the resulting report directory
+        "results/{project}/output/report/all/assembly_summary.csv",
     output:
-        directory("results/{project}/report/assembly_test/"),
+        report(
+            directory("results/{project}/output/report/all/assembly/"),
+            htmlindex="index.html",
+            category="3. Assembly results",
+            labels={
+                "sample": "all samples",
+            },
+        ),
+    params:
+        pin_until="sample",
+        styles="resources/report/tables/",
+        name="assembly_summary",
+        header="Assembly summary",
     log:
-        "logs/{project}/assembly/rbt-csv-report.log",
-    wrapper:
-        "v2.6.0/bio/rbt/csvreport"
+        "logs/{project}/report/assembly_rbt_csv.log",

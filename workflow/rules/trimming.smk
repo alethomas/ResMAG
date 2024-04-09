@@ -2,10 +2,10 @@ RAW_DATA_PATH = get_data_path()
 
 
 # copy files to local
-### TODO: rename rule to fastq (local copy..), change to f"{RAW_DATA_PATh}{{project}}/{{sample}}_R1.fastq.gz"
-rule copy_fastq:
+### TODO: change to copying via tar or remove & expect local path
+'''rule copy_fastq:
     input:
-        get_fastqs,
+        fastqs=get_fastqs,
     output:
         raw1=f"{RAW_DATA_PATH}{{project}}/{{sample}}_R1.fastq.gz",
         raw2=f"{RAW_DATA_PATH}{{project}}/{{sample}}_R2.fastq.gz",
@@ -17,7 +17,8 @@ rule copy_fastq:
         "../envs/unix.yaml"
     shell:
         "(mkdir -p {params.outdir} && "
-        "cp -v -t {params.outdir} {input}) > {log} 2>&1"
+        "cp -v {input.fastqs[0]} {output.raw1} && "
+        "cp -v {input.fastqs[1]} {output.raw2}) > {log} 2>&1"'''
 
 
 # fastp in paired-end mode for Illumina paired-end data
@@ -31,8 +32,8 @@ rule fastp:
                 "results/{project}/trimmed/fastp/{sample}.2.fastq.gz",
             ]
         ),
-        html="results/{project}/trimmed/fastp/{sample}.html",
-        json="results/{project}/trimmed/fastp/{sample}.fastp.json",
+        html=temp("results/{project}/trimmed/fastp/{sample}.html"),
+        json=temp("results/{project}/trimmed/fastp/{sample}.fastp.json"),
     params:
         adapters=get_adapters,
         extra="--qualified_quality_phred {phred} --length_required {minlen}".format(
