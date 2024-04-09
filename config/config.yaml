@@ -60,3 +60,6 @@ das_tool:
 MAG-criteria:
   min-completeness: 85.00
   max-contamination: 5.00
+
+## string term used for formatting output tables
+tablular-config: '/>github<\/a>/a \\t\t\t</li>\n\t\t\t<li class="nav-item"> \n\t\t\t\t<a class="nav-link" href="#">'
