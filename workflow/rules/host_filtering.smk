@@ -268,7 +268,6 @@ rule diversity_summary_report:
     shell:
         "rbt csv-report {input} --pin-until {params.pin_until} {output} && "
         "(sed -i '{params.pattern} {params.header}</a>' "
-        "(sed -i '{params.pattern} {params.header}</a>' "
         "{output}/indexes/index1.html && "
         "sed -i 's/report.xlsx/{params.name}_report.xlsx/g' {output}/indexes/index1.html) && "
         "mv {output}/report.xlsx {output}/{params.name}_report.xlsx && "
