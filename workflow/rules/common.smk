@@ -64,11 +64,36 @@ def get_trimmed_fastqs(wildcards):
 def get_prefiltered_fastqs(wildcards):
     if config["host_filtering"]["do_host_filtering"]:
         return [
-            "results/{project}/host_filtering/non_host/{sample}_1.fastq.gz",
-            "results/{project}/host_filtering/non_host/{sample}_2.fastq.gz",
+            "results/{project}/host_filtering/non_host/{sample}_R1.fastq.gz",
+            "results/{project}/host_filtering/non_host/{sample}_R2.fastq.gz",
         ]
     else:
         return get_trimmed_fastqs(wildcards)
+
+
+def get_host_map_statistics(wildcards):
+    if config["host_filtering"]["do_host_filtering"]:
+        logs=expand_samples_for_project(
+            "logs/{project}/human_filtering/filter_human_{sample}.log",
+        ),
+        return logs
+    else:
+        return []
+
+
+def get_human_ref():
+    if config["human-filtering"]["use-local"]:
+        path = config["human-filtering"]["local-path"]
+    else:
+        path = config["human-filtering"]["download-path"]
+    local_ref = "{}ref_genome/{}".format(get_resource_path(), path.split("/")[-1])
+    return local_ref
+
+
+def get_human_local_folder():
+    path = config["human-filtering"]["local-path"]
+    folder=Path(path).parent
+    return folder
 
 
 def get_kraken_db_file():
@@ -85,21 +110,17 @@ def get_taxID_dict():
     return config["kraken"]["taxIDs-ref"]
 
 
-def get_human_tax_ID():
-    return get_taxID_dict()["human"]
-
-
 def get_filtered_fastqs(wildcards):
     return [
-        "results/{project}/filtered/fastqs/{sample}_1.fastq",
-        "results/{project}/filtered/fastqs/{sample}_2.fastq",
+        "results/{project}/filtered/fastqs/{sample}_R1.fastq",
+        "results/{project}/filtered/fastqs/{sample}_R2.fastq",
     ]
 
 
 def get_filtered_gz_fastqs(wildcards):
     return [
-        "results/{project}/filtered/fastqs/{sample}_1.fastq.gz",
-        "results/{project}/filtered/fastqs/{sample}_2.fastq.gz",
+        "results/{project}/filtered/fastqs/{sample}_R1.fastq.gz",
+        "results/{project}/filtered/fastqs/{sample}_R2.fastq.gz",
     ]
 
 

@@ -102,7 +102,7 @@ rule bin_summary_sample:
         "../scripts/bin_summary_sample.py"
 
 
-use rule kraken2_report as bin_sample_report with:
+use rule diversity_summary_report as bin_sample_report with:
     input:
         "results/{project}/output/report/{sample}/{sample}_bin_summary.csv",
     output:
@@ -118,11 +118,12 @@ use rule kraken2_report as bin_sample_report with:
         styles="resources/report/tables/",
         name="{sample}_bin_summary",
         header="Bin summary for sample {sample}",
+        pattern=config["tablular-config"],
     log:
         "logs/{project}/report/{sample}/bin_rbt_csv.log",
 
 
-use rule kraken2_report as dastool_report with:
+use rule diversity_summary_report as dastool_report with:
     input:
         "results/{project}/output/report/{sample}/{sample}_DASTool_summary.csv",
     output:
@@ -141,11 +142,12 @@ use rule kraken2_report as dastool_report with:
         styles="resources/report/tables/",
         name="{sample}_DASTool_summary",
         header="DAS Tool summary for sample {sample}",
+        pattern=config["tablular-config"],
     log:
         "logs/{project}/report/{sample}/dastool_rbt_csv.log",
 
 
-use rule kraken2_report as checkm2_report with:
+use rule diversity_summary_report as checkm2_report with:
     input:
         "results/{project}/output/report/{sample}/{sample}_checkm2_summary.csv",
     output:
@@ -164,11 +166,12 @@ use rule kraken2_report as checkm2_report with:
         styles="resources/report/tables/",
         name="{sample}_CheckM2_summary",
         header="CheckM2 summary for sample {sample}",
+        pattern=config["tablular-config"],
     log:
         "logs/{project}/report/{sample}/checkm2_rbt_csv.log",
 
 
-use rule kraken2_report as taxonomy_report with:
+use rule diversity_summary_report as taxonomy_report with:
     input:
         "results/{project}/output/report/{sample}/{sample}_bin_taxonomy.csv",
     output:
@@ -184,11 +187,12 @@ use rule kraken2_report as taxonomy_report with:
         styles="resources/report/tables/",
         name="{sample}_taxonomy_summary",
         header="Taxonomy summary for sample {sample}",
+        pattern=config["tablular-config"],
     log:
         "logs/{project}/report/{sample}/taxonomy_rbt_csv.log",
 
 
-use rule kraken2_report as mag_report with:
+use rule diversity_summary_report as mag_report with:
     input:
         "results/{project}/output/report/{sample}/{sample}_mags_summary.csv",
     output:
@@ -204,6 +208,7 @@ use rule kraken2_report as mag_report with:
         styles="resources/report/tables/",
         name="{sample}_MAG_summary",
         header="MAG summary for sample {sample}",
+        pattern=config["tablular-config"],
     log:
         "logs/{project}/report/{sample}/mag_rbt_csv.log",
 
@@ -229,7 +234,7 @@ rule bin_summary_all:
         "../scripts/bin_summary_all.py"
 
 
-use rule kraken2_report as bin_all_report with:
+use rule diversity_summary_report as bin_all_report with:
     input:
         "results/{project}/output/report/all/binnning_summary_all.csv",
     output:
@@ -245,5 +250,6 @@ use rule kraken2_report as bin_all_report with:
         styles="resources/report/tables/",
         name="bin_summary",
         header="Bin summary for all samples",
+        pattern=config["tablular-config"],
     log:
         "logs/{project}/report/all_bin_rbt_csv.log",

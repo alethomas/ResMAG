@@ -1,6 +1,163 @@
 from pathlib import Path
 
 
+if config["human-filtering"]["use-local"]:
+
+    rule copy_local_human_ref:
+        output:
+            fasta=get_human_ref(),
+        params:
+            local=get_human_local_folder(),
+            folder=lambda wildcards, output: Path(output.fasta).parent,
+            file=lambda wildcards, output: Path(output.fasta).name,
+        log:
+            "logs/human_ref_local_copy.log",
+        group:
+            "refGenome_depended"
+        conda:
+            "../envs/unix.yaml"
+        shell:
+            "(mkdir -p {params.folder} && "
+            "tar cpfz - -C {params.local} {params.file} | "
+            "(cd {params.folder} ; tar xpfz -)) > {log} 2>&1"
+
+else:
+
+    rule download_human_ref:
+        output:
+            fasta=get_human_ref(),
+        params:
+            download=config["human-filtering"]["download-path"],
+            folder=lambda wildcards, output: Path(output.fasta).parent,  #get_resource_path(),
+        log:
+            "logs/human_ref_download.log",
+        group:
+            "refGenome_depended"
+        conda:
+            "../envs/unix.yaml"
+        shell:
+            "(mkdir -p {params.folder} && "
+            "cd {params.folder} && "
+            "wget {params.download}) > {log} 2>&1"
+
+
+rule map_to_human:
+    input:
+        fastqs=get_prefiltered_fastqs,
+        ref=get_human_ref(),
+    output:
+        bam=temp("results/{project}/human_filtering/alignments/{sample}.bam"),
+    threads: 10
+    log:
+        "logs/{project}/human_filtering/map_to_host_{sample}.log",
+    conda:
+        "../envs/minimap2.yaml"
+    shell:
+        "(minimap2 -a -xsr -t {threads} {input.ref} {input.fastqs} | "
+        "samtools view -bh | "
+        "samtools sort --threads {threads} -o {output.bam}) > {log} 2>&1"
+
+
+rule index_human_alignment:
+    input:
+        rules.map_to_human.output.bam,
+    output:
+        bai=temp("results/{project}/human_filtering/alignments/{sample}.bam.bai"),
+    threads: 3
+    log:
+        "logs/{project}/human_filtering/index_human_alignment_{sample}.log",
+    conda:
+        "../envs/minimap2.yaml"
+    shell:
+        "samtools index {input} > {log} 2>&1"
+
+
+rule filter_human:
+    input:
+        bam=rules.map_to_human.output.bam,
+        bai=rules.index_human_alignment.output.bai,
+    output:
+        filtered=
+            temp(expand(
+                "results/{{project}}/filtered/fastqs/{{sample}}_{read}.fastq",
+                read=["R1", "R2"],
+            )),
+    threads: 3
+    log:
+        "logs/{project}/human_filtering/filter_human_{sample}.log",
+    conda:
+        "../envs/minimap2.yaml"
+    shell:
+        "(samtools fastq --threads {threads} -F 3584 -f 77 "
+        "-o {output.filtered[0]} {input.bam} && "
+        "samtools fastq --threads {threads} -F 3584 -f 141 "
+        "-o {output.filtered[1]} {input.bam}) > {log} 2>&1"
+    
+
+rule gzip_filtered_reads:
+    input:
+        "results/{project}/filtered/fastqs/{sample}_{read}.fastq",
+    output:
+        "results/{project}/filtered/fastqs/{sample}_{read}.fastq.gz",
+    log:
+        "logs/{project}/human_filtering/gzip_{sample}_{read}.log",
+    threads: 4
+    conda:
+        "../envs/unix.yaml"
+    shell:
+        "gzip -k {input} > {log} 2>&1"
+
+
+if config["host_filtering"]["do_host_filtering"]:
+    # if there is a different host than human, 
+    # this is run before filtering human reads
+
+    use rule map_to_human as map_to_host with:
+        input:
+            fastqs=get_trimmed_fastqs,
+            ref=config["host_filtering"]["ref_genome"],
+        output:
+            bam=temp("results/{project}/host_filtering/alignments/{sample}.bam"),
+        params:
+            ref=config["host_filtering"]["ref_genome"],
+        threads: 10
+        log:
+            "logs/{project}/host_filtering/map_to_host_{sample}.log",
+
+
+    use rule index_human_alignment as index_host_alignment with:
+        input:
+            rules.map_to_host.output.bam,
+        output:
+            bai=temp("results/{project}/host_filtering/alignments/{sample}.bam.bai"),
+        threads: 3
+        log:
+            "logs/{project}/host_filtering/index_host_alignment_{sample}.log",
+        
+
+    rule filter_host:
+        input:
+            bam=rules.map_to_host.output.bam,
+            bai=rules.index_host_alignment.output.bai,
+        output:
+            filtered=temp(
+                expand(
+                    "results/{{project}}/host_filtering/non_host/{{sample}}_{read}.fastq.gz",
+                    read=["R1", "R2"],
+                )
+            ),
+        threads: 3
+        log:
+            "logs/{project}/host_filtering/filter_host_{sample}.log",
+        conda:
+            "../envs/minimap2.yaml"
+        shell:
+            "(samtools fastq -F 3584 -f 77 {input.bam} | "
+            "gzip -c > {output.filtered[0]} && "
+            "samtools fastq -F 3584 -f 141 {input.bam} | "
+            "gzip -c > {output.filtered[1]}) > {log} 2>&1"
+
+
 rule download_kraken_db:
     output:
         hfile=get_kraken_db_file(),
@@ -16,26 +173,18 @@ rule download_kraken_db:
         "wget -c {params.download} -O - | "
         "tar -zxv -C {params.db_folder}) > {log} 2>&1"
 
-
 if not config["testing"]:
 
     rule kraken2:
         input:
             hfile=get_kraken_db_file(),
-            fastqs=get_prefiltered_fastqs,
-            dummy="logs/{project}/fastp/{sample}.log",
+            fastqs=get_filtered_gz_fastqs,
         output:
-            clf1=temp("results/{project}/filtered/{sample}_clf_1.fastq"),
-            clf2=temp("results/{project}/filtered/{sample}_clf_2.fastq"),
-            unclf1=temp("results/{project}/filtered/{sample}_unclf_1.fastq"),
-            unclf2=temp("results/{project}/filtered/{sample}_unclf_2.fastq"),
             report="results/{project}/output/classification/reads/{sample}/{sample}_report.tsv",
             outfile=temp(
                 "results/{project}/output/classification/reads/{sample}/{sample}_outfile.tsv"
             ),
         params:
-            clf=lambda wildcards, output: output.clf1.replace("_clf_1", "_clf#"),
-            unclf=lambda wildcards, output: output.unclf1.replace("_unclf_1", "_unclf#"),
             db=lambda wildcards, input: Path(input.hfile).parent,
         threads: 32
         log:
@@ -43,9 +192,9 @@ if not config["testing"]:
         conda:
             "../envs/kraken2.yaml"
         shell:
-            "kraken2 --db {params.db} --threads {threads} --paired --classified-out {params.clf} "
-            "--unclassified-out {params.unclf} --output {output.outfile} "
-            "--report {output.report} --gzip-compressed {input.fastqs} > {log} 2>&1"
+            "kraken2 --db {params.db} --threads {threads} --paired "
+            "--output {output.outfile} --report {output.report} "
+            "--gzip-compressed {input.fastqs} > {log} 2>&1"
 
 
 if config["testing"]:
@@ -61,57 +210,8 @@ if config["testing"]:
             "gunzip -k {input.clf_gz_1} {input.clf_gz_1}"
 
 
-rule remove_human_reads:
-    input:
-        clf1="results/{project}/filtered/{sample}_clf_1.fastq",
-        clf2="results/{project}/filtered/{sample}_clf_2.fastq",
-        report=rules.kraken2.output.report,
-        outfile=rules.kraken2.output.outfile,
-    output:
-        out1=temp("results/{project}/filtered/{sample}_non_human_1.fastq"),
-        out2=temp("results/{project}/filtered/{sample}_non_human_2.fastq"),
-    log:
-        "logs/{project}/kraken2/remove_human/{sample}.log",
-    params:
-        human_tax=get_human_tax_ID(),
-    threads: 4
-    conda:
-        "../envs/kraken2.yaml"
-    shell:
-        "extract_kraken_reads.py -s1 {input.clf1} -s2 {input.clf2} -k {input.outfile} "
-        "-r {input.report} -t {params.human_tax}  --exclude "
-        "-o {output.out1} -o2 {output.out2} --fastq-output > {log} 2>&1"
-
-
-rule add_unclf_reads:
-    input:
-        filt="results/{project}/filtered/{sample}_non_human_{read}.fastq",
-        unclf="results/{project}/filtered/{sample}_unclf_{read}.fastq",
-    output:
-        temp("results/{project}/filtered/fastqs/{sample}_{read}.fastq"),
-    log:
-        "logs/{project}/kraken2/add_unclf/{sample}_{read}.log",
-    conda:
-        "../envs/unix.yaml"
-    shell:
-        "cat {input.filt} {input.unclf} > {output} 2> {log}"
-
-
-rule gzip_kraken_output:
-    input:
-        "results/{project}/filtered/fastqs/{sample}_{read}.fastq",
-    output:
-        temp("results/{project}/filtered/fastqs/{sample}_{read}.fastq.gz"),
-    log:
-        "logs/{project}/kraken2/gzip_fastq/{sample}_{read}.log",
-    threads: 4
-    conda:
-        "../envs/unix.yaml"
-    shell:
-        "gzip -k {input} > {log} 2>&1"
-
-
-rule kraken_summary:
+## all reports are done on human (+ optional other different host) filtered 
+rule diversity_summary:
     input:
         reports=expand(
             "results/{{project}}/output/classification/reads/{sample}/{sample}_report.tsv",
@@ -121,22 +221,29 @@ rule kraken_summary:
             "results/{{project}}/trimmed/fastp/{sample}.fastp.json",
             sample=get_samples(),
         ),
+        human_logs=expand(
+            "logs/{{project}}/human_filtering/filter_human_{sample}.log",
+            sample=get_samples(),
+        ),
+        host_logs=get_host_map_statistics,
     output:
         csv="results/{project}/output/report/all/diversity_summary.csv",
     log:
         "logs/{project}/kraken2/summary.log",
     params:
         taxid_dict=get_taxID_dict(),
+        other_host=config["host_filtering"]["do_host_filtering"],
+        hostname=config["host_filtering"]["host_name"],
     threads: 2
     conda:
         "../envs/python.yaml"
     script:
-        "../scripts/kraken_summary.py"
+        "../scripts/diversity_summary.py"
 
 
-rule kraken2_report:
+rule diversity_summary_report:
     input:
-        "results/{project}/output/report/all/diversity_summary.csv",
+        rules.diversity_summary.output.csv,
     output:
         report(
             directory("results/{project}/output/report/all/diversity_summary/"),
@@ -151,140 +258,48 @@ rule kraken2_report:
     params:
         pin_until="sample",
         styles="resources/report/tables/",
-        name="kraken2_summary",
-        header="Kraken2 summary",
+        name="diversity_summary",
+        header="Diversity summary based on mapping to host genome(s) and Kraken2",
+        pattern=config["tablular-config"],
     log:
         "logs/{project}/report/kraken2_rbt_csv.log",
     conda:
         "../envs/rbt.yaml"
     shell:
         "rbt csv-report {input} --pin-until {params.pin_until} {output} && "
-        '(sed -i \'/>github<\/a>/a \\\\t\\t\\t</li>\\n\\t\\t\\t<li class="nav-item">'
-        '\\n\\t\\t\\t\\t<a class="nav-link" href="#">{params.header}</a>\' '
+        "(sed -i '{params.pattern} {params.header}</a>' "
         "{output}/indexes/index1.html && "
         "sed -i 's/report.xlsx/{params.name}_report.xlsx/g' {output}/indexes/index1.html) && "
         "mv {output}/report.xlsx {output}/{params.name}_report.xlsx && "
         "cp {params.styles}* {output}/css/ > {log} 2>&1"
 
 
-if config["host_filtering"]["do_host_filtering"]:
-
-    rule map_to_host:
-        input:
-            fastqs=get_trimmed_fastqs,
-        output:
-            temp("results/{project}/host_filtering/alignments/{sample}.bam"),
-        params:
-            ref=config["host_filtering"]["ref_genome"],
-        threads: 10
-        log:
-            "logs/{project}/host_filtering/map_to_host_{sample}.log",
-        conda:
-            "../envs/minimap2.yaml"
-        shell:
-            "(minimap2 -a -xsr -t {threads} {params.ref} {input.fastqs} | "
-            "samtools view -bh | "
-            "samtools sort --threads {threads} -o {output}) > {log} 2>&1"
-
-    rule index_host_alignment:
-        input:
-            "results/{project}/host_filtering/alignments/{sample}.bam",
-        output:
-            temp("results/{project}/host_filtering/alignments/{sample}.bam.bai"),
-        threads: 3
-        log:
-            "logs/{project}/host_filtering/index_host_alignment_{sample}.log",
-        conda:
-            "../envs/minimap2.yaml"
-        shell:
-            "samtools index {input} > {log} 2>&1"
-
-    rule filter_host:
-        input:
-            bam="results/{project}/host_filtering/alignments/{sample}.bam",
-            bai="results/{project}/host_filtering/alignments/{sample}.bam.bai",
-        output:
-            non_host=temp(
-                expand(
-                    "results/{{project}}/host_filtering/non_host/{{sample}}_{reads}.fastq.gz",
-                    reads=["1", "2"],
-                )
-            ),
-        threads: 3
-        log:
-            "logs/{project}/host_filtering/filter_host_{sample}.log",
-        conda:
-            "../envs/minimap2.yaml"
-        shell:
-            "(samtools fastq -F 3584 -f 77 {input.bam} | gzip -c > {output.non_host[0]} && "
-            "samtools fastq -F 3584 -f 141 {input.bam} | gzip -c > {output.non_host[1]}) > {log} 2>&1"
-
-    rule host_filtering_summary:
-        input:
-            csv="results/{project}/output/report/all/diversity_summary.csv",
-            jsons=expand(
-                "results/{{project}}/trimmed/fastp/{sample}.fastp.json",
-                sample=get_samples(),
-            ),
-        output:
-            csv="results/{project}/output/report/host_filtering_summary.csv",
-        params:
-            host_name=config["host_filtering"]["host_name"],
-        log:
-            "logs/{project}/host_filtering/summary.log",
-        threads: 2
-        conda:
-            "../envs/python.yaml"
-        script:
-            "../scripts/host_filtering_summary.py"
-
-    use rule kraken2_report as host_filtering_report with:
-        input:
-            "results/{project}/output/report/host_filtering_summary.csv",
-        output:
-            report(
-                directory("results/{project}/output/report/host_filtering/"),
-                htmlindex="index.html",
-                category="1. Quality control",
-                labels={"sample": "all samples"},
-            ),
-        params:
-            pin_until="sample",
-            styles="resources/report/tables/",
-            name="host_filtering",
-            header="Filtering out {} reads".format(
-                config["host_filtering"]["host_name"]
-            ),
-        log:
-            "logs/{project}/report/host_filtering_rbt_csv.log",
-
-
-rule kraken2_postfilt:
+rule create_host_plot:
     input:
-        hfile=get_kraken_db_file(),
-        fastqs=get_filtered_gz_fastqs,
+        csv=rules.diversity_summary.output.csv,
     output:
-        report="results/{project}/output/classification/reads/{sample}/{sample}_postfilt_report.tsv",
-        outfile=temp(
-            "results/{project}/output/classification/reads/{sample}/{sample}_postfilt_outfile.tsv"
+        html=report(
+            "results/{project}/output/report/all/host_contamination.html",
+            caption="../report/host_plot.rst",
+            category="2. Species diversity",
+            subcategory="2.2 post-filtering host reads",
+            labels={"sample": "all samples"},
         ),
     params:
-        db=lambda wildcards, input: Path(input.hfile).parent,
-    threads: 32
+        other_host=config["host_filtering"]["do_host_filtering"],
+        hostname=config["host_filtering"]["host_name"],
     log:
-        "logs/{project}/kraken2/run_postfilt/{sample}.log",
+        "logs/{project}/report/host_plot.log",
     conda:
-        "../envs/kraken2.yaml"
-    shell:
-        "kraken2 --db {params.db} --threads {threads} --paired "
-        "--output {output.outfile} --report {output.report} "
-        "--gzip-compressed {input.fastqs} > {log} 2>&1"
+        "../envs/python.yaml"
+    script:
+        "../scripts/plot_host.py"
 
 
 rule bracken_genus:
     input:
         hfile=get_kraken_db_file(),
-        kreport=rules.kraken2_postfilt.output.report,
+        kreport=rules.kraken2.output.report,
     output:
         breport=temp(
             "results/{project}/output/report/all/diversity_abundance/reports_genus/{sample}.breport"
@@ -309,7 +324,7 @@ rule bracken_genus:
 use rule bracken_genus as bracken_family with:
     input:
         hfile=get_kraken_db_file(),
-        kreport=rules.kraken2_postfilt.output.report,
+        kreport=rules.kraken2.output.report,
     output:
         breport=temp(
             "results/{project}/output/report/all/diversity_abundance/reports_family/{sample}.breport"
@@ -327,7 +342,7 @@ use rule bracken_genus as bracken_family with:
 use rule bracken_genus as bracken_phylum with:
     input:
         hfile=get_kraken_db_file(),
-        kreport=rules.kraken2_postfilt.output.report,
+        kreport=rules.kraken2.output.report,
     output:
         breport=temp(
             "results/{project}/output/report/all/diversity_abundance/reports_phylum/{sample}.breport"
@@ -345,7 +360,7 @@ use rule bracken_genus as bracken_phylum with:
 use rule bracken_genus as bracken_class with:
     input:
         hfile=get_kraken_db_file(),
-        kreport=rules.kraken2_postfilt.output.report,
+        kreport=rules.kraken2.output.report,
     output:
         breport=temp(
             "results/{project}/output/report/all/diversity_abundance/reports_class/{sample}.breport"
@@ -373,8 +388,6 @@ rule merge_bracken:
     resources:
         mem_mb=100,
     threads: 1
-    params:
-        threads=1,
     conda:
         "../envs/bracken.yaml"
     shell:
@@ -389,7 +402,7 @@ rule create_bracken_plot:
             "results/{project}/output/report/all/abundance_{level}.html",
             caption="../report/bracken_plot.rst",
             category="2. Species diversity",
-            subcategory="2.2 post-filtering human reads",
+            subcategory="2.2 post-filtering host reads",
             labels={"sample": "all samples", "level": "{level}"},
         ),
     params:
@@ -402,37 +415,3 @@ rule create_bracken_plot:
     script:
         "../scripts/brackenplot.py"
 
-
-rule kraken2krona:
-    input:
-        rules.kraken2_postfilt.output.report,
-    output:
-        temp("results/{project}/filtered/krona/{sample}.krona"),
-    threads: 4
-    log:
-        "logs/{project}/kraken2/postfilt_krona/{sample}.log",
-    conda:
-        "../envs/kraken2.yaml"
-    shell:
-        "(python $CONDA_PREFIX/bin/kreport2krona.py -r {input} "
-        "-o {output}) > {log} 2>&1"
-
-
-rule krona_html:
-    input:
-        "results/{project}/filtered/krona/{sample}.krona",
-    output:
-        report(
-            "results/{project}/output/report/{sample}/{sample}_kraken.krona.html",
-            caption="../report/kraken_krona.rst",
-            category="2. Species diversity",
-            subcategory="2.2 post-filtering human reads",
-            labels={"sample": "{sample}"},
-        ),
-    threads: 1
-    log:
-        "logs/{project}/krona/{sample}.log",
-    conda:
-        "../envs/kaiju.yaml"
-    shell:
-        "(ktImportText -o {output} {input}) > {log} 2>&1"

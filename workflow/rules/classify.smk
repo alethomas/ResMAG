@@ -20,6 +20,8 @@ rule run_kaiju:
         fastqs=get_filtered_gz_fastqs,
     output:
         report="results/{project}/output/classification/reads/{sample}/kaiju.out",
+    params:
+        evalue=0.00001,
     threads: 64
     log:
         "logs/{project}/kaiju/{sample}_run.log",
@@ -27,12 +29,13 @@ rule run_kaiju:
         "../envs/kaiju.yaml"
     shell:
         "kaiju -z {threads} -t {input.db_files[0]} -f {input.db_files[1]} "
-        "-i {input.fastqs[0]} -j {input.fastqs[1]} -o {output.report} > {log} 2>&1"
+        "-v -E {params.evalue} -i {input.fastqs[0]} "
+        "-j {input.fastqs[1]} -o {output.report} > {log} 2>&1"
 
 
 rule kaiju_table:
     input:
-        kaiju_report=rules.run_kaiju.output.report,
+        report=rules.run_kaiju.output.report,
         db_files=get_kaiju_files(),
     output:
         summary="results/{project}/output/classification/reads/{sample}/{sample}_{level}_kaiju_summary.tsv",
@@ -42,15 +45,15 @@ rule kaiju_table:
     conda:
         "../envs/kaiju.yaml"
     shell:
-        "kaiju2table -t {input.db_files[0]} -n {input.db_files[2]} "
-        "-r {wildcards.level} -o {output.summary} {input.kaiju_report} "
-        "> {log} 2>&1"
+        "(kaiju2table -t {input.db_files[0]} -n {input.db_files[2]} "
+        "-r {wildcards.level} -o {output.summary} "
+        "{input.report}) > {log} 2>&1"
 
 
 rule kaiju2krona:
     input:
         db_files=get_kaiju_files(),
-        kaiju_report=rules.run_kaiju.output.report,
+        report=rules.run_kaiju.output.report,
     output:
         krona=temp(
             "results/{project}/output/classification/reads/{sample}/kaiju.out.krona"
@@ -69,7 +72,7 @@ rule kaiju2krona:
         "../envs/kaiju.yaml"
     shell:
         "(kaiju2krona -t {input.db_files[0]} -n {input.db_files[2]} "
-        "-i {input.kaiju_report} -o {output.krona} && "
+        "-i {input.report} -o {output.krona} && "
         "ktImportText -o {output.html} {output.krona}) > {log} 2>&1"
 
 

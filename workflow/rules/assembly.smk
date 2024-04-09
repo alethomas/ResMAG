@@ -68,7 +68,7 @@ rule assembly_summary:
         "../scripts/assembly_summary.py"
 
 
-use rule kraken2_report as assembly_report with:
+use rule diversity_summary_report as assembly_report with:
     input:
         "results/{project}/output/report/all/assembly_summary.csv",
     output:
@@ -85,5 +85,6 @@ use rule kraken2_report as assembly_report with:
         styles="resources/report/tables/",
         name="assembly_summary",
         header="Assembly summary",
+        pattern=config["tablular-config"],
     log:
         "logs/{project}/report/assembly_rbt_csv.log",

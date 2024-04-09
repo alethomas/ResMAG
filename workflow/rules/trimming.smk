@@ -33,7 +33,7 @@ rule fastp:
             ]
         ),
         html=temp("results/{project}/trimmed/fastp/{sample}.html"),
-        json=temp("results/{project}/trimmed/fastp/{sample}.fastp.json"),
+        json="results/{project}/trimmed/fastp/{sample}.fastp.json",
     params:
         adapters=get_adapters,
         extra="--qualified_quality_phred {phred} --length_required {minlen}".format(
