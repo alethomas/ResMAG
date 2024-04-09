@@ -153,7 +153,7 @@ rule kraken2_report:
         styles="resources/report/tables/",
         name="kraken2_summary",
         header="Kraken2 summary",
-        pattern=config["tablular-config"]
+        pattern=config["tablular-config"],
     log:
         "logs/{project}/report/kraken2_rbt_csv.log",
     conda:
