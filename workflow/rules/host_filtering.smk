@@ -153,14 +153,14 @@ rule kraken2_report:
         styles="resources/report/tables/",
         name="kraken2_summary",
         header="Kraken2 summary",
+        pattern=config["tablular-config"]
     log:
         "logs/{project}/report/kraken2_rbt_csv.log",
     conda:
         "../envs/rbt.yaml"
     shell:
         "rbt csv-report {input} --pin-until {params.pin_until} {output} && "
-        '(sed -i \'/>github<\/a>/a \\\\t\\t\\t</li>\\n\\t\\t\\t<li class="nav-item">'
-        '\\n\\t\\t\\t\\t<a class="nav-link" href="#">{params.header}</a>\' '
+        "(sed -i '{params.pattern} {params.header}</a>' "
         "{output}/indexes/index1.html && "
         "sed -i 's/report.xlsx/{params.name}_report.xlsx/g' {output}/indexes/index1.html) && "
         "mv {output}/report.xlsx {output}/{params.name}_report.xlsx && "
