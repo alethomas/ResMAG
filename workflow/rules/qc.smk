@@ -118,6 +118,7 @@ use rule kraken2_report as bin_sample_report with:
         styles="resources/report/tables/",
         name="{sample}_bin_summary",
         header="Bin summary for sample {sample}",
+        pattern=config["tablular-config"],
     log:
         "logs/{project}/report/{sample}/bin_rbt_csv.log",
 
@@ -141,6 +142,7 @@ use rule kraken2_report as dastool_report with:
         styles="resources/report/tables/",
         name="{sample}_DASTool_summary",
         header="DAS Tool summary for sample {sample}",
+        pattern=config["tablular-config"],
     log:
         "logs/{project}/report/{sample}/dastool_rbt_csv.log",
 
@@ -164,6 +166,7 @@ use rule kraken2_report as checkm2_report with:
         styles="resources/report/tables/",
         name="{sample}_CheckM2_summary",
         header="CheckM2 summary for sample {sample}",
+        pattern=config["tablular-config"],
     log:
         "logs/{project}/report/{sample}/checkm2_rbt_csv.log",
 
@@ -184,6 +187,7 @@ use rule kraken2_report as taxonomy_report with:
         styles="resources/report/tables/",
         name="{sample}_taxonomy_summary",
         header="Taxonomy summary for sample {sample}",
+        pattern=config["tablular-config"],
     log:
         "logs/{project}/report/{sample}/taxonomy_rbt_csv.log",
 
@@ -204,6 +208,7 @@ use rule kraken2_report as mag_report with:
         styles="resources/report/tables/",
         name="{sample}_MAG_summary",
         header="MAG summary for sample {sample}",
+        pattern=config["tablular-config"],
     log:
         "logs/{project}/report/{sample}/mag_rbt_csv.log",
 
@@ -245,5 +250,6 @@ use rule kraken2_report as bin_all_report with:
         styles="resources/report/tables/",
         name="bin_summary",
         header="Bin summary for all samples",
+        pattern=config["tablular-config"],
     log:
         "logs/{project}/report/all_bin_rbt_csv.log",

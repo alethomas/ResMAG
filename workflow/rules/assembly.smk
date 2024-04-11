@@ -85,5 +85,6 @@ use rule kraken2_report as assembly_report with:
         styles="resources/report/tables/",
         name="assembly_summary",
         header="Assembly summary",
+        pattern=config["tablular-config"],
     log:
         "logs/{project}/report/assembly_rbt_csv.log",

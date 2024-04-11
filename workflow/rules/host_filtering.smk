@@ -255,6 +255,7 @@ if config["host_filtering"]["do_host_filtering"]:
             header="Filtering out {} reads".format(
                 config["host_filtering"]["host_name"]
             ),
+            pattern=config["tablular-config"],
         log:
             "logs/{project}/report/host_filtering_rbt_csv.log",
 
