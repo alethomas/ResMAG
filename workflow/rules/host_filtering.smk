@@ -47,7 +47,7 @@ rule map_to_human:
         ref=get_human_ref(),
     output:
         bam=temp("results/{project}/human_filtering/alignments/{sample}.bam"),
-    threads: 10
+    threads: 20
     log:
         "logs/{project}/human_filtering/map_to_host_{sample}.log",
     conda:
@@ -120,7 +120,7 @@ if config["host_filtering"]["do_host_filtering"]:
             bam=temp("results/{project}/host_filtering/alignments/{sample}.bam"),
         params:
             ref=config["host_filtering"]["ref_genome"],
-        threads: 10
+        threads: 20
         log:
             "logs/{project}/host_filtering/map_to_host_{sample}.log",
 
@@ -180,9 +180,9 @@ if not config["testing"]:
             hfile=get_kraken_db_file(),
             fastqs=get_filtered_gz_fastqs,
         output:
-            report="results/{project}/output/classification/reads/{sample}/{sample}_report.tsv",
+            report="results/{project}/output/classification/reads/{sample}/{sample}_kraken2_report.tsv",
             outfile=temp(
-                "results/{project}/output/classification/reads/{sample}/{sample}_outfile.tsv"
+                "results/{project}/output/classification/reads/{sample}/{sample}_kraken2_outfile.tsv"
             ),
         params:
             db=lambda wildcards, input: Path(input.hfile).parent,
@@ -214,7 +214,7 @@ if config["testing"]:
 rule diversity_summary:
     input:
         reports=expand(
-            "results/{{project}}/output/classification/reads/{sample}/{sample}_report.tsv",
+            "results/{{project}}/output/classification/reads/{sample}/{sample}_kraken2_report.tsv",
             sample=get_samples(),
         ),
         jsons=expand(

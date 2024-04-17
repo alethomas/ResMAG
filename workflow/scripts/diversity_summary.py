@@ -18,7 +18,7 @@ header_ls = ["prct", "total_reads", "lvl_reads", "lvl", "tax_id", "name"]
 results_dict = {}
 
 for report in reports:
-    sample = report[report.rfind("/") + 1 : report.rfind("_report")]
+    sample = report[report.rfind("/") + 1 : report.rfind("_kraken2_report")]
     sample_results_dict = {}
 
     for json_file in jsons:
@@ -27,6 +27,7 @@ for report in reports:
                 jdata = json.load(read_file)
                 # fastp json shows reads instead of read pairs as in the kraken reports
                 total_pre_host_filt = int((jdata["summary"]["after_filtering"]["total_reads"])/2)
+                print(f"after fastp pairs: {total_pre_host_filt}")
             break
     sample_results_dict["#total_reads"] = total_pre_host_filt
 
@@ -36,10 +37,13 @@ for report in reports:
                 with open(host_log, "r") as file:
                     for line in file.readlines():
                         if line.find("processed") >= 0:
-                            non_host_reads = int(line.split()[2])    
+                            non_host_reads = int(line.split()[2])
+                            print(f"non pig pairs: {non_host_reads}")
                             no_reads = total_pre_host_filt - non_host_reads
+                            print(f"pig pairs: {no_reads}")
                             prct_reads = (int(no_reads) / int(total_pre_host_filt)) * 100
-                            
+                            break
+
                 sample_results_dict[f"%{hostname}"] = "%.3f" %prct_reads
                 sample_results_dict[f"#reads_{hostname}"] = no_reads
                 break
@@ -51,12 +55,15 @@ for report in reports:
                 for line in file.readlines():
                     if line.find("processed") >= 0:
                         non_human_reads = int(line.split()[2])
+                        print(f"non human pairs: {non_human_reads}")
                         if snakemake.params.other_host:
-                            no_reads = total_pre_host_filt - non_host_reads - non_human_reads
+                            no_reads = non_host_reads - non_human_reads
                         else:
                             no_reads = total_pre_host_filt - non_human_reads
+                        print(f"human pairs: {no_reads}")
                         prct_reads = (int(no_reads) / int(total_pre_host_filt)) * 100
-                        
+                        break
+
             sample_results_dict[f"%human"] = "%.3f" %prct_reads
             sample_results_dict[f"#reads_human"] = no_reads
             break
