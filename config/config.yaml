@@ -1,9 +1,10 @@
 pepfile: config/pep/config.yaml
+pathogens: config/pathogens.csv
 
 # If testing set true
 testing: False
 
-project-name: "test"
+project-name: "lanuv"
 
 data-handling:
   # path to store data within the workflow
@@ -18,35 +19,29 @@ quality-criteria:
 
 adapter_seqs: "-a CTGTCTCTTATACACATCT -g AGATGTGTATAAGAGACAG"
 
-human-filtering:
+pathogen-recruitment:
   use-local: True
-  # path to a locally stored human reference genome
-  local-path: "/groups/ds/databases_refGenomes/refGenomes/latest/human/GCA_000001405.29_GRCh38.p14_genomic.fna.gz"
+  # path to lacally stored pathogen genomes
+  local-path: "/groups/ds/databases_refGenomes/refGenomes/latest/pathogen/"
   # if use-local = False the reference genome is downloaded via the following link
-  download-path: "https://ftp.ncbi.nlm.nih.gov/refseq/H_sapiens/annotation/GRCh38_latest/refseq_identifiers/GRCh38_latest_genomic.fna.gz"
+  download-path: "https://api.ncbi.nlm.nih.gov/datasets/v2alpha/genome/accession/{accession}/download?include_annotation_type=GENOME_FASTA"
 
 
-# if host filtering is wanted
-host_filtering:
-  do_host_filtering: False
-  host_name: "" #"pig"
-  ref_genome: "" #"resources/ref_genome/GCF_000003025.6_Sscrofa11.1_genomic.fa.gz"
+# human-filtering:
+#   use-local: True
+#   # path to a locally stored human reference genome
+#   local-path: "/groups/ds/databases_refGenomes/refGenomes/latest/human/GCA_000001405.29_GRCh38.p14_genomic.fna.gz"
+#   # if use-local = False the reference genome is downloaded via the following link
+#   download-path: "https://ftp.ncbi.nlm.nih.gov/refseq/H_sapiens/annotation/GRCh38_latest/refseq_identifiers/GRCh38_latest_genomic.fna.gz"
 
-kraken:
-  download-path: "https://genome-idx.s3.amazonaws.com/kraken/k2_pluspf_20230605.tar.gz"
-  db-name: "k2_pluspf"
-  # species/kingdom to separate with taxIDs in same order
-  taxIDs-ref: {
-      bacteria: 2,
-      fungi: 4751,
-      archaea: 2157,
-      viruses: 10239,
-    }
+
+# # if host filtering is wanted
+# host_filtering:
+#   do_host_filtering: False
+#   host_name: "" #"pig"
+#   ref_genome: "" #"resources/ref_genome/GCF_000003025.6_Sscrofa11.1_genomic.fa.gz"
 
 checkm2: "CheckM2_database/uniref100.KO.1.dmnd"
-kaiju:
-  download: "https://kaiju-idx.s3.eu-central-1.amazonaws.com/2023/kaiju_db_refseq_nr_2023-06-17.tgz"
-  fmi-file: "kaiju_db/kaiju_db_refseq_nr.fmi"
 
 binning:
   # threshold for the minimum contig length to be accepted by metabinner and vamb
@@ -55,14 +50,9 @@ binning:
   kmer_length: 3
   threads: 24
 
-rosella:
-  gitURL: "https://github.com/rhysnewell/rosella.git"
-
-das_tool:
-  # cores to use for das_tool
+minimap2:
+  # cores to use for mapping
   threads: 64
-  # available binners are: metabinner, metabat2, metacoag, rosella, vamb
-  binner-list: ["metabinner", "metabat2", "metacoag", "rosella"]
 
 MAG-criteria:
   min-completeness: 85.00

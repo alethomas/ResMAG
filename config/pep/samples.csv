@@ -1,3 +1,2 @@
 sample_name,fq1,fq2
-I15546-L1,/projects/pig-muenster/Metagenome_Kiel/fastq/I15546-L1_R1.fastq.gz,/projects/pig-muenster/Metagenome_Kiel/fastq/I15546-L1_R2.fastq.gz
-I15564-L1,/projects/pig-muenster/Metagenome_Kiel/fastq/I15564-L1_R1.fastq.gz,/projects/pig-muenster/Metagenome_Kiel/fastq/I15564-L1_R2.fastq.gz
+2-Dins-sed-F-Mock,/groups/ds/metagenomes/results/lanuv/filtered/fastqs/2-Dins-sed-F_R1.fastq.gz,/groups/ds/metagenomes/results/lanuv/filtered/fastqs/2-Dins-sed-F_R2.fastq.gz

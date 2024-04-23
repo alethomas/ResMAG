@@ -3,6 +3,7 @@ import sys
 
 sys.stderr = open(snakemake.log[0], "w")
 
+
 def check_files(files, binner_ls):
     path_ls = []
     results_binner = binner_ls.copy()
@@ -17,10 +18,13 @@ def check_files(files, binner_ls):
                 else:
                     path_ls.append(file_path)
                     break
-                
-    with open(output_csv, 'w') as f_out:
-        f_out.write("{paths}\n{binners}\n".format(paths=(",".join(path_ls)),binners=(",".join(results_binner))))
 
+    with open(output_csv, "w") as f_out:
+        f_out.write(
+            "{paths}\n{binners}\n".format(
+                paths=(",".join(path_ls)), binners=(",".join(results_binner))
+            )
+        )
 
 
 # Get the input and output file paths from command-line arguments

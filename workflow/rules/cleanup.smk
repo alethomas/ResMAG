@@ -9,6 +9,7 @@
 # save dastool summary & binner control file; remove rest of das tool folder
 # rm binning_prep folder
 
+
 rule remove_megahit_intermediates:
     input:
         contigs=get_assembly,
@@ -22,4 +23,3 @@ rule remove_megahit_intermediates:
         "../envs/unix.yaml"
     shell:
         "(find {params.outdir}/ -mindepth 1 -type d -exec rm -rf {{}} +) > {log} 2>&1"
-
