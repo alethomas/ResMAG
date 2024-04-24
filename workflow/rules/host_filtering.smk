@@ -77,11 +77,12 @@ rule filter_human:
         bam=rules.map_to_human.output.bam,
         bai=rules.index_human_alignment.output.bai,
     output:
-        filtered=
-            temp(expand(
+        filtered=temp(
+            expand(
                 "results/{{project}}/filtered/fastqs/{{sample}}_{read}.fastq",
                 read=["R1", "R2"],
-            )),
+            )
+        ),
     threads: 3
     log:
         "logs/{project}/human_filtering/filter_human_{sample}.log",
@@ -92,7 +93,7 @@ rule filter_human:
         "-o {output.filtered[0]} {input.bam} && "
         "samtools fastq --threads {threads} -F 3584 -f 141 "
         "-o {output.filtered[1]} {input.bam}) > {log} 2>&1"
-    
+
 
 rule gzip_filtered_reads:
     input:
@@ -109,7 +110,7 @@ rule gzip_filtered_reads:
 
 
 if config["host_filtering"]["do_host_filtering"]:
-    # if there is a different host than human, 
+    # if there is a different host than human,
     # this is run before filtering human reads
 
     use rule map_to_human as map_to_host with:
@@ -124,7 +125,6 @@ if config["host_filtering"]["do_host_filtering"]:
         log:
             "logs/{project}/host_filtering/map_to_host_{sample}.log",
 
-
     use rule index_human_alignment as index_host_alignment with:
         input:
             rules.map_to_host.output.bam,
@@ -133,7 +133,6 @@ if config["host_filtering"]["do_host_filtering"]:
         threads: 3
         log:
             "logs/{project}/host_filtering/index_host_alignment_{sample}.log",
-        
 
     rule filter_host:
         input:
@@ -173,6 +172,7 @@ rule download_kraken_db:
         "wget -c {params.download} -O - | "
         "tar -zxv -C {params.db_folder}) > {log} 2>&1"
 
+
 if not config["testing"]:
 
     rule kraken2:
@@ -180,7 +180,7 @@ if not config["testing"]:
             hfile=get_kraken_db_file(),
             fastqs=get_filtered_gz_fastqs,
         output:
-            report="results/{project}/output/classification/reads/{sample}/{sample}_report.tsv",
+            report="results/{project}/output/classification/reads/{sample}/{sample}_kraken2_report.tsv",
             outfile=temp(
                 "results/{project}/output/classification/reads/{sample}/{sample}_outfile.tsv"
             ),
@@ -210,11 +210,11 @@ if config["testing"]:
             "gunzip -k {input.clf_gz_1} {input.clf_gz_1}"
 
 
-## all reports are done on human (+ optional other different host) filtered 
+## all reports are done on human (+ optional other different host) filtered
 rule diversity_summary:
     input:
         reports=expand(
-            "results/{{project}}/output/classification/reads/{sample}/{sample}_report.tsv",
+            "results/{{project}}/output/classification/reads/{sample}/{sample}_kraken2_report.tsv",
             sample=get_samples(),
         ),
         jsons=expand(
@@ -414,4 +414,3 @@ rule create_bracken_plot:
         "../envs/python.yaml"
     script:
         "../scripts/brackenplot.py"
-

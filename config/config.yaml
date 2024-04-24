@@ -61,8 +61,8 @@ rosella:
 das_tool:
   # cores to use for das_tool
   threads: 64
-  # available binners are: metabinner, metabat2, metacoag, rosella, vamb
-  binner-list: ["metabinner", "metabat2", "metacoag", "rosella"]
+  # available binners are: metabinner, metabat, metabat2, metacoag, rosella, vamb
+  binner-list: ["metabat"]
 
 MAG-criteria:
   min-completeness: 85.00

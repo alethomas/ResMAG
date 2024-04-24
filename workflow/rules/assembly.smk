@@ -9,7 +9,7 @@ rule megahit:
         fastqs=get_filtered_gz_fastqs,
     output:
         contigs=temp("results/{project}/megahit/{sample}/final.contigs.fa"),
-        outdir=temp(directory("results/{project}/megahit/{sample}/")),
+        outdir=directory("results/{project}/megahit/{sample}/"),
     params:
         threshold=get_contig_length_threshold(),
     threads: 64
@@ -18,6 +18,7 @@ rule megahit:
     conda:
         "../envs/megahit.yaml"
     shell:
+        #"--cleaning-rounds 10 --merge-level 20,0.90 "
         "megahit -1 {input.fastqs[0]} -2 {input.fastqs[1]} "
         "--min-contig-len {params.threshold} -t {threads} "
         "--out-dir {output.outdir} -f > {log} 2>&1"
@@ -42,14 +43,14 @@ rule gzip_assembly:
     input:
         contigs=get_assembly,
     output:
-        "results/{project}/output/fastas/{sample}/{sample}_final.contigs.fa.gz",
+        gz="results/{project}/output/fastas/{sample}/{sample}_final.contigs.fa.gz",
     threads: 4
     log:
         "logs/{project}/assembly/{sample}_gzip.log",
     conda:
         "../envs/unix.yaml"
     shell:
-        "gzip -c {input.contigs} > {output} 2> {log}"
+        "gzip -c {input.contigs} > {output.gz} 2> {log}"
 
 
 rule assembly_summary:
