@@ -75,7 +75,7 @@ def get_prefiltered_fastqs(wildcards):
 def get_host_map_statistics(wildcards):
     if config["host_filtering"]["do_host_filtering"]:
         logs=expand(
-            "logs/{{project}}/host_filtering/filter_host_{sample}.log",sample=get_samples()
+            "results/{{project}}/report_prerequisites/qc/filter_host_{sample}.log",sample=get_samples()
         )
         return logs
     else:
