@@ -74,8 +74,9 @@ def get_prefiltered_fastqs(wildcards):
 
 def get_host_map_statistics(wildcards):
     if config["host_filtering"]["do_host_filtering"]:
-        logs=expand(
-            "results/{{project}}/report_prerequisites/qc/filter_host_{sample}.log",sample=get_samples()
+        logs = expand(
+            "results/{{project}}/report_prerequisites/qc/filter_host_{sample}.log",
+            sample=get_samples()
         )
         return logs
     else:
@@ -93,7 +94,7 @@ def get_human_ref():
 
 def get_human_local_folder():
     path = config["human-filtering"]["local-path"]
-    folder=Path(path).parent
+    folder = Path(path).parent
     return folder
 
 
