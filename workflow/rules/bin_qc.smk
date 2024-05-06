@@ -1,4 +1,3 @@
-
 ## bin QC
 rule checkm2_DB_download:
     output:
