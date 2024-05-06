@@ -76,7 +76,7 @@ def get_host_map_statistics(wildcards):
     if config["host_filtering"]["do_host_filtering"]:
         logs = expand(
             "results/{{project}}/report_prerequisites/qc/filter_host_{sample}.log",
-            sample=get_samples()
+            sample=get_samples(),
         )
         return logs
     else:
