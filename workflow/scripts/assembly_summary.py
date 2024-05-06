@@ -2,35 +2,78 @@ import pandas as pd
 import sys
 
 sys.stderr = open(snakemake.log[0], "w")
-log_files = snakemake.input
+
+asbl_logs = snakemake.input.asbl
+txts = snakemake.input.mapped
+qc_csv = snakemake.input.qc_csv
+
+df=pd.read_csv(qc_csv,index_col="sample")
+samples=df.index.to_list()
 
 summary_dict = {}
-for log_file in log_files:
+for sample in samples:
     summary_sample_dict = {}
+    summary_sample_dict["#reads_after_filtering"] = df.loc[sample,"#reads_after_filtering"]
 
-    with open(log_file, "r") as f_log:
-        for line in f_log:
-            if line.find("total") >= 0:
-                info = line.split(" - ")[-1]
-                seps = info.strip().split(", ")
-                for sep in seps:
-                    sep = sep.split()
-                    if "contigs" in sep:
-                        colname = "# contigs"
-                        value=int(sep[0])
-                        summary_sample_dict[colname] = f'{value:,}'
-                    elif "total" in sep:
-                        colname = "total bp"
-                        value=int(sep[1])
-                        summary_sample_dict[colname] = f'{value:,}'
-                    else:
-                        colname = "contigs {} bp".format(sep[0])
-                        value=int(sep[1])
-                        summary_sample_dict[colname] = f'{value:,}'
+    for asbl_log in asbl_logs:
+        if asbl_log.rfind(sample) >= 0:
+            with open(asbl_log, "r") as a_log:
+                for line in a_log:
+                    if line.find("total") >= 0:
+                        info = line.split(" - ")[-1]
+                        seps = info.strip().split(", ")
+                        for sep in seps:
+                            sep = sep.split()
+                            if "contigs" in sep:
+                                colname = "#contigs"
+                                value=int(sep[0])
+                            elif "total" in sep:
+                                colname = "assembly_size(bp)"
+                                value=int(sep[1])
+                            elif "max" in sep:
+                                colname = "longest_contig(bp)"
+                                value=int(sep[1])
+                            elif "avg" in sep:
+                                colname = "average_contig_size(bp)"
+                                value=int(sep[1])
+                            elif "N50" in sep:
+                                colname = "N50(bp)"
+                                value=int(sep[1])
+                            
+                            summary_sample_dict[colname] = value
 
-    sample = log_file[log_file.rfind("/") + 1 : log_file.rfind("_megahit")]
+    for txt in txts:
+        if txt.rfind(sample) >= 0:
+            with open(txt) as t:
+                mapped=int(t.readline())
+                summary_sample_dict["#assembled_reads"] = mapped
+                summary_sample_dict["%assembled_reads"] = round(((mapped/summary_sample_dict["#reads_after_filtering"]) * 100),4)
+            break
+
     summary_dict[sample] = summary_sample_dict
 
 summary_df = pd.DataFrame.from_dict(summary_dict, orient="index")
 summary_df.index.name = "sample"
+
+# reordering columns of output table
+summary_df.insert(3, "#assembled_reads", summary_df.pop("#assembled_reads"))
+summary_df.insert(4, "%assembled_reads", summary_df.pop("%assembled_reads"))
+
 summary_df.to_csv(snakemake.output.csv)
+
+## edit decimal separator for visual of table
+def format_int_with_commas(x):
+    #Formats an integer with commas as thousand separators
+    return f"{x:,}"
+
+def format_float_with_percent(x):
+    #Formats a float with percent sign
+    return f"{x:.2f}%"
+
+cols=[col for col in summary_df.columns.to_list() if col.find("%")>=0]
+summary_df[cols]=summary_df[cols].map(format_float_with_percent)
+
+cols=[col for col in summary_df.columns.to_list() if col.find("%")<0]
+summary_df[cols]=summary_df[cols].map(format_int_with_commas)
+
+summary_df.to_csv(snakemake.output.vis_csv)

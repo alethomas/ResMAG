@@ -10,13 +10,10 @@ rule snakemake_report:
         "results/{project}/output/report/all/multiqc.html",
         # 2. Species diversity
         "results/{project}/output/report/all/diversity_summary/",
+        "results/{project}/output/report/all/host_contamination.html",
         expand(
             "results/{{project}}/output/report/all/abundance_{level}.html",
             level=["genus", "family", "class", "phylum"],
-        ),
-        expand(
-            "results/{{project}}/output/report/{sample}/{sample}_kraken.krona.html",
-            sample=get_samples(),
         ),
         # 3. Assembly results
         "results/{project}/output/report/all/assembly/",

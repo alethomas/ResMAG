@@ -36,10 +36,11 @@ def expand_samples_for_project(paths, **kwargs):
 
 
 def get_fastqs(wildcards):
-    return (
-        pep.sample_table.loc[wildcards.sample]["fq1"],
-        pep.sample_table.loc[wildcards.sample]["fq2"],
-    )
+    file_r1 = pep.sample_table.loc[wildcards.sample]["fq1"]
+    folder = str(Path(file_r1).parent)
+    filename_r1 = Path(file_r1).name
+    filename_r2 = Path(pep.sample_table.loc[wildcards.sample]["fq2"]).name
+    return [folder, filename_r1, filename_r2]
 
 
 def get_local_fastqs(wildcards):
@@ -64,11 +65,37 @@ def get_trimmed_fastqs(wildcards):
 def get_prefiltered_fastqs(wildcards):
     if config["host_filtering"]["do_host_filtering"]:
         return [
-            "results/{project}/host_filtering/non_host/{sample}_1.fastq.gz",
-            "results/{project}/host_filtering/non_host/{sample}_2.fastq.gz",
+            "results/{project}/host_filtering/non_host/{sample}_R1.fastq.gz",
+            "results/{project}/host_filtering/non_host/{sample}_R2.fastq.gz",
         ]
     else:
         return get_trimmed_fastqs(wildcards)
+
+
+def get_host_map_statistics(wildcards):
+    if config["host_filtering"]["do_host_filtering"]:
+        logs = expand(
+            "results/{{project}}/report_prerequisites/qc/filter_host_{sample}.log",
+            sample=get_samples(),
+        )
+        return logs
+    else:
+        return []
+
+
+def get_human_ref():
+    if config["human-filtering"]["use-local"]:
+        path = config["human-filtering"]["local-path"]
+    else:
+        path = config["human-filtering"]["download-path"]
+    local_ref = "{}ref_genome/{}".format(get_resource_path(), path.split("/")[-1])
+    return local_ref
+
+
+def get_human_local_folder():
+    path = config["human-filtering"]["local-path"]
+    folder = Path(path).parent
+    return folder
 
 
 def get_kraken_db_file():
@@ -85,21 +112,17 @@ def get_taxID_dict():
     return config["kraken"]["taxIDs-ref"]
 
 
-def get_human_tax_ID():
-    return get_taxID_dict()["human"]
-
-
 def get_filtered_fastqs(wildcards):
     return [
-        "results/{project}/filtered/fastqs/{sample}_1.fastq",
-        "results/{project}/filtered/fastqs/{sample}_2.fastq",
+        "results/{project}/filtered/fastqs/{sample}_R1.fastq",
+        "results/{project}/filtered/fastqs/{sample}_R2.fastq",
     ]
 
 
 def get_filtered_gz_fastqs(wildcards):
     return [
-        "results/{project}/filtered/fastqs/{sample}_1.fastq.gz",
-        "results/{project}/filtered/fastqs/{sample}_2.fastq.gz",
+        "results/{project}/filtered/fastqs/{sample}_R1.fastq.gz",
+        "results/{project}/filtered/fastqs/{sample}_R2.fastq.gz",
     ]
 
 

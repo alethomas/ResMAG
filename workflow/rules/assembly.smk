@@ -1,20 +1,17 @@
 from pathlib import Path
 
 
-include: "host_filtering.smk"
-
-
 rule megahit:
     input:
         fastqs=get_filtered_gz_fastqs,
     output:
-        contigs=temp("results/{project}/megahit/{sample}/final.contigs.fa"),
-        outdir=temp(directory("results/{project}/megahit/{sample}/")),
+        contigs=("results/{project}/megahit/{sample}/final.contigs.fa"),
+        outdir=directory("results/{project}/megahit/{sample}/"),
     params:
         threshold=get_contig_length_threshold(),
     threads: 64
     log:
-        "logs/{project}/assembly/{sample}_megahit.log",
+        "results/{project}/report_prerequisites/assembly/{sample}_megahit.log",
     conda:
         "../envs/megahit.yaml"
     shell:
@@ -38,39 +35,61 @@ rule remove_megahit_intermediates:
         "(find {params.outdir}/ -mindepth 1 -type d -exec rm -rf {{}} +) > {log} 2>&1"
 
 
+rule map_to_assembly:
+    input:
+        contigs=get_assembly,
+        fastqs=get_filtered_gz_fastqs,
+    output:
+        "results/{project}/report_prerequisites/assembly/{sample}_reads_mapped.txt",
+    threads: 64
+    log:
+        "logs/{project}/assembly/{sample}_mapping_reads.log",
+    conda:
+        "../envs/minimap2.yaml"
+    shell:
+        "(minimap2 -a -xsr -t {threads} {input.contigs} {input.fastqs} | "
+        "samtools view -c -F 4 --threads {threads} -o {output}) > {log} 2>&1"
+
+
 rule gzip_assembly:
     input:
         contigs=get_assembly,
     output:
         "results/{project}/output/fastas/{sample}/{sample}_final.contigs.fa.gz",
-    threads: 4
+    threads: 64
     log:
         "logs/{project}/assembly/{sample}_gzip.log",
     conda:
         "../envs/unix.yaml"
     shell:
-        "gzip -c {input.contigs} > {output} 2> {log}"
+        "pigz -c {input.contigs} > {output} 2> {log}"
 
 
 rule assembly_summary:
     input:
-        expand(
-            "logs/{{project}}/assembly/{sample}_megahit.log",
+        qc_csv=rules.qc_summary.output.csv,
+        asbl=expand(
+            "results/{{project}}/report_prerequisites/assembly/{sample}_megahit.log",
+            sample=get_samples(),
+        ),
+        mapped=expand(
+            "results/{{project}}/report_prerequisites/assembly/{sample}_reads_mapped.txt",
             sample=get_samples(),
         ),
     output:
         csv="results/{project}/output/report/all/assembly_summary.csv",
+        vis_csv=temp("results/{project}/output/report/all/assembly_summary_visual.csv"),
     log:
-        "logs/{project}/assembly/summary.log",
+        "logs/{project}/report/assembly_summary.log",
     conda:
         "../envs/python.yaml"
     script:
         "../scripts/assembly_summary.py"
 
 
-use rule kraken2_report as assembly_report with:
+use rule qc_summary_report as assembly_report with:
     input:
-        "results/{project}/output/report/all/assembly_summary.csv",
+        rules.assembly_summary.output.vis_csv,
     output:
         report(
             directory("results/{project}/output/report/all/assembly/"),

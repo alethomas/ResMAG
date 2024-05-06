@@ -3,7 +3,7 @@ pepfile: config/pep/config.yaml
 # If testing set true
 testing: False
 
-project-name: "pp2_1"
+project-name: "test"
 
 data-handling:
   # path to store data within the workflow
@@ -18,11 +18,19 @@ quality-criteria:
 
 adapter_seqs: "-a CTGTCTCTTATACACATCT -g AGATGTGTATAAGAGACAG"
 
+human-filtering:
+  use-local: True
+  # path to a locally stored human reference genome
+  local-path: "/groups/ds/databases_refGenomes/refGenomes/latest/human/GCA_000001405.29_GRCh38.p14_genomic.fna.gz"
+  # if use-local = False the reference genome is downloaded via the following link
+  download-path: "https://ftp.ncbi.nlm.nih.gov/refseq/H_sapiens/annotation/GRCh38_latest/refseq_identifiers/GRCh38_latest_genomic.fna.gz"
+
+
 # if host filtering is wanted
 host_filtering:
   do_host_filtering: False
-  host_name: ""
-  ref_genome: ""
+  host_name: "" #"pig"
+  ref_genome: "" #"resources/ref_genome/GCF_000003025.6_Sscrofa11.1_genomic.fa.gz"
 
 kraken:
   download-path: "https://genome-idx.s3.amazonaws.com/kraken/k2_pluspf_20230605.tar.gz"
@@ -31,10 +39,9 @@ kraken:
   taxIDs-ref: {
       bacteria: 2,
       fungi: 4751,
-      human: 9606,
       archaea: 2157,
       viruses: 10239,
-    } #pig: 9823 plant: 33090
+    }
 
 checkm2: "CheckM2_database/uniref100.KO.1.dmnd"
 kaiju:
