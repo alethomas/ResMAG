@@ -262,7 +262,7 @@ use rule qc_summary_report as diversity_summary_report with:
         header="Diversity summary based on mapping to host genome(s) and Kraken2",
         pattern=config["tablular-config"],
     log:
-        "logs/{project}/report/kraken2_rbt_csv.log"
+        "logs/{project}/report/kraken2_rbt_csv.log",
 
 
 rule create_host_plot:
