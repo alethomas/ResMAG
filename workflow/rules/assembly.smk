@@ -15,6 +15,7 @@ rule megahit:
     conda:
         "../envs/megahit.yaml"
     shell:
+        #"--cleaning-rounds 10 --merge-level 20,0.90 "
         "megahit -1 {input.fastqs[0]} -2 {input.fastqs[1]} "
         "--min-contig-len {params.threshold} -t {threads} "
         "--out-dir {output.outdir} -f > {log} 2>&1"
