@@ -43,6 +43,7 @@ for report in reports:
                             prct_reads = (
                                 int(no_reads) / int(total_pre_host_filt)
                             ) * 100
+                            break
 
                 sample_results_dict[f"%{hostname}"] = "%.3f" % prct_reads
                 sample_results_dict[f"#reads_{hostname}"] = no_reads
@@ -54,13 +55,18 @@ for report in reports:
                 for line in file.readlines():
                     if line.find("processed") >= 0:
                         non_human_reads = int(line.split()[2])
+                        
                         if snakemake.params.other_host:
                             no_reads = (
                                 total_pre_host_filt - non_host_reads - non_human_reads
                             )
+
                         else:
                             no_reads = total_pre_host_filt - non_human_reads
+                        
                         prct_reads = (int(no_reads) / int(total_pre_host_filt)) * 100
+                        break
+
 
             sample_results_dict[f"%human"] = "%.3f" % prct_reads
             sample_results_dict[f"#reads_human"] = no_reads

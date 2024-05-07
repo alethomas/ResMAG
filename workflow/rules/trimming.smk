@@ -2,23 +2,23 @@ RAW_DATA_PATH = get_data_path()
 
 
 # copy files to local
-### TODO: change to copying via tar or remove & expect local path
-'''rule copy_fastq:
-    input:
-        fastqs=get_fastqs,
+rule copy_fastq:
     output:
         raw1=f"{RAW_DATA_PATH}{{project}}/{{sample}}_R1.fastq.gz",
         raw2=f"{RAW_DATA_PATH}{{project}}/{{sample}}_R2.fastq.gz",
     params:
         outdir=lambda wildcards, output: Path(output.raw1).parent,
+        # returns a list of folder and the filenames for R1 and R2 reads
+        fastqs=get_fastqs,
+    threads: 20
     log:
         "logs/{project}/copy_data/{sample}.log",
     conda:
         "../envs/unix.yaml"
     shell:
         "(mkdir -p {params.outdir} && "
-        "cp -v {input.fastqs[0]} {output.raw1} && "
-        "cp -v {input.fastqs[1]} {output.raw2}) > {log} 2>&1"'''
+        "tar cpfz - -C {params.fastqs[0]}/ {params.fastqs[1]} {params.fastqs[2]} | "
+        "(cd {params.outdir} ; tar xpfz -)) > {log} 2>&1"
 
 
 # fastp in paired-end mode for Illumina paired-end data

@@ -36,10 +36,11 @@ def expand_samples_for_project(paths, **kwargs):
 
 
 def get_fastqs(wildcards):
-    return (
-        pep.sample_table.loc[wildcards.sample]["fq1"],
-        pep.sample_table.loc[wildcards.sample]["fq2"],
-    )
+    file_r1 = pep.sample_table.loc[wildcards.sample]["fq1"]
+    folder = str(Path(file_r1).parent)
+    filename_r1 = Path(file_r1).name
+    filename_r2 = Path(pep.sample_table.loc[wildcards.sample]["fq2"]).name
+    return [folder, filename_r1, filename_r2]
 
 
 def get_local_fastqs(wildcards):
@@ -73,9 +74,10 @@ def get_prefiltered_fastqs(wildcards):
 
 def get_host_map_statistics(wildcards):
     if config["host_filtering"]["do_host_filtering"]:
-        logs=expand_samples_for_project(
-            "logs/{project}/human_filtering/filter_human_{sample}.log",
-        ),
+        logs = expand(
+            "results/{{project}}/report_prerequisites/qc/filter_host_{sample}.log",
+            sample=get_samples(),
+        )
         return logs
     else:
         return []
@@ -92,7 +94,7 @@ def get_human_ref():
 
 def get_human_local_folder():
     path = config["human-filtering"]["local-path"]
-    folder=Path(path).parent
+    folder = Path(path).parent
     return folder
 
 
