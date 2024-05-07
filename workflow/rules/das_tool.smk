@@ -12,7 +12,7 @@ rule postprocess_vamb:
         "sed -i 's/S1C//g' {output}) > {log} 2>&1"
 
 
-rule postprocess_metabat:
+rule postprocess_metabat2:
     input:
         "results/{project}/metabat2/{sample}/",
     output:
@@ -27,7 +27,7 @@ rule postprocess_metabat:
         "../scripts/binner_postprocess.py"
 
 
-use rule postprocess_metabat as postprocess_rosella with:
+use rule postprocess_metabat2 as postprocess_rosella with:
     input:
         "results/{project}/rosella/{sample}/",
     output:
@@ -36,6 +36,23 @@ use rule postprocess_metabat as postprocess_rosella with:
         binner="rosella",
     log:
         "logs/{project}/contig2bins/{sample}/postprocess_rosella.log",
+
+
+rule postprocess_metabat:
+    input:
+        outdir=rules.metabat.output.outdir,
+    output:
+        "results/{project}/output/contig2bins/{sample}/metabat_contig2bin.tsv",
+    params:
+        binner="metabat",
+        prefix="bin",
+    threads: 30
+    log:
+        "logs/{project}/contig2bins/{sample}/postprocess_metabat.log",
+    conda:
+        "../envs/python.yaml"
+    script:
+        "../scripts/metabat_postprocess.py"
 
 
 rule postprocess_metacoag:
@@ -97,18 +114,20 @@ rule dastool_run:
         outdir=temp(directory("results/{project}/das_tool/{sample}/")),
     params:
         path_bin_list=get_paths_binner,
-    threads: get_DAS_Tool_threads()
+        threshold=0,
+    threads: 64
     log:
         "logs/{project}/das_tool/{sample}/das_tool_run.log",
     conda:
         "../envs/das_tool.yaml"
     shell:
-        "DAS_Tool -t {threads} "
-        "--debug --write_bins "
+        "DAS_Tool --debug --write_bins "
         "-i {params.path_bin_list[0]} "
         "-l {params.path_bin_list[1]} "
         "-c {input.contigs} "
         "-o {output.outdir}/{wildcards.sample} "
+        "--score_threshold {params.threshold} "
+        "--threads={threads} "
         "> {log} 2>&1 "
 
 
