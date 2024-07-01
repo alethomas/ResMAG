@@ -179,7 +179,7 @@ def get_all_contig2bin_files(wildcards):
 ## reads in binner control file and returns list with paths to contig2bin files
 ## and a list with name of the binners that produced results
 def get_paths_binner(wildcards):
-    file = f"results/{wildcards.project}/das_tool/{wildcards.sample}_binner_control.csv"
+    file = f"results/{wildcards.project}/das_tool/binner_control_{wildcards.sample}.csv"
     lines = open(file).readlines()
     paths = str(lines[0].rstrip("\n"))
     binner = str(lines[1].rstrip("\n"))
@@ -193,5 +193,52 @@ def bins_for_sample(wildcards):
         return False
 
 
-def get_DAS_Tool_threads():
-    return config["das_tool"]["threads"]
+def get_bin_fa(wildcards):
+    folder = f"results/{wildcards.project}/output/fastas/{wildcards.sample}/bins/"
+    files = [
+        os.path.join(folder, binID)
+        for binID in os.listdir(folder)
+        if binID.endswith("fa.gz")
+    ]
+    return files
+
+
+def get_binIDs_for_sample(wildcards):
+    folder = f"results/{wildcards.project}/output/fastas/{wildcards.sample}/bins/"
+    binIDs = [binID for binID in os.listdir(folder) if binID.endswith("fa.gz")]
+    return binIDs
+
+
+def get_bin_ARGs(wildcards):
+    bin_fastas = (get_bin_fa(wildcards),)
+    bin_fastas = list(bin_fastas)[0]
+    binIDs = [os.path.basename(binID) for binID in bin_fastas]
+    folder = f"results/{wildcards.project}/output/ARGs/bins/{wildcards.sample}/"
+    arg_files = [
+        os.path.join(folder, binID.replace(".fa.gz", ".txt")) for binID in binIDs
+    ]
+    return arg_files
+
+
+def get_gtdb_folder():
+    config["gtdb"]["use_local"]
+
+
+def get_genomad_DB_file():
+    path = "{}genomad_db/names.dmp".format(get_resource_path())
+    return path
+
+
+def get_card_db_file():
+    name = config["card"]["dbfile"]
+    path = "{}CARD_db/{}".format(get_resource_path(), name)
+    return path
+
+
+def get_card_tar_file():
+    if config["card"]["data"]["use_local"]:
+        name = Path(config["card"]["data"]["local_path"]).name
+    else:
+        name = "card-data.tar.bz2"
+    # path = "{}CARD_db/{}".format(get_resource_path(), name)
+    return name

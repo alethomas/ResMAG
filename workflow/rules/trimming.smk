@@ -1,6 +1,6 @@
 RAW_DATA_PATH = get_data_path()
 
-
+"""
 # copy files to local
 rule copy_fastq:
     output:
@@ -19,6 +19,7 @@ rule copy_fastq:
         "(mkdir -p {params.outdir} && "
         "tar cpfz - -C {params.fastqs[0]}/ {params.fastqs[1]} {params.fastqs[2]} | "
         "(cd {params.outdir} ; tar xpfz -)) > {log} 2>&1"
+"""
 
 
 # fastp in paired-end mode for Illumina paired-end data

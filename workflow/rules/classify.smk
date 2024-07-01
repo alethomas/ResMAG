@@ -76,37 +76,87 @@ rule kaiju2krona:
         "ktImportText -o {output.html} {output.krona}) > {log} 2>&1"
 
 
-rule download_GTDB:
-    log:
-        "logs/gtdbtk_download_DB.log",
-    conda:
-        "../envs/gtdbtk.yaml"
-    shell:
-        "download-db.sh > {log} 2>&1"
+if config["gtdb"]["use_local"]:
 
+    rule prepare_gtdb:
+        output:
+            done=touch("results/GTDB_prep.done"),
+        params:
+            db_folder=config["gtdb"]["dbfolder"],
+        threads: 1
+        log:
+            "logs/GTDB_prep.log",
+        conda:
+            "../envs/gtdbtk.yaml"
+        shell:
+            "(conda env config vars set "
+            "GTDBTK_DATA_PATH='{params.db_folder}') > {log} 2>&1"
 
-rule gtdbtk_classify_wf:
-    input:
-        bins=rules.dastool_run.output.bins,
-        dastool=rules.dastool_run.output.outdir,
-        log="logs/gtdbtk_download_DB.log",
-    output:
-        summary="results/{project}/output/classification/bins/{sample}/{sample}.bac120.summary.tsv",
-        json="results/{project}/output/classification/bins/{sample}/gtdbtk.json",
-        outdir=temp(
-            directory("results/{project}/output/classification/bins/{sample}/gtdbtk/")
-        ),
-    params:
-        clf_outdir=lambda wildcards, output: Path(output.summary).parent,
-        sum_name=lambda wildcards, output: Path(output.summary).name,
-        json=lambda wildcards, output: Path(output.json).name,
-    threads: 30
-    log:
-        "logs/{project}/gtdbtk/{sample}_classify.log",
-    conda:
-        "../envs/gtdbtk.yaml"
-    shell:
-        "(gtdbtk classify_wf --skip_ani_screen --prefix {wildcards.sample} "
-        "-x fa --cpus {threads} --genome_dir {input.bins}/ --out_dir {output.outdir}/ && "
-        "cp {output.outdir}/classify/{params.sum_name} {params.clf_outdir}/ && "
-        "cp {output.outdir}/{params.json} {params.clf_outdir}/) > {log} 2>&1"
+    rule gtdbtk_classify_wf:
+        input:
+            bins=rules.gzip_bins.output.bins,
+            db_prep=rules.prepare_gtdb.output.done,
+        output:
+            summary="results/{project}/output/classification/bins/{sample}/{sample}.bac120.summary.tsv",
+            json="results/{project}/output/classification/bins/{sample}/gtdbtk.json",
+            outdir=temp(
+                directory(
+                    "results/{project}/output/classification/bins/{sample}/gtdbtk/"
+                )
+            ),
+        params:
+            db_folder=config["gtdb"]["dbfolder"],
+            clf_outdir=lambda wildcards, output: Path(output.summary).parent,
+            sum_name=lambda wildcards, output: Path(output.summary).name,
+            json=lambda wildcards, output: Path(output.json).name,
+        threads: 64
+        log:
+            "logs/{project}/gtdbtk/{sample}_classify.log",
+        conda:
+            "../envs/gtdbtk.yaml"
+        shell:
+            "(gtdbtk classify_wf --prefix {wildcards.sample} -x fa.gz "
+            "--mash_db {params.db_folder}mash_db/ --cpus {threads} "
+            "--genome_dir {input.bins}/ --out_dir {output.outdir}/ && "
+            "cp {output.outdir}/classify/{params.sum_name} {params.clf_outdir}/ && "
+            "cp {output.outdir}/{params.json} {params.clf_outdir}/) > {log} 2>&1"
+
+else:
+
+    rule download_GTDB:
+        output:
+            done=touch("results/gtdbtk_download_DB.done"),
+        log:
+            "logs/gtdbtk_download_DB.log",
+        threads: 64
+        conda:
+            "../envs/gtdbtk.yaml"
+        shell:
+            "download-db.sh > {log} 2>&1"
+
+    rule gtdbtk_classify_wf:
+        input:
+            bins=rules.gzip_bins.output.bins,
+            load=rules.download_GTDB.output.done,
+        output:
+            summary="results/{project}/output/classification/bins/{sample}/{sample}.bac120.summary.tsv",
+            json="results/{project}/output/classification/bins/{sample}/gtdbtk.json",
+            outdir=temp(
+                directory(
+                    "results/{project}/output/classification/bins/{sample}/gtdbtk/"
+                )
+            ),
+        params:
+            clf_outdir=lambda wildcards, output: Path(output.summary).parent,
+            sum_name=lambda wildcards, output: Path(output.summary).name,
+            json=lambda wildcards, output: Path(output.json).name,
+        threads: 64
+        log:
+            "logs/{project}/gtdbtk/{sample}_classify.log",
+        conda:
+            "../envs/gtdbtk.yaml"
+        shell:
+            "(gtdbtk classify_wf --prefix {wildcards.sample} -x fa.gz "
+            "--cpus {threads} --genome_dir {input.bins}/ --out_dir {output.outdir}/ && "
+            "cp {output.outdir}/classify/{params.sum_name} {params.clf_outdir}/ && "
+            "cp {output.outdir}/{params.json} {params.clf_outdir}/) > {log} 2>&1"

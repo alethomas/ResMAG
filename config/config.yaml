@@ -3,7 +3,7 @@ pepfile: config/pep/config.yaml
 # If testing set true
 testing: False
 
-project-name: "test"
+project-name: "pilot2"
 
 data-handling:
   # path to store data within the workflow
@@ -61,12 +61,20 @@ rosella:
 das_tool:
   # cores to use for das_tool
   threads: 64
-  # available binners are: metabinner, metabat, metabat2, metacoag, rosella, vamb
-  binner-list: ["metabat"]
+  # available binners are: metabinner, metabat, metabat2, metacoag, concoct, rosella, vamb
+  binner-list: ["metabat","metacoag"]
 
 MAG-criteria:
-  min-completeness: 85.00
-  max-contamination: 5.00
+  min-completeness: 50.00
+  max-contamination: 30.00
+
+card:
+  dbfile: "card.json"
+  url: "https://card.mcmaster.ca/latest/data"
+
+gtdb:
+  use_local: True
+  dbfolder: "/local/work/josefa/ResMAG/resources/gtdb/release220/"
 
 ## string term used for formatting output tables
 tablular-config: '/>github<\/a>/a \\t\t\t</li>\n\t\t\t<li class="nav-item"> \n\t\t\t\t<a class="nav-link" href="#">'

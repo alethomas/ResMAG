@@ -1,7 +1,6 @@
-channels:
+channels: 
   - conda-forge
   - bioconda
   - nodefaults
 dependencies:
-  - metacoag = 1.2.1
-  - biopython = 1.81
+  - genomad = 1.8.0

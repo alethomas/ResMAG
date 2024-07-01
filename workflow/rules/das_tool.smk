@@ -55,6 +55,20 @@ rule postprocess_metabat:
         "../scripts/metabat_postprocess.py"
 
 
+rule postprocess_concoct:
+    input:
+        c2bin=rules.concoct_merge.output.merge,
+    output:
+        "results/{project}/output/contig2bins/{sample}/concoct_contig2bin.tsv",
+    log:
+        "logs/{project}/contig2bins/{sample}/postprocess_concoct.log",
+    conda:
+        "../envs/unix.yaml"
+    shell:
+        "(sed '1d' {input.c2bin} | "
+        "sed 's/,/\\tconcoct_bin_/g' > {output}) > {log} 2>&1"
+
+
 rule postprocess_metacoag:
     input:
         c2bin="results/{project}/metacoag/{sample}/contig_to_bin.tsv",
@@ -89,7 +103,7 @@ rule binner_control:
     input:
         get_all_contig2bin_files,
     output:
-        temp("results/{project}/das_tool/{sample}_binner_control.csv"),
+        "results/{project}/das_tool/binner_control_{sample}.csv",  #temp
     params:
         get_binners(),
     log:
@@ -102,19 +116,17 @@ rule binner_control:
 
 rule dastool_run:
     input:
-        binc="results/{project}/das_tool/{sample}_binner_control.csv",
+        binc="results/{project}/das_tool/binner_control_{sample}.csv",
         contigs=get_assembly,
         asml_folder=rules.megahit.output.outdir,
     output:
         summary="results/{project}/das_tool/{sample}/{sample}_DASTool_summary.tsv",
         contig2bin="results/{project}/das_tool/{sample}/{sample}_DASTool_contig2bin.tsv",
-        bins=temp(
-            directory("results/{project}/das_tool/{sample}/{sample}_DASTool_bins/")
-        ),
-        outdir=temp(directory("results/{project}/das_tool/{sample}/")),
+        bins=directory("results/{project}/das_tool/{sample}/{sample}_DASTool_bins/"),
     params:
+        outdir=lambda wildcards, output: Path(output.summary).parent,
         path_bin_list=get_paths_binner,
-        threshold=0,
+        threshold=0.001,
     threads: 64
     log:
         "logs/{project}/das_tool/{sample}/das_tool_run.log",
@@ -125,7 +137,7 @@ rule dastool_run:
         "-i {params.path_bin_list[0]} "
         "-l {params.path_bin_list[1]} "
         "-c {input.contigs} "
-        "-o {output.outdir}/{wildcards.sample} "
+        "-o {params.outdir}/{wildcards.sample} "
         "--score_threshold {params.threshold} "
         "--threads={threads} "
         "> {log} 2>&1 "
@@ -138,11 +150,11 @@ if bins_for_sample:
             contig2bin="results/{project}/das_tool/{sample}/{sample}_DASTool_contig2bin.tsv",
             summary="results/{project}/das_tool/{sample}/{sample}_DASTool_summary.tsv",
             # so folder is not removed before copying
-            dastool=rules.dastool_run.output.outdir,
+            #dastool=rules.dastool_run.output.outdir,
         output:
             contig2bin="results/{project}/output/contig2bins/{sample}/DASTool_contig2bin.tsv",
             summary="results/{project}/output/report/{sample}/{sample}_DASTool_summary.tsv",
-        threads: 2
+        threads: 20
         log:
             "logs/{project}/das_tool/{sample}/move_output.log",
         conda:
@@ -154,7 +166,7 @@ if bins_for_sample:
     rule gzip_bins:
         input:
             bins=rules.dastool_run.output.bins,
-            dastool=rules.dastool_run.output.outdir,
+            #dastool=rules.dastool_run.output.outdir,
         output:
             bins=directory("results/{project}/output/fastas/{sample}/bins/"),
         threads: 64

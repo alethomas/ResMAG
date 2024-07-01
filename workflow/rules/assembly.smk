@@ -41,7 +41,7 @@ rule map_to_assembly:
         contigs=get_assembly,
         fastqs=get_filtered_gz_fastqs,
     output:
-        "results/{project}/report_prerequisites/assembly/{sample}_reads_mapped.txt",
+        bam="results/{project}/report_prerequisites/assembly/{sample}_reads_mapped.bam",
     threads: 64
     log:
         "logs/{project}/assembly/{sample}_mapping_reads.log",
@@ -49,7 +49,37 @@ rule map_to_assembly:
         "../envs/minimap2.yaml"
     shell:
         "(minimap2 -a -xsr -t {threads} {input.contigs} {input.fastqs} | "
-        "samtools view -c -F 4 --threads {threads} -o {output}) > {log} 2>&1"
+        "samtools view -bh | "
+        "samtools sort --threads {threads} -o {output.bam}) > {log} 2>&1"
+
+
+rule index_assembly_alignment:
+    input:
+        rules.map_to_assembly.output.bam,
+    output:
+        bai="results/{project}/report_prerequisites/assembly/{sample}_reads_mapped.bam.bai",
+    threads: 20
+    log:
+        "logs/{project}/assembly/{sample}_mapping_reads_index.log",
+    conda:
+        "../envs/minimap2.yaml"
+    shell:
+        "samtools index {input} > {log} 2>&1"
+
+
+rule reads_mapped_assembly:
+    input:
+        bam=rules.map_to_assembly.output.bam,
+    output:
+        bai="results/{project}/report_prerequisites/assembly/{sample}_reads_mapped.txt",
+    threads: 20
+    log:
+        "logs/{project}/assembly/{sample}_mapping_reads.log",
+    conda:
+        "../envs/minimap2.yaml"
+    shell:
+        "samtools view -c -F 4 --threads {threads} "
+        "-o {output.bai} {input.bam} > {log} 2>&1"
 
 
 rule gzip_assembly:
