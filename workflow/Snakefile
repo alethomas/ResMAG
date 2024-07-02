@@ -95,6 +95,9 @@ rule all:
             project=get_project(),
             sample=get_samples(),
         ),
+        expand("results/{project}/output/report/all/binning/",project=get_project(),
+            sample=get_samples(),
+        ),
 
 
 """        expand("results/{project}/report_prerequisites/assembly/{sample}_reads_mapped.bam.bai",project=get_project(),

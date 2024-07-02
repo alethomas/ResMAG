@@ -13,7 +13,7 @@ rule snakemake_report:
         "results/{project}/output/report/all/host_contamination.html",
         expand(
             "results/{{project}}/output/report/all/abundance_{level}.html",
-            level=["genus", "family", "class", "phylum"],
+            level=["species","genus"],
         ),
         # 3. Assembly results
         "results/{project}/output/report/all/assembly/",

@@ -59,14 +59,14 @@ save_csv_table(csv_path_checkm, checkm_red_df)
 gtdb_df=pd.read_table(in_gtdb)
 gtdb_df.rename({"user_genome":"bin"},axis=1,inplace=True)
 gtdb_df.set_index("bin",inplace=True)
-cols=['classification','fastani_reference','fastani_reference_radius','fastani_ani','fastani_af','classification_method']
+cols=['classification','closest_genome_reference','closest_genome_reference_radius','closest_genome_ani','closest_genome_af','classification_method']
 gtdb_red_df=gtdb_df[cols]
 
 save_csv_table(csv_path_tax, gtdb_red_df)
 
 
-bins_df = pd.concat([tool_red_df,checkm_red_df,gtdb_red_df[['classification','fastani_reference','fastani_ani']]], axis=1)
-col_order = ["completeness","contamination","bin_score","contigs","genome_size","contig_N50","GC_content",'classification','fastani_reference']
+bins_df = pd.concat([tool_red_df,checkm_red_df,gtdb_red_df[['classification','closest_genome_reference','closest_genome_ani']]], axis=1)
+col_order = ["completeness","contamination","bin_score","contigs","genome_size","contig_N50","GC_content",'classification','closest_genome_reference']
 bins_df=bins_df[col_order]
 bins_df.index.name ="bin"
 
