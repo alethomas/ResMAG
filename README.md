@@ -79,12 +79,31 @@ To prepare the workflow
 1. Clone it to your desired working folder via git or your preferred IDE
 2. Edit the `config/config.yaml` file:
    - Specify a project name (`project-name`)
+   - Specify filtering options for human reads (`human-filtering`)
+   - Specify host filtering options, if you have a non-human host (`host-filtering`)
+   - Specify options for GTDB database (see [Downloading GTDB](#Downloading-GTDB))
 3. Provide a sample information in the `config/pep/samples.csv` file with keeping the header and format as `.csv`:
 
 ```
 sample_name,fq1,fq2
 sample1,path/to/your/fastq/sample1_R1.fastq.gz,path/to/your/fastq/sample1_R2.fastq.gz
 ```
+
+#### Downloading GTDB
+The GTDB files need to be downloaded and unarchived, it requires about 110 Gb.
+1. Create a new folder `resources/gtdb/` and change to this directory
+2. Download the latest version of GTDB
+3. Unarchive the downloaded file
+4. After successful step 3: the archive can be removed
+
+```
+mkdir resources/gtdb/
+cd resources/gtdb/
+wget https://data.ace.uq.edu.au/public/gtdb/data/releases/latest/auxillary_files/gtdbtk_package/full_package/gtdbtk_data.tar.gz
+tar xvzf gtdbtk_data.tar.gz
+rm gtdbtk_data.tar.gz
+```
+
 ### Run the workflow
 ```snakemake --use-conda --cores all --rerun-incomplete```
 

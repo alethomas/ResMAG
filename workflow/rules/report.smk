@@ -1,5 +1,5 @@
 report_input = list()
-if config["host_filtering"]["do_host_filtering"]:
+if config["host-filtering"]["do-host-filtering"]:
     report_input.append("results/{project}/output/report/host_filtering/")
 
 

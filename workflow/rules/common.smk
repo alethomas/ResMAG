@@ -52,7 +52,7 @@ def get_local_fastqs(wildcards):
 
 
 def get_adapters(wildcards):
-    return config["adapter_seqs"]
+    return config["adapter-seqs"]
 
 
 def get_trimmed_fastqs(wildcards):
@@ -63,7 +63,7 @@ def get_trimmed_fastqs(wildcards):
 
 
 def get_prefiltered_fastqs(wildcards):
-    if config["host_filtering"]["do_host_filtering"]:
+    if config["host-filtering"]["do-host-filtering"]:
         return [
             "results/{project}/host_filtering/non_host/{sample}_R1.fastq.gz",
             "results/{project}/host_filtering/non_host/{sample}_R2.fastq.gz",
@@ -73,7 +73,7 @@ def get_prefiltered_fastqs(wildcards):
 
 
 def get_host_map_statistics(wildcards):
-    if config["host_filtering"]["do_host_filtering"]:
+    if config["host-filtering"]["do-host-filtering"]:
         logs = expand(
             "results/{{project}}/report_prerequisites/qc/filter_host_{sample}.log",
             sample=get_samples(),
@@ -141,20 +141,20 @@ def get_kaiju_files():
 
 ## binning parameters
 def get_contig_length_threshold():
-    return config["binning"]["min_contig_length"]
+    return config["binning"]["min-contig-length"]
 
 
 def get_contig_length_filter():
-    filt = int(config["binning"]["min_contig_length"]) - 1
+    filt = int(config["binning"]["min-contig-length"]) - 1
     return filt
 
 
 def get_kmersize():
-    return config["binning"]["kmer_length"]
+    return config["binning"]["kmer-length"]
 
 
 def get_binners():
-    return config["das_tool"]["binner-list"]
+    return config["das-tool"]["binner-list"]
 
 
 def get_rosella_install():
@@ -221,8 +221,10 @@ def get_bin_ARGs(wildcards):
 
 
 def get_gtdb_folder():
-    config["gtdb"]["use_local"]
-
+    folder = config["gtdb"]["db-folder"]
+    path = "{0}{1}".format(get_resource_path(), folder)
+    return path
+    
 
 def get_genomad_DB_file():
     path = "{}genomad_db/names.dmp".format(get_resource_path())
@@ -236,7 +238,7 @@ def get_card_db_file():
 
 
 def get_card_tar_file():
-    if config["card"]["data"]["use_local"]:
+    if config["card"]["data"]["use-local"]:
         name = Path(config["card"]["data"]["local_path"]).name
     else:
         name = "card-data.tar.bz2"

@@ -1,13 +1,13 @@
 pepfile: config/pep/config.yaml
 
-# If testing set true
-testing: False
-
+## Please change to a name describing your project
+## All results can be found under results/project-name
 project-name: "pilot2"
 
 data-handling:
   # path to store data within the workflow
   data: "data/"
+  # path where databases and reference genomes are stored
   resources: "resources/"
 
 quality-criteria:
@@ -16,21 +16,43 @@ quality-criteria:
   # average quality of acceptable reads (PHRED)
   min-PHRED: 20
 
-adapter_seqs: "-a CTGTCTCTTATACACATCT -g AGATGTGTATAAGAGACAG"
+adapter-seqs: "-a CTGTCTCTTATACACATCT -g AGATGTGTATAAGAGACAG"
 
+# reads are always filtered for human contamination
 human-filtering:
+  # if you have a human reference genome on your device,
+  # you can set use-local to True and specify the path to the human reference genome
   use-local: True
   # path to a locally stored human reference genome
   local-path: "/groups/ds/databases_refGenomes/refGenomes/latest/human/GCA_000001405.29_GRCh38.p14_genomic.fna.gz"
-  # if use-local = False the reference genome is downloaded via the following link
+  # if use-local = False the reference genome is downloaded via the following url
   download-path: "https://ftp.ncbi.nlm.nih.gov/refseq/H_sapiens/annotation/GRCh38_latest/refseq_identifiers/GRCh38_latest_genomic.fna.gz"
 
+# if filtering for non-human host is required,
+# specify a host name and the path to the reference genome
+host-filtering:
+  do-host-filtering: False
+  #e.g.: "pig"
+  host-name: ""
+  #e.g.: "resources/ref_genome/GCF_000003025.6_Sscrofa11.1_genomic.fa.gz"
+  ref-genome: ""
 
-# if host filtering is wanted
-host_filtering:
-  do_host_filtering: False
-  host_name: "" #"pig"
-  ref_genome: "" #"resources/ref_genome/GCF_000003025.6_Sscrofa11.1_genomic.fa.gz"
+
+### Handling of different databases
+
+## The GTDB has about 100 Gb
+## if use-local is set to False this will be downloaded during the pipeline run
+gtdb:
+  use-local: True
+  # if use-local is set to True, please specify the folder where the untared database is stored
+  # this path is expected to lay under the data-handling resources folder
+  db-folder: "gtdb/release220/"
+
+checkm2: "CheckM2_database/uniref100.KO.1.dmnd"
+
+kaiju:
+  download: "https://kaiju-idx.s3.eu-central-1.amazonaws.com/2023/kaiju_db_refseq_nr_2023-06-17.tgz"
+  fmi-file: "kaiju_db/kaiju_db_refseq_nr.fmi"
 
 kraken:
   download-path: "https://genome-idx.s3.amazonaws.com/kraken/k2_pluspf_20230605.tar.gz"
@@ -43,22 +65,24 @@ kraken:
       viruses: 10239,
     }
 
-checkm2: "CheckM2_database/uniref100.KO.1.dmnd"
-kaiju:
-  download: "https://kaiju-idx.s3.eu-central-1.amazonaws.com/2023/kaiju_db_refseq_nr_2023-06-17.tgz"
-  fmi-file: "kaiju_db/kaiju_db_refseq_nr.fmi"
+card:
+  dbfile: "card.json"
+  url: "https://card.mcmaster.ca/latest/data"
+
+
+### metabinner binning parameters
 
 binning:
   # threshold for the minimum contig length to be accepted by metabinner and vamb
-  min_contig_length: 300
+  min-contig-length: 300
   # some metabinner parameter
-  kmer_length: 3
+  kmer-length: 3
   threads: 24
 
 rosella:
   gitURL: "https://github.com/rhysnewell/rosella.git"
 
-das_tool:
+das-tool:
   # cores to use for das_tool
   threads: 64
   # available binners are: metabinner, metabat, metabat2, metacoag, concoct, rosella, vamb
@@ -68,13 +92,8 @@ MAG-criteria:
   min-completeness: 50.00
   max-contamination: 30.00
 
-card:
-  dbfile: "card.json"
-  url: "https://card.mcmaster.ca/latest/data"
-
-gtdb:
-  use_local: True
-  dbfolder: "/local/work/josefa/ResMAG/resources/gtdb/release220/"
-
 ## string term used for formatting output tables
 tablular-config: '/>github<\/a>/a \\t\t\t</li>\n\t\t\t<li class="nav-item"> \n\t\t\t\t<a class="nav-link" href="#">'
+
+# If testing set true
+testing: False

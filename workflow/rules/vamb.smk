@@ -4,7 +4,7 @@ rule vamb_contig_catalogue:
     output:
         catalogue="results/{project}/vamb/{sample}/catalogue.fna.gz",
     params:
-        threshold=config["binning"]["min_contig_length"],
+        threshold=config["binning"]["min-contig-length"],
     log:
         "logs/{project}/vamb/{sample}/contig_catalogue.log",
     conda:
