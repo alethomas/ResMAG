@@ -49,9 +49,68 @@ rule download_CARD_data:
         "tar -xvf data ./{params.filename}) > {log} 2>&1"
 
 
-rule CARD_load_DB:
+rule CARD_load_DB_for_reads:
     input:
         get_card_db_file(),
+    output:
+        touch("results/CARD_load_DB_for_reads.done"),
+    log:
+        "logs/CARD_load_DB_for_reads.log",
+    conda:
+        "../envs/card.yaml"
+    shell:
+        "rgi clean --local && "
+        "rgi load --card_json {input} --local > {log} 2>&1"
+
+
+rule CARD_annotation:
+    input:
+        json=get_card_db_file(),
+        load=rules.CARD_load_DB_for_reads.output,
+    output:
+        touch("results/CARD_annotation.done"),
+    params:
+        folder=lambda wildcards, input: Path(input.json).parent,
+        file=lambda wildcards, input: Path(input.json).name,
+        ann=get_card_annotation_file(),
+    log:
+        "logs/CARD_annotation.log",
+    conda:
+        "../envs/card.yaml"
+    shell:
+        "(cd {params.folder}/ && "
+        "rgi card_annotation -i {params.file}) && "
+        "rgi load -i {input.json} --card_annotation {params.ann} --local > {log} 2>&1"
+
+
+rule CARD_read_run:
+    input:
+        fa=get_filtered_gz_fastqs,
+        db=rules.CARD_annotation.output,
+    output:
+        txt="results/{project}/output/ARGs/reads/{sample}/{sample}.allele_mapping_data.txt",
+    params:
+        folder=lambda wildcards, output: Path(output.txt).parent,
+    log:
+        "logs/{project}/ARGs/reads/{sample}.log",
+    threads: 64
+    conda:
+        "../envs/card.yaml"
+    shell:
+        "rgi bwt -1 {input.fa[0]} -2 {input.fa[1]} "
+        "-o {params.folder}/{wildcards.sample} --local "
+        "--clean -n {threads} > {log} 2>&1"
+
+
+rule CARD_load_DB:
+    input:
+        db=get_card_db_file(),
+        # need to be ready
+        read_args=expand(
+            "results/{project}/output/ARGs/reads/{sample}/{sample}.allele_mapping_data.txt",
+            sample=get_samples(),
+            project=get_project(),
+        ),
     output:
         touch("results/CARD_load_DB.done"),
     log:
@@ -60,7 +119,7 @@ rule CARD_load_DB:
         "../envs/card.yaml"
     shell:
         "rgi clean --local && "
-        "rgi load --card_json {input} --local > {log} 2>&1"
+        "rgi load --card_json {input.db} --local > {log} 2>&1"
 
 
 rule CARD_assembly_run:
@@ -82,26 +141,26 @@ rule CARD_assembly_run:
         "-n {threads} --clean > {log} 2>&1"
 
 
-use rule CARD_assembly_run as CARD_bin_run with:
+use rule CARD_assembly_run as CARD_mag_run with:
     input:
-        fa="results/{project}/output/fastas/{sample}/bins/{binID}.fa.gz",
+        fa="results/{project}/output/fastas/{sample}/mags/{binID}.fa.gz",
         db=rules.CARD_load_DB.output,
     output:
-        txt="results/{project}/output/ARGs/bins/{sample}/{binID}.txt",
+        txt="results/{project}/output/ARGs/mags/{sample}/{binID}.txt",
     params:
         path_wo_ext=lambda wildcards, output: Path(output.txt).with_suffix(""),
     log:
-        "logs/{project}/ARGs/bins/{sample}/{binID}.log",
+        "logs/{project}/ARGs/mags/{sample}/{binID}.log",
 
 
-rule wrap_bin_ARGs:
+rule wrap_mag_ARGs:
     input:
-        get_bin_ARGs,
+        get_mag_ARGs,
         #expand("results/{{project}}/output/ARGs/bins/{{sample}}/{binID}.txt", binID=get_binIDs_for_sample),
     output:
-        "results/{project}/output/ARGs/bins/{sample}/all_bins.done",
+        "results/{project}/output/ARGs/mags/{sample}/all_mags.done",
     log:
-        "logs/{project}/ARGs/bins/{sample}/all_bins.log",
+        "logs/{project}/ARGs/mags/{sample}/all_mags.log",
     conda:
         "../envs/unix.yaml"
     shell:

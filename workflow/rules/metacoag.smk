@@ -4,7 +4,7 @@ rule coverm_metacoag:
         contigs=get_assembly,
     output:
         temp("results/{project}/binning_prep/{sample}/abundance.tsv"),
-    threads: 2
+    threads: 20
     log:
         "logs/{project}/coverm/{sample}.log",
     conda:

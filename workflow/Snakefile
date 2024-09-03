@@ -39,11 +39,6 @@ include: "rules/report.smk"
 rule all:
     input:
         expand(
-            "results/{project}/das_tool/binner_control_{sample}.csv",
-            project=get_project(),
-            sample=get_samples(),
-        ),
-        expand(
             "results/{project}/output/fastas/{sample}/bins/",
             project=get_project(),
             sample=get_samples(),
@@ -55,12 +50,12 @@ rule all:
         ),
         # resistance
         expand(
-            "results/{project}/output/ARGs/assembly/{sample}/{sample}.txt",
+            "results/{project}/output/ARGs/reads/{sample}/{sample}.allele_mapping_data.txt",
             project=get_project(),
             sample=get_samples(),
         ),
         expand(
-            "results/{project}/output/ARGs/bins/{sample}/all_bins.done",
+            "results/{project}/output/ARGs/assembly/{sample}/{sample}.txt",
             project=get_project(),
             sample=get_samples(),
         ),
@@ -75,50 +70,23 @@ rule all:
             sample=get_samples(),
         ),
         expand(
-            "results/{project}/output/report/{sample}/checkm2/",
-            project=get_project(),
-            sample=get_samples(),
-        ),
-        expand(
-            "results/{project}/output/report/{sample}/dastool/",
-            project=get_project(),
-            sample=get_samples(),
-        ),
-        expand(
-            "results/{project}/output/report/{sample}/taxonomy/",
-            project=get_project(),
-            sample=get_samples(),
-        ),
-        # 5. Taxonomic classification
-        expand(
-            "results/{project}/output/report/{sample}/mags/",
-            project=get_project(),
-            sample=get_samples(),
-        ),
-        expand("results/{project}/output/report/all/binning/",project=get_project(),
-            sample=get_samples(),
-        ),
-
-
-"""        expand("results/{project}/report_prerequisites/assembly/{sample}_reads_mapped.bam.bai",project=get_project(),
-            sample=get_samples(),
-        ),
-        expand(
-            "results/{project}/output/report/report_{project}.zip",
-            project=get_project(),
-        ),
-        expand(
-            "results/{project}/output/fastas/{sample}/{sample}_final.contigs.fa.gz",
-            project=get_project(),
-            sample=get_samples(),
-        ),
-        expand(
             "results/{project}/output/classification/reads/{sample}/{sample}_{level}_kaiju_summary.tsv",
             project=get_project(),
             sample=get_samples(),
             level=["species", "genus"],
         ),
+        expand(
+            "results/{project}/output/report/report_{project}.zip",
+            project=get_project(),
+        ),
         
+'''        expand(
+            "results/{project}/output/ARGs/mags/{sample}/all_mags.done",
+            project=get_project(),
+            sample=get_samples(),
+        ),
+'''
+""""
         # removal logs
         expand(
             "logs/{project}/assembly/{sample}_intermediate_removal.done",

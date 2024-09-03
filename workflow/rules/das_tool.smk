@@ -46,7 +46,7 @@ rule postprocess_metabat:
     params:
         binner="metabat",
         prefix="bin",
-    threads: 30
+    threads: 20
     log:
         "logs/{project}/contig2bins/{sample}/postprocess_metabat.log",
     conda:
@@ -75,6 +75,7 @@ rule postprocess_metacoag:
         folder="results/{project}/metacoag/{sample}/",
     output:
         "results/{project}/output/contig2bins/{sample}/metacoag_contig2bin.tsv",
+    threads: 20
     log:
         "logs/{project}/contig2bins/{sample}/postprocess_metacoag.log",
     conda:
@@ -103,7 +104,7 @@ rule binner_control:
     input:
         get_all_contig2bin_files,
     output:
-        "results/{project}/das_tool/binner_control_{sample}.csv",  #temp
+        temp("results/{project}/das_tool/binner_control_{sample}.csv"),  #temp
     params:
         get_binners(),
     log:
@@ -185,7 +186,7 @@ if bins_for_sample:
             csv="results/{project}/output/report/{sample}/{sample}_mags_summary.csv",
         output:
             outdir=directory("results/{project}/output/fastas/{sample}/mags/"),
-        threads: 2
+        threads: 20
         log:
             "logs/{project}/bins/{sample}/move_MAGs.log",
         conda:

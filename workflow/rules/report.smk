@@ -8,13 +8,7 @@ rule snakemake_report:
         # 1. Quality control
         report_input,
         "results/{project}/output/report/all/multiqc.html",
-        # 2. Species diversity
-        "results/{project}/output/report/all/diversity_summary/",
-        "results/{project}/output/report/all/host_contamination.html",
-        expand(
-            "results/{{project}}/output/report/all/abundance_{level}.html",
-            level=["species","genus"],
-        ),
+        "results/{project}/output/report/all/quality_summary/",
         # 3. Assembly results
         "results/{project}/output/report/all/assembly/",
         # 4. Binning results

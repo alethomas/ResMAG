@@ -193,8 +193,8 @@ def bins_for_sample(wildcards):
         return False
 
 
-def get_bin_fa(wildcards):
-    folder = f"results/{wildcards.project}/output/fastas/{wildcards.sample}/bins/"
+def get_mag_fa(wildcards):
+    folder = f"results/{wildcards.project}/output/fastas/{wildcards.sample}/mags/"
     files = [
         os.path.join(folder, binID)
         for binID in os.listdir(folder)
@@ -209,11 +209,11 @@ def get_binIDs_for_sample(wildcards):
     return binIDs
 
 
-def get_bin_ARGs(wildcards):
-    bin_fastas = (get_bin_fa(wildcards),)
+def get_mag_ARGs(wildcards):
+    bin_fastas = (get_mag_fa(wildcards),)
     bin_fastas = list(bin_fastas)[0]
     binIDs = [os.path.basename(binID) for binID in bin_fastas]
-    folder = f"results/{wildcards.project}/output/ARGs/bins/{wildcards.sample}/"
+    folder = f"results/{wildcards.project}/output/ARGs/mags/{wildcards.sample}/"
     arg_files = [
         os.path.join(folder, binID.replace(".fa.gz", ".txt")) for binID in binIDs
     ]
@@ -237,6 +237,12 @@ def get_card_db_file():
     return path
 
 
+def get_card_annotation_file():
+    version = config["card"]["version"]
+    path = "{}CARD_db/card_database_{}.fasta".format(get_resource_path(), version)
+    return path
+
+'''
 def get_card_tar_file():
     if config["card"]["data"]["use-local"]:
         name = Path(config["card"]["data"]["local_path"]).name
@@ -244,3 +250,4 @@ def get_card_tar_file():
         name = "card-data.tar.bz2"
     # path = "{}CARD_db/{}".format(get_resource_path(), name)
     return name
+'''
