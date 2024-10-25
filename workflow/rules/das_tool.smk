@@ -6,7 +6,7 @@ rule postprocess_metabat:
     params:
         binner="metabat",
         prefix="bin",
-    threads: 30
+    threads: 20
     log:
         "logs/{project}/contig2bins/{sample}/postprocess_metabat.log",
     conda:
@@ -118,7 +118,7 @@ if bins_for_sample:
             csv="results/{project}/output/report/{sample}/{sample}_mags_summary.csv",
         output:
             outdir=directory("results/{project}/output/fastas/{sample}/mags/"),
-        threads: 12
+        threads: 20
         log:
             "logs/{project}/bins/{sample}/move_MAGs.log",
         conda:

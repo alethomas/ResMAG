@@ -53,6 +53,7 @@ rule download_CARD_data:
 
 
 rule CARD_load_DB_for_reads:
+rule CARD_load_DB_for_reads:
     input:
         get_card_db_file(),
     output:
@@ -140,6 +141,7 @@ rule CARD_load_DB:
     shell:
         "rgi clean --local && "
         "rgi load --card_json {input.db} --local > {log} 2>&1"
+        "rgi load --card_json {input.db} --local > {log} 2>&1"
 
 
 rule CARD_assembly_run:
@@ -177,21 +179,26 @@ use rule CARD_read_sample_summary as CARD_assembly_sample_summary with:
 use rule CARD_assembly_run as CARD_mag_run with:
     input:
         fa="results/{project}/output/fastas/{sample}/mags/{binID}.fa.gz",
+        fa="results/{project}/output/fastas/{sample}/mags/{binID}.fa.gz",
         db=rules.CARD_load_DB.output,
     output:
+        txt="results/{project}/output/ARGs/mags/{sample}/{binID}.txt",
         txt="results/{project}/output/ARGs/mags/{sample}/{binID}.txt",
     params:
         path_wo_ext=lambda wildcards, output: Path(output.txt).with_suffix(""),
     log:
         "logs/{project}/ARGs/mags/{sample}/{binID}.log",
+        "logs/{project}/ARGs/mags/{sample}/{binID}.log",
 
 
-rule wrap_bin_ARGs:
+rule wrap_mag_ARGs:
     input:
         get_mag_ARGs,
     output:
         "results/{project}/output/ARGs/mags/{sample}/all_mags.done",
+        "results/{project}/output/ARGs/mags/{sample}/all_mags.done",
     log:
+        "logs/{project}/ARGs/mags/{sample}/all_mags.log",
         "logs/{project}/ARGs/mags/{sample}/all_mags.log",
     conda:
         "../envs/unix.yaml"

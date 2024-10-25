@@ -67,6 +67,7 @@ kraken:
 
 card:
   version: "v3.2.9"
+  version: "v3.2.9"
   dbfile: "card.json"
   url: "https://card.mcmaster.ca/latest/data"
 
