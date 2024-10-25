@@ -1,43 +1,3 @@
-rule postprocess_vamb:
-    input:
-        "results/{project}/vamb/{sample}/vamb_res/clusters.tsv",
-    output:
-        "results/{project}/output/contig2bins/{sample}/vamb_contig2bin.tsv",
-    log:
-        "logs/{project}/contig2bins/{sample}/postprocess_vamb.log",
-    conda:
-        "../envs/unix.yaml"
-    shell:
-        "(awk '{{print $2 \"\tvamb_bin_\" $1}}' {input} > {output} && "
-        "sed -i 's/S1C//g' {output}) > {log} 2>&1"
-
-
-rule postprocess_metabat2:
-    input:
-        "results/{project}/metabat2/{sample}/",
-    output:
-        "results/{project}/output/contig2bins/{sample}/metabat2_contig2bin.tsv",
-    params:
-        binner="metabat2",
-    log:
-        "logs/{project}/contig2bins/{sample}/postprocess_metabat2.log",
-    conda:
-        "../envs/python.yaml"
-    script:
-        "../scripts/binner_postprocess.py"
-
-
-use rule postprocess_metabat2 as postprocess_rosella with:
-    input:
-        "results/{project}/rosella/{sample}/",
-    output:
-        "results/{project}/output/contig2bins/{sample}/rosella_contig2bin.tsv",
-    params:
-        binner="rosella",
-    log:
-        "logs/{project}/contig2bins/{sample}/postprocess_rosella.log",
-
-
 rule postprocess_metabat:
     input:
         outdir=rules.metabat.output.outdir,
@@ -55,26 +15,13 @@ rule postprocess_metabat:
         "../scripts/metabat_postprocess.py"
 
 
-rule postprocess_concoct:
-    input:
-        c2bin=rules.concoct_merge.output.merge,
-    output:
-        "results/{project}/output/contig2bins/{sample}/concoct_contig2bin.tsv",
-    log:
-        "logs/{project}/contig2bins/{sample}/postprocess_concoct.log",
-    conda:
-        "../envs/unix.yaml"
-    shell:
-        "(sed '1d' {input.c2bin} | "
-        "sed 's/,/\\tconcoct_bin_/g' > {output}) > {log} 2>&1"
-
-
 rule postprocess_metacoag:
     input:
         c2bin="results/{project}/metacoag/{sample}/contig_to_bin.tsv",
         folder="results/{project}/metacoag/{sample}/",
     output:
         "results/{project}/output/contig2bins/{sample}/metacoag_contig2bin.tsv",
+    threads: 4
     log:
         "logs/{project}/contig2bins/{sample}/postprocess_metacoag.log",
     conda:
@@ -84,26 +31,12 @@ rule postprocess_metacoag:
         "sed 's/len=[0-9]*,/metacoag_/g' > {output}) > {log} 2>&1"
 
 
-## move metabinner output to contig2bin folder
-rule postprocess_metabinner:
-    input:
-        "results/{project}/metabinner/{sample}/metabinner_res/metabinner_result.tsv",
-    output:
-        "results/{project}/output/contig2bins/{sample}/metabinner_contig2bin.tsv",
-    log:
-        "logs/{project}/contig2bins/{sample}/postprocess_metabinner.log",
-    conda:
-        "../envs/unix.yaml"
-    shell:
-        "awk '{{print $1 \"\tmetabinner_bin_\" $2}}' {input} > {output} 2> {log}"
-
-
 ## tests if binner created bins and writes file for DAS Tool
 rule binner_control:
     input:
         get_all_contig2bin_files,
     output:
-        "results/{project}/das_tool/binner_control_{sample}.csv",  #temp
+        temp("results/{project}/das_tool/binner_control_{sample}.csv"),
     params:
         get_binners(),
     log:
@@ -185,7 +118,7 @@ if bins_for_sample:
             csv="results/{project}/output/report/{sample}/{sample}_mags_summary.csv",
         output:
             outdir=directory("results/{project}/output/fastas/{sample}/mags/"),
-        threads: 2
+        threads: 12
         log:
             "logs/{project}/bins/{sample}/move_MAGs.log",
         conda:

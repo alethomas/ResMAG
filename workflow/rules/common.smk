@@ -4,10 +4,6 @@ import os
 configfile: "config/config.yaml"
 
 
-def get_root():
-    return os.getcwd()
-
-
 def get_data_path():
     return config["data-handling"]["data"]
 
@@ -22,17 +18,6 @@ def get_project():
 
 def get_samples():
     return list(pep.sample_table["sample_name"].values)
-
-
-def expand_samples_for_project(paths, **kwargs):
-    def inner(wildcards):
-        return expand(
-            paths,
-            sample=get_samples(),
-            **kwargs,
-        )
-
-    return inner
 
 
 def get_fastqs(wildcards):
@@ -144,27 +129,8 @@ def get_contig_length_threshold():
     return config["binning"]["min-contig-length"]
 
 
-def get_contig_length_filter():
-    filt = int(config["binning"]["min-contig-length"]) - 1
-    return filt
-
-
-def get_kmersize():
-    return config["binning"]["kmer-length"]
-
-
 def get_binners():
     return config["das-tool"]["binner-list"]
-
-
-def get_rosella_install():
-    folder = get_resource_path()
-    script = f"{folder}rosella/install.sh"
-    return script
-
-
-def get_rosella_git():
-    return config["rosella"]["gitURL"]
 
 
 def get_all_contig2bin_files(wildcards):
@@ -193,8 +159,8 @@ def bins_for_sample(wildcards):
         return False
 
 
-def get_bin_fa(wildcards):
-    folder = f"results/{wildcards.project}/output/fastas/{wildcards.sample}/bins/"
+def get_mag_fa(wildcards):
+    folder = f"results/{wildcards.project}/output/fastas/{wildcards.sample}/mags/"
     files = [
         os.path.join(folder, binID)
         for binID in os.listdir(folder)
@@ -204,16 +170,16 @@ def get_bin_fa(wildcards):
 
 
 def get_binIDs_for_sample(wildcards):
-    folder = f"results/{wildcards.project}/output/fastas/{wildcards.sample}/bins/"
+    folder = f"results/{wildcards.project}/output/fastas/{wildcards.sample}/mags/"
     binIDs = [binID for binID in os.listdir(folder) if binID.endswith("fa.gz")]
     return binIDs
 
 
-def get_bin_ARGs(wildcards):
-    bin_fastas = (get_bin_fa(wildcards),)
+def get_mag_ARGs(wildcards):
+    bin_fastas = (get_mag_fa(wildcards),)
     bin_fastas = list(bin_fastas)[0]
     binIDs = [os.path.basename(binID) for binID in bin_fastas]
-    folder = f"results/{wildcards.project}/output/ARGs/bins/{wildcards.sample}/"
+    folder = f"results/{wildcards.project}/output/ARGs/mags/{wildcards.sample}/"
     arg_files = [
         os.path.join(folder, binID.replace(".fa.gz", ".txt")) for binID in binIDs
     ]
@@ -224,7 +190,7 @@ def get_gtdb_folder():
     folder = config["gtdb"]["db-folder"]
     path = "{0}{1}".format(get_resource_path(), folder)
     return path
-    
+
 
 def get_genomad_DB_file():
     path = "{}genomad_db/names.dmp".format(get_resource_path())
@@ -237,10 +203,7 @@ def get_card_db_file():
     return path
 
 
-def get_card_tar_file():
-    if config["card"]["data"]["use-local"]:
-        name = Path(config["card"]["data"]["local_path"]).name
-    else:
-        name = "card-data.tar.bz2"
-    # path = "{}CARD_db/{}".format(get_resource_path(), name)
-    return name
+def get_card_annotation_file():
+    version = config["card"]["version"]
+    path = "{}CARD_db/card_database_{}.fasta".format(get_resource_path(), version)
+    return path

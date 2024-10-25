@@ -23,14 +23,9 @@ include: "rules/trimming.smk"
 include: "rules/host_filtering.smk"
 include: "rules/assembly.smk"
 include: "rules/metabat.smk"
-include: "rules/concoct.smk"
 include: "rules/das_tool.smk"
 include: "rules/bin_qc.smk"
-include: "rules/metabat2.smk"
-include: "rules/metabinner.smk"
 include: "rules/metacoag.smk"
-include: "rules/rosella.smk"
-include: "rules/vamb.smk"
 include: "rules/classify.smk"
 include: "rules/analysis.smk"
 include: "rules/report.smk"
@@ -38,29 +33,21 @@ include: "rules/report.smk"
 
 rule all:
     input:
+        # overall report
         expand(
-            "results/{project}/das_tool/binner_control_{sample}.csv",
+            "results/{project}/output/report/report_{project}.zip",
+            project=get_project(),
+        ),
+        # read classification output
+        expand(
+            "results/{project}/output/classification/reads/{sample}/{sample}_{level}_kaiju_summary.tsv",
             project=get_project(),
             sample=get_samples(),
+            level=["species", "genus"],
         ),
+        # fasta output
         expand(
             "results/{project}/output/fastas/{sample}/bins/",
-            project=get_project(),
-            sample=get_samples(),
-        ),
-        expand(
-            "results/{project}/output/plasmids/{sample}/{sample}_final.contigs_summary/{sample}_final.contigs_plasmid_summary.tsv",
-            project=get_project(),
-            sample=get_samples(),
-        ),
-        # resistance
-        expand(
-            "results/{project}/output/ARGs/assembly/{sample}/{sample}.txt",
-            project=get_project(),
-            sample=get_samples(),
-        ),
-        expand(
-            "results/{project}/output/ARGs/bins/{sample}/all_bins.done",
             project=get_project(),
             sample=get_samples(),
         ),
@@ -69,77 +56,43 @@ rule all:
             project=get_project(),
             sample=get_samples(),
         ),
+        # binning summary output
         expand(
             "results/{project}/output/report/{sample}/{sample}_DASTool_summary.tsv",
             project=get_project(),
             sample=get_samples(),
         ),
+        # plasmid analysis
         expand(
-            "results/{project}/output/report/{sample}/checkm2/",
+            "results/{project}/output/plasmids/{sample}/{sample}_final.contigs_summary/{sample}_final.contigs_plasmid_summary.tsv",
+            project=get_project(),
+            sample=get_samples(),
+        ),
+        # resistance analysis
+        expand(
+            "results/{project}/output/ARGs/reads/{sample}/{sample}_read_ARGs.csv",
             project=get_project(),
             sample=get_samples(),
         ),
         expand(
-            "results/{project}/output/report/{sample}/dastool/",
+            "results/{project}/output/ARGs/assembly/{sample}/{sample}_assembly_ARGs.csv",
             project=get_project(),
-            sample=get_samples(),
-        ),
-        expand(
-            "results/{project}/output/report/{sample}/taxonomy/",
-            project=get_project(),
-            sample=get_samples(),
-        ),
-        # 5. Taxonomic classification
-        expand(
-            "results/{project}/output/report/{sample}/mags/",
-            project=get_project(),
-            sample=get_samples(),
-        ),
-        expand("results/{project}/output/report/all/binning/",project=get_project(),
             sample=get_samples(),
         ),
 
 
-"""        expand("results/{project}/report_prerequisites/assembly/{sample}_reads_mapped.bam.bai",project=get_project(),
-            sample=get_samples(),
-        ),
+"""        
         expand(
-            "results/{project}/output/report/report_{project}.zip",
-            project=get_project(),
-        ),
-        expand(
-            "results/{project}/output/fastas/{sample}/{sample}_final.contigs.fa.gz",
+            "results/{project}/output/ARGs/mags/{sample}/all_mags.done",
             project=get_project(),
             sample=get_samples(),
         ),
-        expand(
-            "results/{project}/output/classification/reads/{sample}/{sample}_{level}_kaiju_summary.tsv",
-            project=get_project(),
-            sample=get_samples(),
-            level=["species", "genus"],
-        ),
-        
+"""
+
+"""     
         # removal logs
         expand(
             "logs/{project}/assembly/{sample}_intermediate_removal.done",
-            project=get_project(),
-            sample=get_samples(),
-        ),
-        expand(
-            "logs/{project}/metabinner/{sample}/coverage_profile_{threshold}_removal.done",
-            project=get_project(),
-            sample=get_samples(),
-            threshold=get_contig_length_filter(),
-        ),
-        expand(
-            "logs/{project}/metabinner/{sample}/composition_profile_kmer_{kmer_size}_f{threshold}_removal.done",
-            project=get_project(),
-            sample=get_samples(),
-            kmer_size=get_kmersize(),
-            threshold=get_contig_length_filter(),
-        ),
-        expand(
-            "logs/{project}/metabinner/{sample}/metabinner_removal.done",
             project=get_project(),
             sample=get_samples(),
         ),

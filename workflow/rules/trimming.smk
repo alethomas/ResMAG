@@ -43,6 +43,6 @@ rule fastp:
         ),
     log:
         "logs/{project}/fastp/{sample}.log",
-    threads: 2
+    threads: 30
     wrapper:
         "v2.6.0/bio/fastp"

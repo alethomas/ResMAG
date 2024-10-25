@@ -2,7 +2,7 @@ pepfile: config/pep/config.yaml
 
 ## Please change to a name describing your project
 ## All results can be found under results/project-name
-project-name: "pilot2"
+project-name: "project1"
 
 data-handling:
   # path to store data within the workflow
@@ -66,6 +66,7 @@ kraken:
     }
 
 card:
+  version: "v3.2.9"
   dbfile: "card.json"
   url: "https://card.mcmaster.ca/latest/data"
 
@@ -85,7 +86,6 @@ rosella:
 das-tool:
   # cores to use for das_tool
   threads: 64
-  # available binners are: metabinner, metabat, metabat2, metacoag, concoct, rosella, vamb
   binner-list: ["metabat","metacoag"]
 
 MAG-criteria:

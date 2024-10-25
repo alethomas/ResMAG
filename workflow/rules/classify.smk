@@ -82,7 +82,7 @@ if config["gtdb"]["use-local"]:
         output:
             done=touch("results/GTDB_prep.done"),
         params:
-            db_folder=get_gtdb_folder,
+            db_folder=get_gtdb_folder(),
         threads: 1
         log:
             "logs/GTDB_prep.log",
@@ -105,7 +105,7 @@ if config["gtdb"]["use-local"]:
                 )
             ),
         params:
-            db_folder=get_gtdb_folder,
+            db_folder=get_gtdb_folder(),
             clf_outdir=lambda wildcards, output: Path(output.summary).parent,
             sum_name=lambda wildcards, output: Path(output.summary).name,
             json=lambda wildcards, output: Path(output.json).name,

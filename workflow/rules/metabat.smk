@@ -3,7 +3,7 @@ rule coverm_metabat:
         bact_reads=get_filtered_gz_fastqs,
         contigs=rules.gzip_assembly.output,
     output:
-        abd="results/{project}/binning_prep/{sample}/abundance_metabat.tsv",
+        abd=temp("results/{project}/binning_prep/{sample}/abundance_metabat.tsv"),
     threads: 30
     log:
         "logs/{project}/coverm_metabat/{sample}.log",
