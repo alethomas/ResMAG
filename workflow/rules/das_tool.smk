@@ -6,7 +6,7 @@ rule postprocess_metabat:
     params:
         binner="metabat",
         prefix="bin",
-    threads: 20
+    threads: 12
     log:
         "logs/{project}/contig2bins/{sample}/postprocess_metabat.log",
     conda:
@@ -21,7 +21,7 @@ rule postprocess_metacoag:
         folder="results/{project}/metacoag/{sample}/",
     output:
         "results/{project}/output/contig2bins/{sample}/metacoag_contig2bin.tsv",
-    threads: 4
+    threads: 12
     log:
         "logs/{project}/contig2bins/{sample}/postprocess_metacoag.log",
     conda:
@@ -82,8 +82,6 @@ if bins_for_sample:
         input:
             contig2bin="results/{project}/das_tool/{sample}/{sample}_DASTool_contig2bin.tsv",
             summary="results/{project}/das_tool/{sample}/{sample}_DASTool_summary.tsv",
-            # so folder is not removed before copying
-            #dastool=rules.dastool_run.output.outdir,
         output:
             contig2bin="results/{project}/output/contig2bins/{sample}/DASTool_contig2bin.tsv",
             summary="results/{project}/output/report/{sample}/{sample}_DASTool_summary.tsv",
@@ -99,7 +97,6 @@ if bins_for_sample:
     rule gzip_bins:
         input:
             bins=rules.dastool_run.output.bins,
-            #dastool=rules.dastool_run.output.outdir,
         output:
             bins=directory("results/{project}/output/fastas/{sample}/bins/"),
         threads: 64

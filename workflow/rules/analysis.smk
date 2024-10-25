@@ -53,7 +53,6 @@ rule download_CARD_data:
 
 
 rule CARD_load_DB_for_reads:
-rule CARD_load_DB_for_reads:
     input:
         get_card_db_file(),
     output:
