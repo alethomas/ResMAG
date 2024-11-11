@@ -41,7 +41,9 @@ rule map_to_assembly:
         contigs=get_assembly,
         fastqs=get_filtered_gz_fastqs,
     output:
-        bam=temp("results/{project}/report_prerequisites/assembly/{sample}_reads_mapped.bam"),
+        bam=temp(
+            "results/{project}/report_prerequisites/assembly/{sample}_reads_mapped.bam"
+        ),
     threads: 64
     log:
         "logs/{project}/assembly/{sample}_mapping_reads.log",
@@ -57,7 +59,9 @@ rule index_assembly_alignment:
     input:
         rules.map_to_assembly.output.bam,
     output:
-        bai=temp("results/{project}/report_prerequisites/assembly/{sample}_reads_mapped.bam.bai"),
+        bai=temp(
+            "results/{project}/report_prerequisites/assembly/{sample}_reads_mapped.bam.bai"
+            ),
     threads: 20
     log:
         "logs/{project}/assembly/{sample}_mapping_reads_index.log",
