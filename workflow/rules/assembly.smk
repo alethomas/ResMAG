@@ -61,7 +61,7 @@ rule index_assembly_alignment:
     output:
         bai=temp(
             "results/{project}/report_prerequisites/assembly/{sample}_reads_mapped.bam.bai"
-            ),
+        ),
     threads: 20
     log:
         "logs/{project}/assembly/{sample}_mapping_reads_index.log",
