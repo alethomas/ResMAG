@@ -1,5 +1,5 @@
 report_input = list()
-if config["host_filtering"]["do_host_filtering"]:
+if config["host-filtering"]["do-host-filtering"]:
     report_input.append("results/{project}/output/report/host_filtering/")
 
 
@@ -9,12 +9,7 @@ rule snakemake_report:
         report_input,
         "results/{project}/output/report/all/multiqc.html",
         # 2. Species diversity
-        "results/{project}/output/report/all/diversity_summary/",
-        "results/{project}/output/report/all/host_contamination.html",
-        expand(
-            "results/{{project}}/output/report/all/abundance_{level}.html",
-            level=["genus", "family", "class", "phylum"],
-        ),
+        "results/{project}/output/report/all/quality_summary/",
         # 3. Assembly results
         "results/{project}/output/report/all/assembly/",
         # 4. Binning results

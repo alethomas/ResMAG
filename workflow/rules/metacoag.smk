@@ -4,7 +4,7 @@ rule coverm_metacoag:
         contigs=get_assembly,
     output:
         temp("results/{project}/binning_prep/{sample}/abundance.tsv"),
-    threads: 2
+    threads: 30
     log:
         "logs/{project}/coverm/{sample}.log",
     conda:
@@ -65,7 +65,7 @@ rule metacoag_run:
         abd="results/{project}/binning_prep/{sample}/abundance_metacoag.tsv",
     output:
         out_tsv=temp("results/{project}/metacoag/{sample}/contig_to_bin.tsv"),
-        folder=temp(directory("results/{project}/metacoag/{sample}/")),
+        folder=directory("results/{project}/metacoag/{sample}/"),
     params:
         outdir=lambda wildcards, output: Path(output.out_tsv).parent,
     threads: 64
@@ -76,4 +76,6 @@ rule metacoag_run:
     shell:
         "metacoag --assembler megahit --graph {input.gfa} "
         "--contigs {input.contigs} --abundance {input.abd} "
-        "--output {params.outdir} > {log} 2>&1"
+        "--output {params.outdir} --min_length 300 "
+        "--bin_mg_threshold 0.2 --min_bin_size 100000 "
+        "--nthreads {threads} > {log} 2>&1"

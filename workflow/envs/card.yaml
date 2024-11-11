@@ -3,5 +3,5 @@ channels:
   - bioconda
   - nodefaults
 dependencies:
-  - metacoag = 1.2.1
-  - biopython = 1.81
+  - rgi = 6.0.3
+  - kma = 1.4.9

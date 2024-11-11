@@ -109,18 +109,18 @@ rule gzip_filtered_reads:
         "pigz -k {input} > {log} 2>&1"
 
 
-if config["host_filtering"]["do_host_filtering"]:
+if config["host-filtering"]["do-host-filtering"]:
     # if there is a different host than human,
     # this is run before filtering human reads
 
     use rule map_to_human as map_to_host with:
         input:
             fastqs=get_trimmed_fastqs,
-            ref=config["host_filtering"]["ref_genome"],
+            ref=config["host-filtering"]["ref-genome"],
         output:
             bam=temp("results/{project}/host_filtering/alignments/{sample}.bam"),
         params:
-            ref=config["host_filtering"]["ref_genome"],
+            ref=config["host-filtering"]["ref-genome"],
         threads: 20
         log:
             "logs/{project}/host_filtering/map_to_host_{sample}.log",
@@ -233,8 +233,8 @@ rule diversity_summary:
         "logs/{project}/kraken2/summary.log",
     params:
         taxid_dict=get_taxID_dict(),
-        other_host=config["host_filtering"]["do_host_filtering"],
-        hostname=config["host_filtering"]["host_name"],
+        other_host=config["host-filtering"]["do-host-filtering"],
+        hostname=config["host-filtering"]["host-name"],
     threads: 2
     conda:
         "../envs/python.yaml"
@@ -276,8 +276,8 @@ rule create_host_plot:
             labels={"sample": "all samples"},
         ),
     params:
-        other_host=config["host_filtering"]["do_host_filtering"],
-        hostname=config["host_filtering"]["host_name"],
+        other_host=config["host-filtering"]["do-host-filtering"],
+        hostname=config["host-filtering"]["host-name"],
     log:
         "logs/{project}/report/host_plot.log",
     conda:

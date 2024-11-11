@@ -16,7 +16,7 @@ rule checkm2_run:
     input:
         bins="results/{project}/das_tool/{sample}/{sample}_DASTool_bins/",
         dbfile=get_checkm2_db(),
-        dastool=rules.dastool_run.output.outdir,
+        #dastool=rules.dastool_run.output.outdir,
     output:
         outdir=temp(directory("results/{project}/qc/checkm2/{sample}/")),
         stats="results/{project}/output/report/{sample}/checkm2_quality_report.tsv",
@@ -24,7 +24,7 @@ rule checkm2_run:
         outname="quality_report.tsv",
     log:
         "logs/{project}/checkm2/{sample}.log",
-    threads: 4
+    threads: 24
     conda:
         "../envs/checkm2.yaml"
     shell:
@@ -38,6 +38,7 @@ rule bin_summary_sample:
         tool="results/{project}/output/report/{sample}/{sample}_DASTool_summary.tsv",
         checkm="results/{project}/output/report/{sample}/checkm2_quality_report.tsv",
         gtdb="results/{project}/output/classification/bins/{sample}/{sample}.bac120.summary.tsv",
+        #args="results/{project}/output/ARGs/bins/{sample}/all_bins.done",
     output:
         csv_bins="results/{project}/output/report/{sample}/{sample}_bin_summary.csv",
         csv_checkm="results/{project}/output/report/{sample}/{sample}_checkm2_summary.csv",

@@ -57,8 +57,8 @@ rule qc_summary:
         csv="results/{project}/output/report/all/quality_summary.csv",
         vis_csv=temp("results/{project}/output/report/all/quality_summary_visual.csv"),
     params:
-        other_host=config["host_filtering"]["do_host_filtering"],
-        hostname=config["host_filtering"]["host_name"],
+        other_host=config["host-filtering"]["do-host-filtering"],
+        hostname=config["host-filtering"]["host-name"],
     log:
         "logs/{project}/report/qc_summary.log",
     conda:
