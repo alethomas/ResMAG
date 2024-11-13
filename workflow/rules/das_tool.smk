@@ -1,3 +1,6 @@
+from pathlib import Path
+
+
 rule postprocess_metabat:
     input:
         outdir=rules.metabat.output.outdir,

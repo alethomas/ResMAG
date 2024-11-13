@@ -19,13 +19,13 @@ report: "report/workflow.rst"
 
 include: "rules/common.smk"
 include: "rules/qc.smk"
-include: "rules/trimming.smk"
 include: "rules/host_filtering.smk"
+include: "rules/trimming.smk"
 include: "rules/assembly.smk"
 include: "rules/metabat.smk"
+include: "rules/metacoag.smk"
 include: "rules/das_tool.smk"
 include: "rules/bin_qc.smk"
-include: "rules/metacoag.smk"
 include: "rules/classify.smk"
 include: "rules/analysis.smk"
 include: "rules/report.smk"
@@ -33,17 +33,25 @@ include: "rules/report.smk"
 
 rule all:
     input:
-        # overall report
-        expand(
-            "results/{project}/output/report/report_{project}.zip",
-            project=get_project(),
-        ),
-        # read classification output
+       # read classification output
         expand(
             "results/{project}/output/classification/reads/{sample}/{sample}_{level}_kaiju_summary.tsv",
             project=get_project(),
             sample=get_samples(),
             level=["species", "genus"],
+        ),         
+        
+        # overall report
+        expand(
+            "results/{project}/output/report/report_{project}.zip",
+            project=get_project(),
+        ),
+        
+        # binning summary output
+        expand(
+            "results/{project}/output/report/{sample}/{sample}_DASTool_summary.tsv",
+            project=get_project(),
+            sample=get_samples(),
         ),
         # fasta output
         expand(
@@ -56,18 +64,13 @@ rule all:
             project=get_project(),
             sample=get_samples(),
         ),
-        # binning summary output
-        expand(
-            "results/{project}/output/report/{sample}/{sample}_DASTool_summary.tsv",
-            project=get_project(),
-            sample=get_samples(),
-        ),
         # plasmid analysis
         expand(
             "results/{project}/output/plasmids/{sample}/{sample}_final.contigs_summary/{sample}_final.contigs_plasmid_summary.tsv",
             project=get_project(),
             sample=get_samples(),
         ),
+        
         # resistance analysis
         expand(
             "results/{project}/output/ARGs/reads/{sample}/{sample}_read_ARGs.csv",
@@ -79,7 +82,6 @@ rule all:
             project=get_project(),
             sample=get_samples(),
         ),
-
 
 """        
         expand(

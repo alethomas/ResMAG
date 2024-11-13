@@ -1,1 +1,0 @@
-Krona plot showing the results for `Kraken2 <https://github.com/DerrickWood/kraken2>`_ analysis after human reads where filtered out.

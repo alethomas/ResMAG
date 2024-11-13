@@ -1,7 +1,8 @@
+
 rule coverm_metabat:
     input:
         bact_reads=get_filtered_gz_fastqs,
-        contigs=rules.gzip_assembly.output,
+        contigs=get_gz_assembly,
     output:
         abd=temp("results/{project}/binning_prep/{sample}/abundance_metabat.tsv"),
     threads: 30
@@ -17,7 +18,7 @@ rule coverm_metabat:
 
 rule metabat:
     input:
-        contigs=rules.gzip_assembly.output,
+        contigs=get_gz_assembly,
         abd=rules.coverm_metabat.output.abd,
     output:
         outdir=directory("results/{project}/metabat/{sample}/"),
@@ -27,7 +28,7 @@ rule metabat:
     log:
         "logs/{project}/metabat/{sample}.log",
     conda:
-        "../envs/metabat2.yaml"
+        "../envs/metabat.yaml"
     shell:
         "metabat1 -i {input.contigs} -a {input.abd} "
         "--seed 1 --p1 95 --p2 90 "

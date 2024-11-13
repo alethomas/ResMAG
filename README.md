@@ -104,56 +104,59 @@ tar xvzf gtdbtk_data.tar.gz
 rm gtdbtk_data.tar.gz
 ```
 
+### Install Snakemake
+Create a snakemake environment using [mamba](https://mamba.readthedocs.io/en/latest/) via:
+
+ ```mamba create -c conda-forge -c bioconda -n snakemake snakemake```
+
+For installation details, see the [instructions in the Snakemake documentation](https://snakemake.readthedocs.io/en/stable/getting_started/installation.html).
+
 ### Run the workflow
-```snakemake --use-conda --cores all --rerun-incomplete```
+Activate the conda environment:
+```conda activate snakemake```
+
+Test your configuration by performing a dry-run via
+```snakemake --use-conda -n```
+
+Executing the workflow:
+```snakemake --use-conda --cores $N --rerun-incomplete```
+
+using `$N` cores. It is recommended to use all available cores.
 
 The usage of this workflow is described in the [Snakemake Workflow Catalog](https://snakemake.github.io/snakemake-workflow-catalog/?usage=<owner>%2F<repo>).
 
 ## Output
 
+## Tools
 
-## Contributing
+A list of tools used in the pipeline:
 
-**Bug report**
-
-
-**Feature request**
-
-## License
-
-ResMAG is released under the [BSD-2 Clause](https://www.open-xchange.com/hubfs/2_Clause_BSD_License.pdf?hsLang=en). Please review the license file for more details.
+| Tool      | Link                                              |
+| --------- | ------------------------------------------------- |
+| CoverM    | https://github.com/wwood/CoverM                   |
+| DAS Tool  | https://doi.org/10.1038/s41564-018-0171-1         |
+| fastp     | https://doi.org/10.1093/bioinformatics/bty560     |
+| FastQC    | www.bioinformatics.babraham.ac.uk/projects/fastqc |
+| MEGAHIT   | https://doi.org/10.1093/bioinformatics/btv033     |
+| MetaBAT   | http://dx.doi.org/10.7717/peerj.1165              |
+| MetaCoAG  | https://doi.org/10.1101/2021.09.10.459728         |
+| minimap2  | https://doi.org/10.1093/bioinformatics/bty191     |
+| MultiQC   | www.doi.org/10.1093/bioinformatics/btw354         |
+| samtools  | https://doi.org/10.1093/gigascience/giab008       |
+| Snakemake | www.doi.org/10.12688/f1000research.29032.1        |
 
 ## Contact Information
 
-For any questions, or feedback, please contact the project maintainer at josefa.welling@uk-essen.de or katharina.block@uk-essen.de. We appreciate your input and support in using and improving ResMAG.
+For any questions, or feedback, please contact the project maintainer at josefa.welling@uk-essen.de. We appreciate your input and support in using and improving ResMAG.
 
 ## Acknowledgements
 
-We would like to express our gratitude towards Adrian Doerr, Alexander Thomas, Johannes Köster, Ann-Kathrin Brüggemann and the IKIM who have contributed to the development and testing of ResMAG. Their valuable insights and feedback have been helpful throughout the creation of the workflow.
-
-## References
-
-### Tools
-
-[CoverM](https://github.com/wwood/CoverM)<br />
-[DAS Tool](https://doi.org/10.1038/s41564-018-0171-1)<br />
-[fastp](https://doi.org/10.1093/bioinformatics/bty560)<br />
-[FastQC](https://github.com/s-andrews/FastQC)<br />
-[Kraken 2](https://doi.org/10.1186/s13059-019-1891-0)<br />
-[MEGAHIT](https://doi.org/10.1093/bioinformatics/btv033)<br />
-[MetaBAT 2](https://doi.org/10.7717%2Fpeerj.7359)<br />
-[MetaBinner](https://doi.org/10.1186/s13059-022-02832-6)<br />
-[MetaCoAG](https://doi.org/10.1101/2021.09.10.459728)<br />
-[minimap2](https://doi.org/10.1093/bioinformatics/bty191)<br />
-[pandas](https://doi.org/10.5281/zenodo.3509134)<br />
-[Rosella](https://github.com/rhysnewell/rosella)<br />
-[samtools](https://doi.org/10.1093/gigascience/giab008)<br />
-[VAMB](https://doi.org/10.1038/s41587-020-00777-4)<br />
-[MultiQC](https://doi.org/10.1093%2Fbioinformatics%2Fbtw354)<br />
-
-### Literature
-[Not here yet](https://www.lipsum.com/feed/html)
+We would like to express our gratitude towards Katharina Block, Adrian Doerr, Miriam Balzer, Alexander Thomas, Johannes Köster, Ann-Kathrin Doerr and the IKIM who have contributed to the development and testing of ResMAG. Their valuable insights and feedback have been helpful throughout the creation of the workflow.
 
 ## Citation
 
 A paper is on its way. If you use ResMAG in your work before the paper, then please consider citing this GitHub.
+
+## License
+
+ResMAG is released under the [BSD-2 Clause](https://www.open-xchange.com/hubfs/2_Clause_BSD_License.pdf?hsLang=en). Please review the license file for more details.

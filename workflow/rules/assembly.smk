@@ -91,7 +91,7 @@ rule gzip_assembly:
     input:
         contigs=get_assembly,
     output:
-        "results/{project}/output/fastas/{sample}/{sample}_final.contigs.fa.gz",
+        "results/{project}/output/fastas/{sample}/{sample}_contigs.fa.gz",
     threads: 64
     log:
         "logs/{project}/assembly/{sample}_gzip.log",
