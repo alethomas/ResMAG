@@ -67,7 +67,7 @@ gtdb:
   db-folder: gtdb/release220/
 
 card:
-  version: v3.2.9
+  version: v3.3.0
   dbfile: card.json
   url: https://card.mcmaster.ca/latest/data
 

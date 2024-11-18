@@ -108,7 +108,7 @@ def get_assembly(wildcards):
 
     
 def get_gz_assembly(wildcards):
-    return "results/{project}/output/fastas/{sample}/{sample}_contigs.fa.gz"
+    return "results/{project}/output/fastas/{sample}/{sample}.fa.gz"
 
 
 def get_kaiju_files():
@@ -141,7 +141,7 @@ def get_all_contig2bin_files(wildcards):
 ## reads in binner control file and returns list with paths to contig2bin files
 ## and a list with name of the binners that produced results
 def get_paths_binner(wildcards):
-    file = "".join(["results/",wildcards.project,"/das_tool/binner_control_",wildcards.sample,".csv"])
+    file = "results/{}/das_tool/binner_control_{}.csv".format(wildcards.project,wildcards.sample)
     lines = open(file).readlines()
     paths = str(lines[0].rstrip("\n"))
     binner = str(lines[1].rstrip("\n"))
@@ -156,7 +156,7 @@ def bins_for_sample(wildcards):
 
 
 def get_mag_fa(wildcards):
-    folder = "".join(["results/",wildcards.project,"/output/fastas/",wildcards.sample,"/mags/"])
+    folder = "results/{project}/output/fastas/{sample}/mags/"
     files = [
         os.path.join(folder, binID)
         for binID in os.listdir(folder)
@@ -166,7 +166,7 @@ def get_mag_fa(wildcards):
 
 
 def get_binIDs_for_sample(wildcards):
-    folder = "".join(["results/",wildcards.project,"/output/fastas/",wildcards.sample,"/mags/"])
+    folder = "results/{project}/output/fastas/{sample}/mags/"
     binIDs = [binID for binID in os.listdir(folder) if binID.endswith("fa.gz")]
     return binIDs
 
@@ -175,7 +175,7 @@ def get_mag_ARGs(wildcards):
     bin_fastas = (get_mag_fa(wildcards),)
     bin_fastas = list(bin_fastas)[0]
     binIDs = [os.path.basename(binID) for binID in bin_fastas]
-    folder = "".join(["results/",wildcards.project,"/output/ARGs/mags/",wildcards.sample,"/"])
+    folder = "results/{project}/output/ARGs/mags/{sample}/"
     arg_files = [
         os.path.join(folder, binID.replace(".fa.gz", ".txt")) for binID in binIDs
     ]

@@ -5,27 +5,30 @@ rule megahit:
     input:
         fastqs=get_filtered_gz_fastqs,
     output:
-        contigs=("results/{project}/megahit/{sample}/final.contigs.fa"),
+        contigs="results/{project}/megahit/{sample}/final.contigs.fa",
         outdir=directory("results/{project}/megahit/{sample}/"),
+        log="results/{project}/report_prerequisites/assembly/{sample}_megahit.log",
+        done=touch("results/{project}/megahit/{sample}.done")
     params:
         threshold=get_contig_length_threshold(),
     threads: 64
     log:
-        "results/{project}/report_prerequisites/assembly/{sample}_megahit.log",
+        "logs/{project}/assembly/{sample}_megahit.log",
     conda:
         "../envs/megahit.yaml"
     shell:
         #"--cleaning-rounds 10 --merge-level 20,0.90 "
-        "megahit -1 {input.fastqs[0]} -2 {input.fastqs[1]} "
+        "(megahit -1 {input.fastqs[0]} -2 {input.fastqs[1]} "
         "--min-contig-len {params.threshold} -t {threads} "
-        "--out-dir {output.outdir} -f > {log} 2>&1"
+        "--out-dir {output.outdir} -f > {log} 2>&1) && "
+        "cp {log} {output.log}"
 
 
 rule remove_megahit_intermediates:
     input:
         contigs=get_assembly,
     output:
-        touch("logs/{project}/assembly/{sample}_intermediate_removal.done"),
+        touch("results/{project}/megahit/{sample}_intermediate_removal.done"),
     params:
         outdir=lambda wildcards, input: Path(input.contigs).parent,
     log:
@@ -90,8 +93,9 @@ rule reads_mapped_assembly:
 rule gzip_assembly:
     input:
         contigs=get_assembly,
+        intermediate = rules.remove_megahit_intermediates.output,
     output:
-        "results/{project}/output/fastas/{sample}/{sample}_contigs.fa.gz",
+        "results/{project}/output/fastas/{sample}/{sample}.fa.gz",
     threads: 64
     log:
         "logs/{project}/assembly/{sample}_gzip.log",
