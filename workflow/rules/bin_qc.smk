@@ -37,7 +37,7 @@ rule bin_summary_sample:
     input:
         tool="results/{project}/output/report/{sample}/{sample}_DASTool_summary.tsv",
         checkm="results/{project}/output/report/{sample}/checkm2_quality_report.tsv",
-        gtdb="results/{project}/output/classification/bins/{sample}/{sample}.bac120.summary.tsv",
+        gtdb="results/{project}/output/classification/bins/{sample}/{sample}.summary.tsv",
         #args="results/{project}/output/ARGs/bins/{sample}/all_bins.done",
     output:
         csv_bins="results/{project}/output/report/{sample}/{sample}_bin_summary.csv",
