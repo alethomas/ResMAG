@@ -99,18 +99,16 @@ if config["gtdb"]["use-local"]:
         output:
             summary="results/{project}/output/classification/bins/{sample}/{sample}.bac120.summary.tsv",
             json="results/{project}/output/classification/bins/{sample}/gtdbtk.json",
-            #align=(
-            #    directory("results/{project}/output/classification/bins/{sample}/align/")
-            #),
-            classify=temp(
-                directory("results/{project}/output/classification/bins/{sample}/classify/")
+            outdir=temp(
+                directory(
+                    "results/{project}/output/classification/bins/{sample}/gtdbtk/"
+                )
             ),
-            #identify=(
-            #    directory("results/{project}/output/classification/bins/{sample}/identify/")
-            #),
         params:
             db_folder=get_gtdb_folder(),
-            outdir=lambda wildcards, output: Path(output.summary).parent,
+            clf_outdir=lambda wildcards, output: Path(output.summary).parent,
+            sum_name=lambda wildcards, output: Path(output.summary).name,
+            json=lambda wildcards, output: Path(output.json).name,
         threads: 64
         log:
             "logs/{project}/gtdbtk/{sample}_classify.log",
@@ -119,7 +117,9 @@ if config["gtdb"]["use-local"]:
         shell:
             "(gtdbtk classify_wf --prefix {wildcards.sample} -x fa.gz "
             "--mash_db {params.db_folder}mash_db/ --cpus {threads} "
-            "--genome_dir {input.bins}/ --out_dir {params.outdir}/ ) > {log} 2>&1"
+            "--genome_dir {input.bins}/ --out_dir {output.outdir}/ && "
+            "cp {output.outdir}/classify/{params.sum_name} {params.clf_outdir}/ && "
+            "cp {output.outdir}/{params.json} {params.clf_outdir}/) > {log} 2>&1"
 
 else:
 
