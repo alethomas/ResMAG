@@ -156,10 +156,11 @@ if config["host-filtering"]["do-host-filtering"]:
             "samtools fastq -F 3584 -f 141 {input.bam} | "
             "pigz -c > {output.filtered[1]}) > {log} 2>&1"
 
+
 ## TODO
 ## change to using kaiju output or just to present human contamination
 ## all reports are done on human (+ optional other different host) filtered
-'''rule diversity_summary:
+"""rule diversity_summary:
     input:
         reports=expand(
             "results/{{project}}/output/classification/reads/{sample}/{sample}_kraken2_report.tsv",
@@ -230,4 +231,4 @@ rule create_host_plot:
         "../envs/python.yaml"
     script:
         "../scripts/plot_host.py"
-'''
+"""

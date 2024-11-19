@@ -74,7 +74,7 @@ def get_human_ref():
     else:
         path = config["human-filtering"]["download-path"]
     filename = path.split("/")[-1]
-    local_ref = "".join([get_resource_path(),"ref_genome/", filename])
+    local_ref = "".join([get_resource_path(), "ref_genome/", filename])
     return local_ref
 
 
@@ -106,7 +106,7 @@ def get_filtered_gz_fastqs(wildcards):
 def get_assembly(wildcards):
     return "results/{project}/megahit/{sample}/final.contigs.fa"
 
-    
+
 def get_gz_assembly(wildcards):
     return "results/{project}/output/fastas/{sample}/{sample}.fa.gz"
 
@@ -116,7 +116,7 @@ def get_kaiju_files():
     path = str(Path(file).parent)
     fmi = Path(file).name
     names = ["nodes.dmp", fmi, "names.dmp"]
-    files = ["/".join([path,name]) for name in names]
+    files = ["/".join([path, name]) for name in names]
     return files
 
 
@@ -132,7 +132,13 @@ def get_binners():
 def get_all_contig2bin_files(wildcards):
     binners = get_binners()
     file_list = [
-        "".join(["results/{project}/output/contig2bins/{sample}/",binner,"_contig2bin.tsv"])
+        "".join(
+            [
+                "results/{project}/output/contig2bins/{sample}/",
+                binner,
+                "_contig2bin.tsv",
+            ]
+        )
         for binner in binners
     ]
     return file_list
@@ -141,7 +147,9 @@ def get_all_contig2bin_files(wildcards):
 ## reads in binner control file and returns list with paths to contig2bin files
 ## and a list with name of the binners that produced results
 def get_paths_binner(wildcards):
-    file = "results/{}/das_tool/binner_control_{}.csv".format(wildcards.project,wildcards.sample)
+    file = "results/{}/das_tool/binner_control_{}.csv".format(
+        wildcards.project, wildcards.sample
+    )
     lines = open(file).readlines()
     paths = str(lines[0].rstrip("\n"))
     binner = str(lines[1].rstrip("\n"))
@@ -188,16 +196,16 @@ def get_gtdb_folder():
 
 
 def get_genomad_DB_file():
-    path = "".join([get_resource_path(),"genomad_db/names.dmp"])
+    path = "".join([get_resource_path(), "genomad_db/names.dmp"])
     return path
 
 
 def get_card_db_file():
-    path = "".join([get_resource_path(),"CARD_db/",config["card"]["dbfile"]])
+    path = "".join([get_resource_path(), "CARD_db/", config["card"]["dbfile"]])
     return path
 
 
 def get_card_annotation_file():
     version = config["card"]["version"]
-    path = "".join([get_resource_path(),"CARD_db/card_database_",version,".fasta"])
+    path = "".join([get_resource_path(), "CARD_db/card_database_", version, ".fasta"])
     return path

@@ -66,7 +66,9 @@ rule metacoag_run:
     output:
         out_tsv=temp("results/{project}/metacoag/{sample}/contig_to_bin.tsv"),
         folder=temp(directory("results/{project}/metacoag/{sample}/")),
-        intermediate=temp("results/{project}/metacoag/{sample}final.contigs.fa.normalized_contig_tetramers.pickle"),
+        intermediate=temp(
+            "results/{project}/metacoag/{sample}final.contigs.fa.normalized_contig_tetramers.pickle"
+        ),
     params:
         outdir=lambda wildcards, output: Path(output.out_tsv).parent,
     threads: 64

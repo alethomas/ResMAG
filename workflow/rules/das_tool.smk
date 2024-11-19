@@ -142,4 +142,3 @@ if bins_for_sample:
         threads: 2
         log:
             "logs/{project}/das_tool/{sample}/cleanup.log",
-

@@ -8,7 +8,7 @@ rule megahit:
         contigs="results/{project}/megahit/{sample}/final.contigs.fa",
         outdir=directory("results/{project}/megahit/{sample}/"),
         log="results/{project}/report_prerequisites/assembly/{sample}_megahit.log",
-        done=touch("results/{project}/megahit/{sample}.done")
+        done=touch("results/{project}/megahit/{sample}.done"),
     params:
         threshold=get_contig_length_threshold(),
     threads: 64
@@ -93,7 +93,7 @@ rule reads_mapped_assembly:
 rule gzip_assembly:
     input:
         contigs=get_assembly,
-        intermediate = rules.remove_megahit_intermediates.output,
+        intermediate=rules.remove_megahit_intermediates.output,
     output:
         "results/{project}/output/fastas/{sample}/{sample}.fa.gz",
     threads: 64

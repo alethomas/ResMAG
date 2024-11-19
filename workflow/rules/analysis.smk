@@ -217,4 +217,3 @@ rule wrap_mag_ARGs:
         touch("results/{project}/output/ARGs/mags/{sample}/all_mags.done"),
     log:
         "logs/{project}/ARGs/mags/{sample}/all_mags.log",
-
