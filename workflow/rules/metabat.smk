@@ -1,7 +1,8 @@
+
 rule coverm_metabat:
     input:
         bact_reads=get_filtered_gz_fastqs,
-        contigs=rules.gzip_assembly.output,
+        contigs=get_gz_assembly,
     output:
         abd=temp("results/{project}/binning_prep/{sample}/abundance_metabat.tsv"),
     threads: 30
@@ -17,17 +18,17 @@ rule coverm_metabat:
 
 rule metabat:
     input:
-        contigs=rules.gzip_assembly.output,
+        contigs=get_gz_assembly,
         abd=rules.coverm_metabat.output.abd,
     output:
-        outdir=directory("results/{project}/metabat/{sample}/"),
+        outdir=temp(directory("results/{project}/metabat/{sample}/")),
     threads: 64
     params:
         prefix="bin",
     log:
         "logs/{project}/metabat/{sample}.log",
     conda:
-        "../envs/metabat2.yaml"
+        "../envs/metabat.yaml"
     shell:
         "metabat1 -i {input.contigs} -a {input.abd} "
         "--seed 1 --p1 95 --p2 90 "
@@ -35,3 +36,14 @@ rule metabat:
         "-m 1500 -s 100000 "
         "--minCorr 95 --minContigByCorr 300 --minSamples 1 "
         "-t {threads} -v -l -o {output}/{params.prefix} > {log} 2>&1"
+
+
+rule cleanup_metabat_output:
+    input:
+        folder=rules.metabat.output.outdir,
+        dastool="results/{project}/das_tool/{sample}/{sample}_DASTool_summary.tsv",
+    output:
+        done=touch("results/{project}/metabat/{sample}_cleanup.done"),
+    threads: 2
+    log:
+        "logs/{project}/metabat/{sample}/cleanup.log",

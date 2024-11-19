@@ -16,7 +16,7 @@ rule multiqc:
         expand(
             [
                 "results/{{project}}/qc/fastqc/{sample}_trimmed_fastqc.zip",
-                "results/{{project}}/trimmed/fastp/{sample}.fastp.json",
+                "results/{{project}}/report_prerequisites/qc/{sample}.fastp.json",
             ],
             sample=get_samples(),
         ),
@@ -45,7 +45,7 @@ rule qc_summary:
     input:
         # move these to report_prerequistes
         jsons=expand(
-            "results/{{project}}/trimmed/fastp/{sample}.fastp.json",
+            "results/{{project}}/report_prerequisites/qc/{sample}.fastp.json",
             sample=get_samples(),
         ),
         human_logs=expand(

@@ -17,20 +17,44 @@ rule genomad_run:
         db=rules.load_genomad_DB.output.file,
         asmbl=rules.gzip_assembly.output,
     output:
-        plasmid_tsv="results/{project}/output/plasmids/{sample}/{sample}_final.contigs_summary/{sample}_final.contigs_plasmid_summary.tsv",
-        virus_tsv="results/{project}/output/plasmids/{sample}/{sample}_final.contigs_summary/{sample}_final.contigs_virus_summary.tsv",
+        outdir=temp(directory("results/{project}/genomad/{sample}/")),
+        plasmid_tsv=temp(
+            "results/{project}/genomad/{sample}/{sample}_summary/{sample}_plasmid_summary.tsv"
+        ),
+        virus_tsv=temp(
+            "results/{project}/genomad/{sample}/{sample}_summary/{sample}_virus_summary.tsv"
+        ),
     params:
         db_folder=lambda wildcards, input: Path(input.db).parent,
-        outdir=lambda wildcards, output: Path(output.plasmid_tsv).parent.parent,
     log:
-        "logs/{project}/plasmids/{sample}.log",
+        "logs/{project}/plasmids/{sample}_run.log",
     threads: 64
     conda:
         "../envs/genomad.yaml"
     shell:
         "genomad end-to-end --cleanup -t {threads} "
-        "{input.asmbl} {params.outdir}/ "
+        "{input.asmbl} {output.outdir}/ "
         "{params.db_folder}/ > {log} 2>&1"
+
+
+rule move_genomad_output:
+    input:
+        folder=rules.genomad_run.output.outdir,
+        plasmid_tsv=rules.genomad_run.output.plasmid_tsv,
+        virus_tsv=rules.genomad_run.output.virus_tsv,
+    output:
+        plasmid_tsv="results/{project}/output/plasmids/{sample}/{sample}_plasmid_summary.tsv",
+        virus_tsv="results/{project}/output/plasmids/{sample}/{sample}_virus_summary.tsv",
+    params:
+        outdir=lambda wildcards, output: Path(output.plasmid_tsv).parent,
+        sum_folder=lambda wildcards, input: Path(input.plasmid_tsv).parent,
+    log:
+        "logs/{project}/plasmids/{sample}_move_output.log",
+    threads: 64
+    conda:
+        "../envs/unix.yaml"
+    shell:
+        "scp {params.sum_folder}/* {params.outdir}/ > {log} 2>&1"
 
 
 # Resistance analysis
@@ -190,10 +214,6 @@ rule wrap_mag_ARGs:
     input:
         get_mag_ARGs,
     output:
-        "results/{project}/output/ARGs/mags/{sample}/all_mags.done",
+        touch("results/{project}/output/ARGs/mags/{sample}/all_mags.done"),
     log:
         "logs/{project}/ARGs/mags/{sample}/all_mags.log",
-    conda:
-        "../envs/unix.yaml"
-    shell:
-        "touch {output} > {log} 2>&1"

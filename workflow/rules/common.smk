@@ -73,7 +73,8 @@ def get_human_ref():
         path = config["human-filtering"]["local-path"]
     else:
         path = config["human-filtering"]["download-path"]
-    local_ref = "{}ref_genome/{}".format(get_resource_path(), path.split("/")[-1])
+    filename = path.split("/")[-1]
+    local_ref = "".join([get_resource_path(), "ref_genome/", filename])
     return local_ref
 
 
@@ -83,18 +84,9 @@ def get_human_local_folder():
     return folder
 
 
-def get_kraken_db_file():
-    file = "{}{}/hash.k2d".format(get_resource_path(), config["kraken"]["db-name"])
-    return file
-
-
 def get_checkm2_db():
     file = "{}{}".format(get_resource_path(), config["checkm2"])
     return file
-
-
-def get_taxID_dict():
-    return config["kraken"]["taxIDs-ref"]
 
 
 def get_filtered_fastqs(wildcards):
@@ -115,18 +107,22 @@ def get_assembly(wildcards):
     return "results/{project}/megahit/{sample}/final.contigs.fa"
 
 
+def get_gz_assembly(wildcards):
+    return "results/{project}/output/fastas/{sample}/{sample}.fa.gz"
+
+
 def get_kaiju_files():
-    file = "{}{}".format(get_resource_path(), config["kaiju"]["fmi-file"])
-    path = Path(file).parent
+    file = "".join([get_resource_path(), config["kaiju"]["fmi-file"]])
+    path = str(Path(file).parent)
     fmi = Path(file).name
     names = ["nodes.dmp", fmi, "names.dmp"]
-    files = [f"{path}/{name}" for name in names]
+    files = ["/".join([path, name]) for name in names]
     return files
 
 
 ## binning parameters
 def get_contig_length_threshold():
-    return config["binning"]["min-contig-length"]
+    return config["min-contig-length"]
 
 
 def get_binners():
@@ -136,7 +132,13 @@ def get_binners():
 def get_all_contig2bin_files(wildcards):
     binners = get_binners()
     file_list = [
-        f"results/{{project}}/output/contig2bins/{{sample}}/{binner}_contig2bin.tsv"
+        "".join(
+            [
+                "results/{project}/output/contig2bins/{sample}/",
+                binner,
+                "_contig2bin.tsv",
+            ]
+        )
         for binner in binners
     ]
     return file_list
@@ -145,7 +147,9 @@ def get_all_contig2bin_files(wildcards):
 ## reads in binner control file and returns list with paths to contig2bin files
 ## and a list with name of the binners that produced results
 def get_paths_binner(wildcards):
-    file = f"results/{wildcards.project}/das_tool/binner_control_{wildcards.sample}.csv"
+    file = "results/{}/das_tool/binner_control_{}.csv".format(
+        wildcards.project, wildcards.sample
+    )
     lines = open(file).readlines()
     paths = str(lines[0].rstrip("\n"))
     binner = str(lines[1].rstrip("\n"))
@@ -160,7 +164,7 @@ def bins_for_sample(wildcards):
 
 
 def get_mag_fa(wildcards):
-    folder = f"results/{wildcards.project}/output/fastas/{wildcards.sample}/mags/"
+    folder = "results/{project}/output/fastas/{sample}/mags/"
     files = [
         os.path.join(folder, binID)
         for binID in os.listdir(folder)
@@ -170,7 +174,7 @@ def get_mag_fa(wildcards):
 
 
 def get_binIDs_for_sample(wildcards):
-    folder = f"results/{wildcards.project}/output/fastas/{wildcards.sample}/mags/"
+    folder = "results/{project}/output/fastas/{sample}/mags/"
     binIDs = [binID for binID in os.listdir(folder) if binID.endswith("fa.gz")]
     return binIDs
 
@@ -179,8 +183,7 @@ def get_mag_ARGs(wildcards):
     bin_fastas = (get_mag_fa(wildcards),)
     bin_fastas = list(bin_fastas)[0]
     binIDs = [os.path.basename(binID) for binID in bin_fastas]
-    folder = f"results/{wildcards.project}/output/ARGs/mags/{wildcards.sample}/"
-    folder = f"results/{wildcards.project}/output/ARGs/mags/{wildcards.sample}/"
+    folder = "results/{project}/output/ARGs/mags/{sample}/"
     arg_files = [
         os.path.join(folder, binID.replace(".fa.gz", ".txt")) for binID in binIDs
     ]
@@ -188,23 +191,21 @@ def get_mag_ARGs(wildcards):
 
 
 def get_gtdb_folder():
-    folder = config["gtdb"]["db-folder"]
-    path = "{0}{1}".format(get_resource_path(), folder)
+    path = "".join([get_resource_path(), config["gtdb"]["db-folder"]])
     return path
 
 
 def get_genomad_DB_file():
-    path = "{}genomad_db/names.dmp".format(get_resource_path())
+    path = "".join([get_resource_path(), "genomad_db/names.dmp"])
     return path
 
 
 def get_card_db_file():
-    name = config["card"]["dbfile"]
-    path = "{}CARD_db/{}".format(get_resource_path(), name)
+    path = "".join([get_resource_path(), "CARD_db/", config["card"]["dbfile"]])
     return path
 
 
 def get_card_annotation_file():
     version = config["card"]["version"]
-    path = "{}CARD_db/card_database_{}.fasta".format(get_resource_path(), version)
+    path = "".join([get_resource_path(), "CARD_db/card_database_", version, ".fasta"])
     return path

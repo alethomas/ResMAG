@@ -1,2 +1,0 @@
-A barplot for each sample, showing the relative abundance of reads from certain genera among all bacterial reads.
-The reads are classified using `Kraken2 <https://github.com/DerrickWood/kraken2>`_ and `Bracken <https://github.com/jenniferlu717/Bracken>`_.

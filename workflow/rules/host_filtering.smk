@@ -157,69 +157,17 @@ if config["host-filtering"]["do-host-filtering"]:
             "pigz -c > {output.filtered[1]}) > {log} 2>&1"
 
 
-rule download_kraken_db:
-    output:
-        hfile=get_kraken_db_file(),
-    params:
-        download=config["kraken"]["download-path"],
-        db_folder=lambda wildcards, output: Path(output.hfile).parent,
-    log:
-        "logs/kraken2_DB_download.log",
-    conda:
-        "../envs/unix.yaml"
-    shell:
-        "(mkdir -p {params.db_folder} && "
-        "wget -c {params.download} -O - | "
-        "tar -zxv -C {params.db_folder}) > {log} 2>&1"
-
-
-if not config["testing"]:
-
-    rule kraken2:
-        input:
-            hfile=get_kraken_db_file(),
-            fastqs=get_filtered_gz_fastqs,
-        output:
-            report="results/{project}/output/classification/reads/{sample}/{sample}_kraken2_report.tsv",
-            outfile=temp(
-                "results/{project}/output/classification/reads/{sample}/{sample}_kraken2_outfile.tsv"
-            ),
-        params:
-            db=lambda wildcards, input: Path(input.hfile).parent,
-        threads: 64
-        log:
-            "logs/{project}/kraken2/run/{sample}.log",
-        conda:
-            "../envs/kraken2.yaml"
-        shell:
-            "kraken2 --db {params.db} --threads {threads} --paired "
-            "--output {output.outfile} --report {output.report} "
-            "--gzip-compressed {input.fastqs} > {log} 2>&1"
-
-
-if config["testing"]:
-
-    rule gunzip_kraken_output:
-        input:
-            clf_gz_1="results/{project}/filtered/{sample}_clf_1.fastq.gz",
-            clf_gz_2="results/{project}/filtered/{sample}_clf_2.fastq.gz",
-        output:
-            clf1=temp("results/{project}/filtered/{sample}_clf_1.fastq"),
-            clf2=temp("results/{project}/filtered/{sample}_clf_2.fastq"),
-        threads: 64
-        shell:
-            "pigz -dk {input.clf_gz_1} {input.clf_gz_1}"
-
-
+## TODO
+## change to using kaiju output or just to present human contamination
 ## all reports are done on human (+ optional other different host) filtered
-rule diversity_summary:
+"""rule diversity_summary:
     input:
         reports=expand(
             "results/{{project}}/output/classification/reads/{sample}/{sample}_kraken2_report.tsv",
             sample=get_samples(),
         ),
         jsons=expand(
-            "results/{{project}}/trimmed/fastp/{sample}.fastp.json",
+            "results/{{project}}/report_prerequisites/qc/{sample}.fastp.json",
             sample=get_samples(),
         ),
         human_logs=expand(
@@ -232,7 +180,6 @@ rule diversity_summary:
     log:
         "logs/{project}/kraken2/summary.log",
     params:
-        taxid_dict=get_taxID_dict(),
         other_host=config["host-filtering"]["do-host-filtering"],
         hostname=config["host-filtering"]["host-name"],
     threads: 2
@@ -284,122 +231,4 @@ rule create_host_plot:
         "../envs/python.yaml"
     script:
         "../scripts/plot_host.py"
-
-
-rule bracken_genus:
-    input:
-        hfile=get_kraken_db_file(),
-        kreport=rules.kraken2.output.report,
-    output:
-        breport=temp(
-            "results/{project}/output/report/all/diversity_abundance/reports_genus/{sample}.breport"
-        ),
-        bfile=temp(
-            "results/{project}/output/report/all/diversity_abundance/files_genus/{sample}.bracken"
-        ),
-    params:
-        db=lambda wildcards, input: Path(input.hfile).parent,
-        level="G",
-    log:
-        "logs/{project}/bracken/{sample}_genus.log",
-    resources:
-        mem_mb=100,
-    threads: 1
-    conda:
-        "../envs/bracken.yaml"
-    shell:
-        "bracken -d {params.db} -i {input.kreport} -l {params.level} -o {output.bfile} -w {output.breport} > {log} 2>&1"
-
-
-use rule bracken_genus as bracken_family with:
-    input:
-        hfile=get_kraken_db_file(),
-        kreport=rules.kraken2.output.report,
-    output:
-        breport=temp(
-            "results/{project}/output/report/all/diversity_abundance/reports_family/{sample}.breport"
-        ),
-        bfile=temp(
-            "results/{project}/output/report/all/diversity_abundance/files_family/{sample}.bracken"
-        ),
-    params:
-        db=lambda wildcards, input: Path(input.hfile).parent,
-        level="F",
-    log:
-        "logs/{project}/bracken/{sample}_family.log",
-
-
-use rule bracken_genus as bracken_phylum with:
-    input:
-        hfile=get_kraken_db_file(),
-        kreport=rules.kraken2.output.report,
-    output:
-        breport=temp(
-            "results/{project}/output/report/all/diversity_abundance/reports_phylum/{sample}.breport"
-        ),
-        bfile=temp(
-            "results/{project}/output/report/all/diversity_abundance/files_phylum/{sample}.bracken"
-        ),
-    params:
-        db=lambda wildcards, input: Path(input.hfile).parent,
-        level="P",
-    log:
-        "logs/{project}/bracken/{sample}_phylum.log",
-
-
-use rule bracken_genus as bracken_class with:
-    input:
-        hfile=get_kraken_db_file(),
-        kreport=rules.kraken2.output.report,
-    output:
-        breport=temp(
-            "results/{project}/output/report/all/diversity_abundance/reports_class/{sample}.breport"
-        ),
-        bfile=temp(
-            "results/{project}/output/report/all/diversity_abundance/files_class/{sample}.bracken"
-        ),
-    params:
-        db=lambda wildcards, input: Path(input.hfile).parent,
-        level="C",
-    log:
-        "logs/{project}/bracken/{sample}_class.log",
-
-
-rule merge_bracken:
-    input:
-        expand(
-            "results/{{project}}/output/report/all/diversity_abundance/files_{{level}}/{sample}.bracken",
-            sample=get_samples(),
-        ),
-    output:
-        "results/{project}/output/report/all/diversity_abundance/merged.bracken_{level}.txt",
-    log:
-        "logs/{project}/bracken/merge_bracken_{level}.log",
-    resources:
-        mem_mb=100,
-    threads: 1
-    conda:
-        "../envs/bracken.yaml"
-    shell:
-        "(python $CONDA_PREFIX/bin/combine_bracken_outputs.py --files {input} --output {output}) > {log} 2>&1"
-
-
-rule create_bracken_plot:
-    input:
-        "results/{project}/output/report/all/diversity_abundance/merged.bracken_{level}.txt",
-    output:
-        report(
-            "results/{project}/output/report/all/abundance_{level}.html",
-            caption="../report/bracken_plot.rst",
-            category="2. Species diversity",
-            labels={"sample": "all samples", "level": "{level}"},
-        ),
-    params:
-        # all level values below 1% will be summed up as other
-        threshold=0.01,
-    log:
-        "logs/{project}/report/bracken_{level}_plot.log",
-    conda:
-        "../envs/python.yaml"
-    script:
-        "../scripts/brackenplot.py"
+"""

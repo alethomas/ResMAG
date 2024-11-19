@@ -1,3 +1,6 @@
+from pathlib import Path
+
+
 rule postprocess_metabat:
     input:
         outdir=rules.metabat.output.outdir,
@@ -49,15 +52,19 @@ rule binner_control:
 
 rule dastool_run:
     input:
-        binc="results/{project}/das_tool/binner_control_{sample}.csv",
+        binc=rules.binner_control.output,
         contigs=get_assembly,
         asml_folder=rules.megahit.output.outdir,
     output:
-        summary="results/{project}/das_tool/{sample}/{sample}_DASTool_summary.tsv",
-        contig2bin="results/{project}/das_tool/{sample}/{sample}_DASTool_contig2bin.tsv",
-        bins=directory("results/{project}/das_tool/{sample}/{sample}_DASTool_bins/"),
+        summary=temp("results/{project}/das_tool/{sample}/{sample}_DASTool_summary.tsv"),
+        contig2bin=temp(
+            "results/{project}/das_tool/{sample}/{sample}_DASTool_contig2bin.tsv"
+        ),
+        bins=temp(
+            directory("results/{project}/das_tool/{sample}/{sample}_DASTool_bins/")
+        ),
+        outdir=temp(directory("results/{project}/das_tool/{sample}/")),
     params:
-        outdir=lambda wildcards, output: Path(output.summary).parent,
         path_bin_list=get_paths_binner,
         threshold=0.001,
     threads: 64
@@ -70,7 +77,7 @@ rule dastool_run:
         "-i {params.path_bin_list[0]} "
         "-l {params.path_bin_list[1]} "
         "-c {input.contigs} "
-        "-o {params.outdir}/{wildcards.sample} "
+        "-o {output.outdir}/{wildcards.sample} "
         "--score_threshold {params.threshold} "
         "--threads={threads} "
         "> {log} 2>&1 "
@@ -80,11 +87,12 @@ if bins_for_sample:
 
     rule move_dastool_output:
         input:
-            contig2bin="results/{project}/das_tool/{sample}/{sample}_DASTool_contig2bin.tsv",
-            summary="results/{project}/das_tool/{sample}/{sample}_DASTool_summary.tsv",
+            contig2bin=rules.dastool_run.output.contig2bin,  #"results/{project}/das_tool/{sample}/{sample}_DASTool_contig2bin.tsv",
+            summary=rules.dastool_run.output.summary,  #"results/{project}/das_tool/{sample}/{sample}_DASTool_summary.tsv",
         output:
             contig2bin="results/{project}/output/contig2bins/{sample}/DASTool_contig2bin.tsv",
             summary="results/{project}/output/report/{sample}/{sample}_DASTool_summary.tsv",
+            done=touch("results/{project}/das_tool/{sample}_move.done"),
         threads: 20
         log:
             "logs/{project}/das_tool/{sample}/move_output.log",
@@ -99,6 +107,7 @@ if bins_for_sample:
             bins=rules.dastool_run.output.bins,
         output:
             bins=directory("results/{project}/output/fastas/{sample}/bins/"),
+            done=touch("results/{project}/das_tool/{sample}_bins.done"),
         threads: 64
         log:
             "logs/{project}/bins/{sample}/gz_bins.log",
@@ -122,3 +131,14 @@ if bins_for_sample:
             "../envs/python.yaml"
         script:
             "../scripts/move_MAGs.py"
+
+    rule cleanup_dastool_output:
+        input:
+            folder=rules.dastool_run.output.outdir,
+            bins=rules.gzip_bins.output.done,
+            move=rules.move_dastool_output.output.done,
+        output:
+            done=touch("results/{project}/das_tool/{sample}_cleanup.done"),
+        threads: 2
+        log:
+            "logs/{project}/das_tool/{sample}/cleanup.log",

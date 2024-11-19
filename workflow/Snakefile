@@ -19,13 +19,13 @@ report: "report/workflow.rst"
 
 include: "rules/common.smk"
 include: "rules/qc.smk"
-include: "rules/trimming.smk"
 include: "rules/host_filtering.smk"
+include: "rules/trimming.smk"
 include: "rules/assembly.smk"
 include: "rules/metabat.smk"
+include: "rules/metacoag.smk"
 include: "rules/das_tool.smk"
 include: "rules/bin_qc.smk"
-include: "rules/metacoag.smk"
 include: "rules/classify.smk"
 include: "rules/analysis.smk"
 include: "rules/report.smk"
@@ -33,17 +33,18 @@ include: "rules/report.smk"
 
 rule all:
     input:
-        # overall report
-        expand(
-            "results/{project}/output/report/report_{project}.zip",
-            project=get_project(),
-        ),
         # read classification output
         expand(
             "results/{project}/output/classification/reads/{sample}/{sample}_{level}_kaiju_summary.tsv",
             project=get_project(),
             sample=get_samples(),
             level=["species", "genus"],
+        ),
+        # binning summary output
+        expand(
+            "results/{project}/output/report/{sample}/{sample}_DASTool_summary.tsv",
+            project=get_project(),
+            sample=get_samples(),
         ),
         # fasta output
         expand(
@@ -56,15 +57,9 @@ rule all:
             project=get_project(),
             sample=get_samples(),
         ),
-        # binning summary output
-        expand(
-            "results/{project}/output/report/{sample}/{sample}_DASTool_summary.tsv",
-            project=get_project(),
-            sample=get_samples(),
-        ),
         # plasmid analysis
         expand(
-            "results/{project}/output/plasmids/{sample}/{sample}_final.contigs_summary/{sample}_final.contigs_plasmid_summary.tsv",
+            "results/{project}/output/plasmids/{sample}/{sample}_plasmid_summary.tsv",
             project=get_project(),
             sample=get_samples(),
         ),
@@ -79,20 +74,31 @@ rule all:
             project=get_project(),
             sample=get_samples(),
         ),
+        # overall report
+        expand(
+            "results/{project}/output/report/report_{project}.zip",
+            project=get_project(),
+        ),
+        expand(
+            "results/{project}/metabat/{sample}_cleanup.done",
+            project=get_project(),
+            sample=get_samples(),
+        ),
+        expand(
+            "results/{project}/metacoag/{sample}_cleanup.done",
+            project=get_project(),
+            sample=get_samples(),
+        ),
+        expand(
+            "results/{project}/das_tool/{sample}_cleanup.done",
+            project=get_project(),
+            sample=get_samples(),
+        ),
 
 
 """        
         expand(
             "results/{project}/output/ARGs/mags/{sample}/all_mags.done",
-            project=get_project(),
-            sample=get_samples(),
-        ),
-"""
-
-"""     
-        # removal logs
-        expand(
-            "logs/{project}/assembly/{sample}_intermediate_removal.done",
             project=get_project(),
             sample=get_samples(),
         ),
