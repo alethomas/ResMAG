@@ -4,18 +4,20 @@ from pathlib import Path
 
 sys.stderr = open(snakemake.log[0], "w")
 
-folder=snakemake.params.outdir
-json_infile=snakemake.input.json
+folder = snakemake.params.outdir
+json_infile = snakemake.input.json
 output_file = snakemake.output.summary
 
-#list of summary outfiles produced by GTDBTk
+# list of summary outfiles produced by GTDBTk
 summary_files = []
 
-with open(json_infile, 'r') as f:
+with open(json_infile, "r") as f:
     data = json.load(f)
 
 # Find the output for the step with name 'classify'
-classify_step = next((step for step in data["steps"] if step["name"] == "classify"), None)
+classify_step = next(
+    (step for step in data["steps"] if step["name"] == "classify"), None
+)
 if classify_step:
     output_files = classify_step["output_files"]
     for key in output_files.keys():
