@@ -38,7 +38,7 @@ rule all:
             "results/{project}/output/classification/reads/{sample}/{sample}_{level}_kaiju_summary.tsv",
             project=get_project(),
             sample=get_samples(),
-            level=["species", "genus"],
+            level=["species", "genus", "family", "order", "class", "phylum"],
         ),
         # binning summary output
         expand(
@@ -80,17 +80,22 @@ rule all:
             project=get_project(),
         ),
         expand(
-            "results/{project}/metabat/{sample}_cleanup.done",
+            "results/{project}/megahit/{sample}_cleanup.done",
             project=get_project(),
             sample=get_samples(),
         ),
         expand(
-            "results/{project}/metacoag/{sample}_cleanup.done",
+            "results/{project}/binning/metabat/{sample}_cleanup.done",
             project=get_project(),
             sample=get_samples(),
         ),
         expand(
-            "results/{project}/das_tool/{sample}_cleanup.done",
+            "results/{project}/binning/metacoag/{sample}_cleanup.done",
+            project=get_project(),
+            sample=get_samples(),
+        ),
+        expand(
+            "results/{project}/binning/das_tool/{sample}_cleanup.done",
             project=get_project(),
             sample=get_samples(),
         ),

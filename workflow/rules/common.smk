@@ -147,7 +147,7 @@ def get_all_contig2bin_files(wildcards):
 ## reads in binner control file and returns list with paths to contig2bin files
 ## and a list with name of the binners that produced results
 def get_paths_binner(wildcards):
-    file = "results/{}/das_tool/binner_control_{}.csv".format(
+    file = "results/{}/binning/das_tool/binner_control_{}.csv".format(
         wildcards.project, wildcards.sample
     )
     lines = open(file).readlines()

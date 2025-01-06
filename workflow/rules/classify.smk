@@ -48,6 +48,7 @@ rule kaiju_table:
         "(kaiju2table -t {input.db_files[0]} -n {input.db_files[2]} "
         "-r {wildcards.level} -o {output.summary} "
         "{input.report}) > {log} 2>&1"
+        # -p to print full taxonomy
 
 
 rule kaiju2krona:
@@ -65,7 +66,6 @@ rule kaiju2krona:
             subcategory="5.2 Read classification",
             labels={"sample": "{sample}"},
         ),
-        #Kaiju read classification krona plot
     log:
         "logs/{project}/kaiju/{sample}_2krona.log",
     conda:

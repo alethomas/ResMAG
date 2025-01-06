@@ -14,9 +14,8 @@ rule checkm2_DB_download:
 
 rule checkm2_run:
     input:
-        bins="results/{project}/das_tool/{sample}/{sample}_DASTool_bins/",
+        bins="results/{project}/output/fastas/{sample}/bins/",
         dbfile=get_checkm2_db(),
-        #dastool=rules.dastool_run.output.outdir,
     output:
         outdir=temp(directory("results/{project}/qc/checkm2/{sample}/")),
         stats="results/{project}/output/report/{sample}/checkm2_quality_report.tsv",
@@ -28,7 +27,7 @@ rule checkm2_run:
     conda:
         "../envs/checkm2.yaml"
     shell:
-        "(checkm2 predict -x fa --threads {threads} --force "
+        "(checkm2 predict -x fa.gz --threads {threads} --force "
         "--input {input.bins}/ --output-directory {output.outdir}/ && "
         "cp {output.outdir}/{params.outname} {output.stats}) > {log} 2>&1"
 
@@ -46,7 +45,7 @@ rule bin_summary_sample:
         csv_tax="results/{project}/output/report/{sample}/{sample}_bin_taxonomy.csv",
         csv_mags="results/{project}/output/report/{sample}/{sample}_mags_summary.csv",
     params:
-        max_cont=config["MAG-criteria"]["max-contamination"],  #snakemake.params.contamination
+        max_cont=config["MAG-criteria"]["max-contamination"],
         min_comp=config["MAG-criteria"]["min-completeness"],
     log:
         "logs/{project}/bin_summary/{sample}.log",
@@ -179,7 +178,7 @@ rule bin_summary_all:
             sample=get_samples(),
         ),
     output:
-        "results/{project}/output/report/all/binnning_summary_all.csv",
+        "results/{project}/output/report/all/binning_summary_all.csv",
     log:
         "logs/{project}/bin_summary/all.log",
     threads: 4
@@ -191,7 +190,7 @@ rule bin_summary_all:
 
 use rule qc_summary_report as bin_all_report with:
     input:
-        "results/{project}/output/report/all/binnning_summary_all.csv",
+        "results/{project}/output/report/all/binning_summary_all.csv",
     output:
         report(
             directory("results/{project}/output/report/all/binning/"),

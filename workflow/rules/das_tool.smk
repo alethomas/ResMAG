@@ -20,8 +20,8 @@ rule postprocess_metabat:
 
 rule postprocess_metacoag:
     input:
-        c2bin="results/{project}/metacoag/{sample}/contig_to_bin.tsv",
-        folder="results/{project}/metacoag/{sample}/",
+        c2bin="results/{project}/binning/metacoag/{sample}/contig_to_bin.tsv",
+        folder="results/{project}/binning/metacoag/{sample}/",
     output:
         "results/{project}/output/contig2bins/{sample}/metacoag_contig2bin.tsv",
     threads: 12
@@ -39,7 +39,7 @@ rule binner_control:
     input:
         get_all_contig2bin_files,
     output:
-        temp("results/{project}/das_tool/binner_control_{sample}.csv"),
+        temp("results/{project}/binning/das_tool/binner_control_{sample}.csv"),
     params:
         get_binners(),
     log:
@@ -56,14 +56,19 @@ rule dastool_run:
         contigs=get_assembly,
         asml_folder=rules.megahit.output.outdir,
     output:
-        summary=temp("results/{project}/das_tool/{sample}/{sample}_DASTool_summary.tsv"),
+        summary=temp(
+            "results/{project}/binning/das_tool/{sample}/{sample}_DASTool_summary.tsv"
+        ),
         contig2bin=temp(
-            "results/{project}/das_tool/{sample}/{sample}_DASTool_contig2bin.tsv"
+            "results/{project}/binning/das_tool/{sample}/{sample}_DASTool_contig2bin.tsv"
         ),
         bins=temp(
-            directory("results/{project}/das_tool/{sample}/{sample}_DASTool_bins/")
+            directory(
+                "results/{project}/binning/das_tool/{sample}/{sample}_DASTool_bins/"
+            )
         ),
-        outdir=temp(directory("results/{project}/das_tool/{sample}/")),
+        outdir=temp(directory("results/{project}/binning/das_tool/{sample}/")),
+        done=touch("results/{project}/binning/das_tool/{sample}_run.done"),
     params:
         path_bin_list=get_paths_binner,
         threshold=0.001,
@@ -87,12 +92,12 @@ if bins_for_sample:
 
     rule move_dastool_output:
         input:
-            contig2bin=rules.dastool_run.output.contig2bin,  #"results/{project}/das_tool/{sample}/{sample}_DASTool_contig2bin.tsv",
-            summary=rules.dastool_run.output.summary,  #"results/{project}/das_tool/{sample}/{sample}_DASTool_summary.tsv",
+            contig2bin=rules.dastool_run.output.contig2bin,
+            summary=rules.dastool_run.output.summary,
         output:
             contig2bin="results/{project}/output/contig2bins/{sample}/DASTool_contig2bin.tsv",
             summary="results/{project}/output/report/{sample}/{sample}_DASTool_summary.tsv",
-            done=touch("results/{project}/das_tool/{sample}_move.done"),
+            done=touch("results/{project}/binning/das_tool/{sample}_move.done"),
         threads: 20
         log:
             "logs/{project}/das_tool/{sample}/move_output.log",
@@ -107,7 +112,7 @@ if bins_for_sample:
             bins=rules.dastool_run.output.bins,
         output:
             bins=directory("results/{project}/output/fastas/{sample}/bins/"),
-            done=touch("results/{project}/das_tool/{sample}_bins.done"),
+            done=touch("results/{project}/binning/das_tool/{sample}_bins.done"),
         threads: 64
         log:
             "logs/{project}/bins/{sample}/gz_bins.log",
@@ -138,7 +143,7 @@ if bins_for_sample:
             bins=rules.gzip_bins.output.done,
             move=rules.move_dastool_output.output.done,
         output:
-            done=touch("results/{project}/das_tool/{sample}_cleanup.done"),
+            done=touch("results/{project}/binning/das_tool/{sample}_cleanup.done"),
         threads: 2
         log:
             "logs/{project}/das_tool/{sample}/cleanup.log",
