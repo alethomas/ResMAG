@@ -5,8 +5,8 @@ rule megahit:
     input:
         fastqs=get_filtered_gz_fastqs,
     output:
-        contigs="results/{project}/megahit/{sample}/final.contigs.fa",
-        outdir=directory("results/{project}/megahit/{sample}/"),
+        contigs=temp("results/{project}/megahit/{sample}/final.contigs.fa"),
+        outdir=temp(directory("results/{project}/megahit/{sample}/")),
         log="results/{project}/report_prerequisites/assembly/{sample}_megahit.log",
         done=touch("results/{project}/megahit/{sample}.done"),
     params:
@@ -17,26 +17,10 @@ rule megahit:
     conda:
         "../envs/megahit.yaml"
     shell:
-        #"--cleaning-rounds 10 --merge-level 20,0.90 "
         "(megahit -1 {input.fastqs[0]} -2 {input.fastqs[1]} "
         "--min-contig-len {params.threshold} -t {threads} "
         "--out-dir {output.outdir} -f > {log} 2>&1) && "
         "cp {log} {output.log}"
-
-
-rule remove_megahit_intermediates:
-    input:
-        contigs=get_assembly,
-    output:
-        touch("results/{project}/megahit/{sample}_intermediate_removal.done"),
-    params:
-        outdir=lambda wildcards, input: Path(input.contigs).parent,
-    log:
-        "logs/{project}/assembly/{sample}_intermediate_removal.log",
-    conda:
-        "../envs/unix.yaml"
-    shell:
-        "(find {params.outdir}/ -mindepth 1 -type d -exec rm -rf {{}} +) > {log} 2>&1"
 
 
 rule map_to_assembly:
@@ -93,7 +77,6 @@ rule reads_mapped_assembly:
 rule gzip_assembly:
     input:
         contigs=get_assembly,
-        intermediate=rules.remove_megahit_intermediates.output,
     output:
         "results/{project}/output/fastas/{sample}/{sample}.fa.gz",
     threads: 64
@@ -147,3 +130,18 @@ use rule qc_summary_report as assembly_report with:
         pattern=config["tablular-config"],
     log:
         "logs/{project}/report/assembly_rbt_csv.log",
+
+
+# remove megahit intermediate results when all dependent results are produced
+rule cleanup_megahit_output:
+    input:
+        # folder to remove
+        asmbl_folder=rules.megahit.output.outdir,
+        #dependent results
+        gz_asmbl=rules.gzip_assembly.output,
+        asmbl_summary=rules.assembly_summary.output.csv,
+        binning_done="results/{project}/binning/das_tool/{sample}_run.done",
+    output:
+        touch("results/{project}/megahit/{sample}_cleanup.done"),
+    log:
+        "logs/{project}/assembly/{sample}_cleanup.log",

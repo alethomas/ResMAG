@@ -28,7 +28,7 @@ else:
             fasta=get_human_ref(),
         params:
             download=config["human-filtering"]["download-path"],
-            folder=lambda wildcards, output: Path(output.fasta).parent,  #get_resource_path(),
+            folder=lambda wildcards, output: Path(output.fasta).parent,
         log:
             "logs/human_ref_download.log",
         group:

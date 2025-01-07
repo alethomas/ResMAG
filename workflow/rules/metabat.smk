@@ -21,7 +21,7 @@ rule metabat:
         contigs=get_gz_assembly,
         abd=rules.coverm_metabat.output.abd,
     output:
-        outdir=temp(directory("results/{project}/metabat/{sample}/")),
+        outdir=temp(directory("results/{project}/binning/metabat/{sample}/")),
     threads: 64
     params:
         prefix="bin",
@@ -41,9 +41,9 @@ rule metabat:
 rule cleanup_metabat_output:
     input:
         folder=rules.metabat.output.outdir,
-        dastool="results/{project}/das_tool/{sample}/{sample}_DASTool_summary.tsv",
+        dastool="results/{project}/binning/das_tool/{sample}/{sample}_DASTool_summary.tsv",
     output:
-        done=touch("results/{project}/metabat/{sample}_cleanup.done"),
+        done=touch("results/{project}/binning/metabat/{sample}_cleanup.done"),
     threads: 2
     log:
         "logs/{project}/metabat/{sample}/cleanup.log",

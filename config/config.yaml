@@ -4,7 +4,7 @@ pepfile: config/pep/config.yaml
 ## All results can be found under results/project-name/
 project-name: "test"
 #
-run-date: "2024-11-11"
+run-date: "2025-01-06"
 
 data-handling:
   # path to store data within the workflow

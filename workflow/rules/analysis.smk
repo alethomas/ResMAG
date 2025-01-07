@@ -116,6 +116,9 @@ rule CARD_read_run:
         db=rules.CARD_annotation.output,
     output:
         txt="results/{project}/output/ARGs/reads/{sample}/{sample}.gene_mapping_data.txt",
+        bam=temp(
+            "results/{project}/output/ARGs/reads/{sample}/{sample}.sorted.length_100.bam"
+        ),
     params:
         folder=lambda wildcards, output: Path(output.txt).parent,
     log:
